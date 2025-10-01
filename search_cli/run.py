@@ -559,12 +559,24 @@ class RobustRecipeSearcher:
         
         # Rating-based filtering using metadata
         if 'min_rating' in filters:
-            if 'rating' in meta and meta['rating'] < filters['min_rating']:
-                return False
+            if 'rating' in meta:
+                try:
+                    rating_value = float(meta['rating']) if meta['rating'] else 0.0
+                    if rating_value < filters['min_rating']:
+                        return False
+                except (ValueError, TypeError):
+                    # If rating can't be converted to float, skip this filter
+                    pass
         
         if 'min_review_count' in filters:
-            if 'review_count' in meta and meta['review_count'] < filters['min_review_count']:
-                return False
+            if 'review_count' in meta:
+                try:
+                    review_count_value = int(meta['review_count']) if meta['review_count'] else 0
+                    if review_count_value < filters['min_review_count']:
+                        return False
+                except (ValueError, TypeError):
+                    # If review_count can't be converted to int, skip this filter
+                    pass
         
         # Servings filtering using metadata
         if 'min_servings' in filters:
@@ -663,15 +675,36 @@ class RobustRecipeSearcher:
         
         # Rating filters
         ratings = recipe_data.get('ratings', {})
+        rating_value = 0.0
+        review_count_value = 0
+        
         if isinstance(ratings, dict):
-            rating_value = ratings.get('average', ratings.get('rating', ratings.get('score', 0)))
+            # Handle different rating field names and convert strings to numbers
+            rating_raw = ratings.get('average', ratings.get('rating', ratings.get('score', 0)))
+            try:
+                rating_value = float(rating_raw) if rating_raw else 0.0
+            except (ValueError, TypeError):
+                rating_value = 0.0
+            
+            # Handle review count
+            review_count_raw = ratings.get('review_count', ratings.get('count', 0))
+            try:
+                review_count_value = int(review_count_raw) if review_count_raw else 0
+            except (ValueError, TypeError):
+                review_count_value = 0
         else:
-            rating_value = float(ratings) if ratings else 0
+            try:
+                rating_value = float(ratings) if ratings else 0.0
+            except (ValueError, TypeError):
+                rating_value = 0.0
         
         if filters.get('min_rating') and rating_value < filters['min_rating']:
             return False
         
         if filters.get('max_rating') and rating_value > filters['max_rating']:
+            return False
+        
+        if filters.get('min_review_count') and review_count_value < filters['min_review_count']:
             return False
         
         # Nutrition filters

@@ -225,26 +225,25 @@ function RecipesListPageContent() {
             let results = response.results || response.recipes || [];
 
             // Apply client-side sorting (since backend doesn't support all sort options)
-            const sorted = [...results];
             switch (sortBy) {
                 case 'rating':
-                    results = sorted.sort((a, b) => {
+                    results = results.sort((a, b) => {
                         const ratingA = parseFloat(a.ratings?.rating || '0');
                         const ratingB = parseFloat(b.ratings?.rating || '0');
                         return ratingB - ratingA;
                     });
                     break;
                 case 'time_asc':
-                    results = sorted.sort((a, b) => (a.times?.total || 999) - (b.times?.total || 999));
+                    results = results.sort((a, b) => (a.times?.total || 999) - (b.times?.total || 999));
                     break;
                 case 'time_desc':
-                    results = sorted.sort((a, b) => (b.times?.total || 0) - (a.times?.total || 0));
+                    results = results.sort((a, b) => (b.times?.total || 0) - (a.times?.total || 0));
                     break;
                 case 'title':
-                    results = sorted.sort((a, b) => a.title.localeCompare(b.title));
+                    results = results.sort((a, b) => a.title.localeCompare(b.title));
                     break;
                 case 'date':
-                    results = sorted.sort((a, b) => {
+                    results = results.sort((a, b) => {
                         const dateA = new Date(a.date_published || '1970-01-01');
                         const dateB = new Date(b.date_published || '1970-01-01');
                         return dateB.getTime() - dateA.getTime();
@@ -252,7 +251,8 @@ function RecipesListPageContent() {
                     break;
                 case 'relevance':
                 default:
-                    results = sorted; // Backend already sorted by relevance
+                    // Backend already sorted by relevance - no client-side sorting needed
+                    break;
             }
 
             // Use server-side pagination data

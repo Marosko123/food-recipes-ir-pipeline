@@ -59,6 +59,11 @@ frontend-nextjs/build/
 *.swo
 *~
 
+# Assistant configuration files (project-specific)
+.cursorrules
+.github/copilot-instructions.md
+AGENT_PROMPT.md
+
 # Logs
 *.log
 logs/

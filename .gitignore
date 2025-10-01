@@ -61,7 +61,7 @@ frontend-nextjs/build/
 
 # Assistant configuration files (project-specific)
 .cursorrules
-.github/copilot-instructions.md
+.github/
 AGENT_PROMPT.md
 
 # Logs

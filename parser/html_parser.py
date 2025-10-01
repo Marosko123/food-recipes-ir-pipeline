@@ -26,10 +26,26 @@ class HTMLParser:
             r'total\s*time[:\s]*(\d+)\s*(?:minute|min|m|hour|hr|h)'
         ]
         
+        # Comprehensive list of ACTUAL cuisines (countries/regions)
         self.cuisine_keywords = [
-            'italian', 'mexican', 'chinese', 'japanese', 'indian', 'french',
-            'thai', 'korean', 'greek', 'spanish', 'german', 'american',
-            'vietnamese', 'mediterranean', 'asian', 'european', 'latin'
+            # North America
+            'american', 'canadian', 'mexican', 'tex mex', 'cajun', 'creole',
+            'southwestern u.s.', 'native american',
+            # South America
+            'south american', 'latin', 'caribbean',
+            # Europe
+            'european', 'italian', 'french', 'spanish', 'greek', 'german',
+            'portuguese', 'british', 'irish', 'scandinavian', 'polish',
+            # Asia
+            'asian', 'chinese', 'japanese', 'korean', 'thai', 'vietnamese',
+            'indian', 'filipino', 'indonesian', 'malaysian', 'singaporean',
+            # Middle East & Africa
+            'mediterranean', 'moroccan', 'ethiopian', 'african', 'middle eastern',
+            'lebanese', 'turkish', 'persian',
+            # Oceania
+            'australian', 'new zealand', 'hawaiian',
+            # Cultural/Religious
+            'jewish', 'kosher', 'halal'
         ]
     
     def parse_recipe(self, html_content: str, url: str) -> Dict[str, Any]:
@@ -250,30 +266,47 @@ class HTMLParser:
             return 0
     
     def _extract_cuisine(self, doc: etree.Element, html_content: str) -> List[str]:
-        """Extract cuisine information."""
+        """Extract cuisine information - only actual cuisines (countries/regions)."""
         cuisines = []
         
         # Look in meta keywords
         meta_keywords = doc.cssselect('meta[name="keywords"]')
         if meta_keywords:
-            keywords = meta_keywords[0].get('content', '').lower()
-            for cuisine in self.cuisine_keywords:
-                if cuisine in keywords:
-                    cuisines.append(cuisine.title())
+            keywords_content = meta_keywords[0].get('content', '')
+            # Split by comma and check each one
+            for kw in keywords_content.split(','):
+                kw_clean = kw.strip().lower()
+                if kw_clean in self.cuisine_keywords:
+                    cuisine_title = kw.strip().title()
+                    if cuisine_title not in cuisines:
+                        cuisines.append(cuisine_title)
         
         # Look in breadcrumbs or navigation
         breadcrumbs = doc.cssselect('.breadcrumb, .breadcrumbs, nav')
         for breadcrumb in breadcrumbs:
             text = breadcrumb.text_content().lower()
             for cuisine in self.cuisine_keywords:
-                if cuisine in text and cuisine.title() not in cuisines:
-                    cuisines.append(cuisine.title())
+                cuisine_title = cuisine.title()
+                if cuisine in text and cuisine_title not in cuisines:
+                    cuisines.append(cuisine_title)
         
         return cuisines
     
     def _extract_category(self, doc: etree.Element) -> List[str]:
-        """Extract recipe category."""
+        """Extract recipe category - meal types, courses, and dietary tags."""
         categories = []
+        
+        MEAL_TYPES = {
+            'breakfast', 'brunch', 'lunch', 'lunch/snacks', 'dinner', 'dessert',
+            'appetizers', 'beverages', 'snacks', 'side dishes'
+        }
+        
+        DIETARY_TAGS = {
+            'vegan', 'vegetarian', 'kosher', 'halal', 'gluten-free', 'dairy-free',
+            'egg free', 'lactose free', 'no shell fish', 'low cholesterol',
+            'low protein', 'high protein', 'high fiber', 'very low carbs',
+            'healthy', 'free of...'
+        }
         
         # Look for category in breadcrumbs
         breadcrumbs = doc.cssselect('.breadcrumb, .breadcrumbs, nav')
@@ -281,8 +314,22 @@ class HTMLParser:
             links = breadcrumb.cssselect('a')
             for link in links:
                 text = link.text_content().strip()
-                if text and len(text) > 2 and text.lower() not in ['home', 'recipes', 'recipe']:
+                text_lower = text.lower()
+                if (text and len(text) > 2 and 
+                    text_lower not in ['home', 'recipes', 'recipe'] and
+                    (text_lower in MEAL_TYPES or text_lower in DIETARY_TAGS)):
                     categories.append(text)
+        
+        # Also check meta keywords for categories
+        meta_keywords = doc.cssselect('meta[name="keywords"]')
+        if meta_keywords:
+            keywords_content = meta_keywords[0].get('content', '')
+            for kw in keywords_content.split(','):
+                kw_clean = kw.strip().lower()
+                kw_display = kw.strip()
+                if ((kw_clean in MEAL_TYPES or kw_clean in DIETARY_TAGS) and
+                    kw_display not in categories):
+                    categories.append(kw_display)
         
         return categories
     

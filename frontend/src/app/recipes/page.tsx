@@ -48,6 +48,12 @@ function RecipesListPageContent() {
     const [categories, setCategories] = useState<FilterOption[]>([]);
     const [ingredients, setIngredients] = useState<FilterOption[]>([]);
 
+    // Two-stage filtering: preview + apply
+    const [pendingFilters, setPendingFilters] = useState<SearchFilters>({});
+    const [filterCount, setFilterCount] = useState<number | null>(null);
+    const [isCountingFilters, setIsCountingFilters] = useState(false);
+    const [hasUnappliedFilters, setHasUnappliedFilters] = useState(false);
+
     // Collapsible sections state - Most used filters first, cuisines open by default
     const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
         cuisines: false,      // Most used - open by default
@@ -137,7 +143,7 @@ function RecipesListPageContent() {
         if (maxCookTime) urlFilters.max_cook_minutes = parseInt(maxCookTime);
         if (minServings) urlFilters.min_servings = parseInt(minServings);
         if (maxServings) urlFilters.max_servings = parseInt(maxServings);
-        if (difficulty) urlFilters.difficulty = [difficulty];
+        if (difficulty) urlFilters.difficulty = difficulty.split(',');
         if (minRating) urlFilters.min_rating = parseFloat(minRating);
         if (minReviewCount) urlFilters.min_review_count = parseInt(minReviewCount);
         if (minCalories) urlFilters.min_calories = parseInt(minCalories);
@@ -181,7 +187,7 @@ function RecipesListPageContent() {
                 label: cuisine.charAt(0).toUpperCase() + cuisine.slice(1),
             }));
 
-            const ingredientOptions = ingredientsData.ingredients.slice(0, 200).map(ingredient => ({
+            const ingredientOptions = ingredientsData.ingredients.map(ingredient => ({
                 value: ingredient,
                 label: ingredient.charAt(0).toUpperCase() + ingredient.slice(1),
             }));
@@ -354,10 +360,56 @@ function RecipesListPageContent() {
         setCurrentPage(1);
     };
 
-    const handleFiltersChange = (newFilters: SearchFilters) => {
-        setFilters(newFilters);
+    // Get current filter values (pending if exists, otherwise active)
+    const getCurrentFilters = useCallback((): SearchFilters => {
+        return hasUnappliedFilters ? pendingFilters : filters;
+    }, [hasUnappliedFilters, pendingFilters, filters]);
+
+    // Two-stage filtering: update pending filters and fetch count
+    const handleFiltersChange = useCallback((newFilters: SearchFilters) => {
+        setPendingFilters(newFilters);
+        setHasUnappliedFilters(true);
+        
+        // Fetch count with debounce
+        setIsCountingFilters(true);
+        
+        const fetchCount = async () => {
+            try {
+                const result = await apiClient.getSearchCount({
+                    query: searchQuery,
+                    filters: newFilters
+                });
+                setFilterCount(result.count);
+            } catch (error) {
+                console.error('Failed to fetch filter count:', error);
+                setFilterCount(null);
+            } finally {
+                setIsCountingFilters(false);
+            }
+        };
+
+        // Debounce the count fetch by 500ms
+        const timeoutId = setTimeout(fetchCount, 500);
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery]);
+
+    // Apply the pending filters and trigger actual search
+    const applyPendingFilters = useCallback(() => {
+        setFilters(pendingFilters);
+        setHasUnappliedFilters(false);
+        setFilterCount(null);
         setCurrentPage(1);
-    };
+    }, [pendingFilters]);
+
+    // Clear all filters including pending
+    const clearAllFilters = useCallback(() => {
+        const emptyFilters = {};
+        setFilters(emptyFilters);
+        setPendingFilters(emptyFilters);
+        setFilterCount(null);
+        setHasUnappliedFilters(false);
+        setCurrentPage(1);
+    }, []);
 
     const handleSortChange = (newSort: string) => {
         setSortBy(newSort);
@@ -520,9 +572,9 @@ function RecipesListPageContent() {
                                             <div className="px-4 pb-4">
                                                 <MultiSelect
                                                     options={cuisines}
-                                                    selected={filters.cuisine || []}
+                                                    selected={getCurrentFilters().cuisine || []}
                                                     onSelectionChange={(selected) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         cuisine: selected.length > 0 ? selected : undefined
                                                     })}
                                                     placeholder="Select cuisines..."
@@ -562,9 +614,9 @@ function RecipesListPageContent() {
                                                 </label>
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <select
-                                                        value={filters.min_total_minutes || ''}
+                                                        value={getCurrentFilters().min_total_minutes || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             min_total_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -576,9 +628,9 @@ function RecipesListPageContent() {
                                                         <option value="60">1 hour</option>
                                                     </select>
                                                     <select
-                                                        value={filters.max_total_minutes || ''}
+                                                        value={getCurrentFilters().max_total_minutes || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             max_total_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -601,9 +653,9 @@ function RecipesListPageContent() {
                                                 </label>
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <select
-                                                        value={filters.min_prep_minutes || ''}
+                                                        value={getCurrentFilters().min_prep_minutes || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             min_prep_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -615,9 +667,9 @@ function RecipesListPageContent() {
                                                         <option value="30">30 min</option>
                                                     </select>
                                                     <select
-                                                        value={filters.max_prep_minutes || ''}
+                                                        value={getCurrentFilters().max_prep_minutes || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             max_prep_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -639,9 +691,9 @@ function RecipesListPageContent() {
                                                 </label>
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <select
-                                                        value={filters.min_cook_minutes || ''}
+                                                        value={getCurrentFilters().min_cook_minutes || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             min_cook_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -653,9 +705,9 @@ function RecipesListPageContent() {
                                                         <option value="30">30 min</option>
                                                     </select>
                                                     <select
-                                                        value={filters.max_cook_minutes || ''}
+                                                        value={getCurrentFilters().max_cook_minutes || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             max_cook_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -694,9 +746,9 @@ function RecipesListPageContent() {
                                         <div className="px-4 pb-4">
                                             <div className="grid grid-cols-2 gap-2">
                                                 <select
-                                                    value={filters.min_servings || ''}
+                                                    value={getCurrentFilters().min_servings || ''}
                                                     onChange={(e) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         min_servings: e.target.value ? parseInt(e.target.value) : undefined
                                                     })}
                                                     className="input-field text-sm"
@@ -708,9 +760,9 @@ function RecipesListPageContent() {
                                                     <option value="6">6 servings</option>
                                                 </select>
                                                 <select
-                                                    value={filters.max_servings || ''}
+                                                    value={getCurrentFilters().max_servings || ''}
                                                     onChange={(e) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         max_servings: e.target.value ? parseInt(e.target.value) : undefined
                                                     })}
                                                     className="input-field text-sm"
@@ -758,9 +810,9 @@ function RecipesListPageContent() {
                                                         min="0"
                                                         max="5"
                                                         step="0.5"
-                                                        value={filters.min_rating || 0}
+                                                        value={getCurrentFilters().min_rating || 0}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             min_rating: parseFloat(e.target.value) || undefined
                                                         })}
                                                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
@@ -778,9 +830,9 @@ function RecipesListPageContent() {
                                                     Minimum Reviews
                                                 </label>
                                                 <select
-                                                    value={filters.min_review_count || ''}
+                                                    value={getCurrentFilters().min_review_count || ''}
                                                     onChange={(e) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         min_review_count: e.target.value ? parseInt(e.target.value) : undefined
                                                     })}
                                                     className="w-full input-field text-sm"
@@ -817,19 +869,19 @@ function RecipesListPageContent() {
                                     {!collapsedSections.difficulty && (
                                         <div className="px-4 pb-4">
                                             <div className="space-y-2">
-                                                {['easy', 'medium', 'hard'].map((level) => (
+                                                {['easy', 'intermediate', 'hard'].map((level) => (
                                                     <label key={level} className="flex items-center">
                                                         <input
                                                             type="checkbox"
-                                                            checked={filters.difficulty?.includes(level) || false}
+                                                            checked={getCurrentFilters().difficulty?.includes(level) || false}
                                                             onChange={(e) => {
-                                                                const currentDifficulties = filters.difficulty || [];
+                                                                const currentDifficulties = getCurrentFilters().difficulty || [];
                                                                 const newDifficulties = e.target.checked
                                                                     ? [...currentDifficulties, level]
                                                                     : currentDifficulties.filter(d => d !== level);
 
                                                                 handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     difficulty: newDifficulties.length > 0 ? newDifficulties : undefined
                                                                 });
                                                             }}
@@ -873,9 +925,9 @@ function RecipesListPageContent() {
                                                     <input
                                                         type="number"
                                                         placeholder="Min"
-                                                        value={filters.min_calories || ''}
+                                                        value={getCurrentFilters().min_calories || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             min_calories: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -883,9 +935,9 @@ function RecipesListPageContent() {
                                                     <input
                                                         type="number"
                                                         placeholder="Max"
-                                                        value={filters.max_calories || ''}
+                                                        value={getCurrentFilters().max_calories || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             max_calories: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -903,9 +955,9 @@ function RecipesListPageContent() {
                                                     <input
                                                         type="number"
                                                         placeholder="Min"
-                                                        value={filters.min_protein || ''}
+                                                        value={getCurrentFilters().min_protein || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             min_protein: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -913,9 +965,9 @@ function RecipesListPageContent() {
                                                     <input
                                                         type="number"
                                                         placeholder="Max"
-                                                        value={filters.max_protein || ''}
+                                                        value={getCurrentFilters().max_protein || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             max_protein: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -933,9 +985,9 @@ function RecipesListPageContent() {
                                                     <input
                                                         type="number"
                                                         placeholder="Min"
-                                                        value={filters.min_carbs || ''}
+                                                        value={getCurrentFilters().min_carbs || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             min_carbs: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -943,9 +995,9 @@ function RecipesListPageContent() {
                                                     <input
                                                         type="number"
                                                         placeholder="Max"
-                                                        value={filters.max_carbs || ''}
+                                                        value={getCurrentFilters().max_carbs || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             max_carbs: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -963,9 +1015,9 @@ function RecipesListPageContent() {
                                                     <input
                                                         type="number"
                                                         placeholder="Min"
-                                                        value={filters.min_fat || ''}
+                                                        value={getCurrentFilters().min_fat || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             min_fat: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -973,9 +1025,9 @@ function RecipesListPageContent() {
                                                     <input
                                                         type="number"
                                                         placeholder="Max"
-                                                        value={filters.max_fat || ''}
+                                                        value={getCurrentFilters().max_fat || ''}
                                                         onChange={(e) => handleFiltersChange({
-                                                            ...filters,
+                                                            ...getCurrentFilters(),
                                                             max_fat: e.target.value ? parseInt(e.target.value) : undefined
                                                         })}
                                                         className="input-field text-sm"
@@ -1014,9 +1066,9 @@ function RecipesListPageContent() {
                                                 <input
                                                     type="text"
                                                     placeholder="Search by author..."
-                                                    value={filters.author || ''}
+                                                    value={getCurrentFilters().author || ''}
                                                     onChange={(e) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         author: e.target.value || undefined
                                                     })}
                                                     className="w-full input-field text-sm"
@@ -1031,9 +1083,9 @@ function RecipesListPageContent() {
                                                 <input
                                                     type="text"
                                                     placeholder="e.g. New York, Italy..."
-                                                    value={filters.author_location || ''}
+                                                    value={getCurrentFilters().author_location || ''}
                                                     onChange={(e) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         author_location: e.target.value || undefined
                                                     })}
                                                     className="w-full input-field text-sm"
@@ -1065,18 +1117,18 @@ function RecipesListPageContent() {
                                             <div className="grid grid-cols-2 gap-2">
                                                 <input
                                                     type="date"
-                                                    value={filters.date_from || ''}
+                                                    value={getCurrentFilters().date_from || ''}
                                                     onChange={(e) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         date_from: e.target.value || undefined
                                                     })}
                                                     className="input-field text-sm"
                                                 />
                                                 <input
                                                     type="date"
-                                                    value={filters.date_to || ''}
+                                                    value={getCurrentFilters().date_to || ''}
                                                     onChange={(e) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         date_to: e.target.value || undefined
                                                     })}
                                                     className="input-field text-sm"
@@ -1108,9 +1160,9 @@ function RecipesListPageContent() {
                                             <label className="flex items-center">
                                                 <input
                                                     type="checkbox"
-                                                    checked={filters.has_image || false}
+                                                    checked={getCurrentFilters().has_image || false}
                                                     onChange={(e) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         has_image: e.target.checked || undefined
                                                     })}
                                                     className="mr-2"
@@ -1143,9 +1195,9 @@ function RecipesListPageContent() {
                                             <div className="px-4 pb-4">
                                                 <MultiSelect
                                                     options={cuisines}
-                                                    selected={filters.cuisine || []}
+                                                    selected={getCurrentFilters().cuisine || []}
                                                     onSelectionChange={(selected) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         cuisine: selected.length > 0 ? selected : undefined
                                                     })}
                                                     placeholder="Select cuisines..."
@@ -1179,9 +1231,9 @@ function RecipesListPageContent() {
                                             <div className="px-4 pb-4">
                                                 <MultiSelect
                                                     options={categories}
-                                                    selected={filters.category || []}
+                                                    selected={getCurrentFilters().category || []}
                                                     onSelectionChange={(selected) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         category: selected.length > 0 ? selected : undefined
                                                     })}
                                                     placeholder="Select categories..."
@@ -1214,21 +1266,16 @@ function RecipesListPageContent() {
                                         {!collapsedSections.ingredients && (
                                             <div className="px-4 pb-4">
                                                 <MultiSelect
-                                                    options={ingredients.slice(0, 200)}
-                                                    selected={filters.ingredients || []}
+                                                    options={ingredients}
+                                                    selected={getCurrentFilters().ingredients || []}
                                                     onSelectionChange={(selected) => handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         ingredients: selected.length > 0 ? selected : undefined
                                                     })}
                                                     placeholder="Select required ingredients..."
                                                     searchable={true}
                                                     maxDisplay={3}
                                                 />
-                                                {ingredients.length > 200 && (
-                                                    <p className="text-xs text-gray-500 mt-1">
-                                                        Showing top 200 most common ingredients
-                                                    </p>
-                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -1256,7 +1303,7 @@ function RecipesListPageContent() {
                                             <input
                                                 type="text"
                                                 placeholder="e.g. healthy, quick, vegetarian..."
-                                                value={filters.keywords?.join(', ') || ''}
+                                                value={getCurrentFilters().keywords?.join(', ') || ''}
                                                 onChange={(e) => {
                                                     const keywords = e.target.value
                                                         .split(',')
@@ -1264,7 +1311,7 @@ function RecipesListPageContent() {
                                                         .filter(k => k.length > 0);
 
                                                     handleFiltersChange({
-                                                        ...filters,
+                                                        ...getCurrentFilters(),
                                                         keywords: keywords.length > 0 ? keywords : undefined
                                                     });
                                                 }}
@@ -1276,6 +1323,43 @@ function RecipesListPageContent() {
                                         </div>
                                     )}
                                 </div>
+
+                                {/* Apply Filters Button - Mobile */}
+                                {hasUnappliedFilters && (
+                                    <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t-2 border-orange-500 shadow-lg z-10 -mx-4 -mb-4">
+                                        <button
+                                            onClick={applyPendingFilters}
+                                            disabled={isCountingFilters}
+                                            className={cn(
+                                                "w-full px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 flex items-center justify-center space-x-2",
+                                                isCountingFilters 
+                                                    ? "bg-gray-400 cursor-not-allowed"
+                                                    : "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-md hover:shadow-lg"
+                                            )}
+                                        >
+                                            {isCountingFilters ? (
+                                                <>
+                                                    <LoadingSpinner className="w-5 h-5" />
+                                                    <span>Counting recipes...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Filter className="w-5 h-5" />
+                                                    <span>
+                                                        Apply Filters 
+                                                        {filterCount !== null && ` (${filterCount.toLocaleString()} ${filterCount === 1 ? 'recipe' : 'recipes'})`}
+                                                    </span>
+                                                </>
+                                            )}
+                                        </button>
+                                        
+                                        {filterCount !== null && filterCount === 0 && !isCountingFilters && (
+                                            <p className="text-sm text-red-600 mt-2 text-center font-medium">
+                                                ⚠️ No recipes match these filters
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -1329,13 +1413,20 @@ function RecipesListPageContent() {
                                     {/* Filters - Reordered by Usage Frequency */}
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-                                            {getActiveFilterCount() > 0 && (
+                                            <div className="flex items-center space-x-2">
+                                                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+                                                {hasUnappliedFilters && (
+                                                    <span className="px-2 py-0.5 text-xs font-semibold bg-orange-100 text-orange-700 rounded-full">
+                                                        Preview
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {(getActiveFilterCount() > 0 || hasUnappliedFilters) && (
                                                 <button
-                                                    onClick={() => setFilters({})}
+                                                    onClick={clearAllFilters}
                                                     className="text-sm text-primary-600 hover:text-primary-700 font-medium"
                                                 >
-                                                    Clear all ({getActiveFilterCount()})
+                                                    Clear all {getActiveFilterCount() > 0 && `(${getActiveFilterCount()})`}
                                                 </button>
                                             )}
                                         </div>
@@ -1362,9 +1453,9 @@ function RecipesListPageContent() {
                                                     <div className="px-4 pb-4">
                                                         <MultiSelect
                                                             options={cuisines}
-                                                            selected={filters.cuisine || []}
+                                                            selected={getCurrentFilters().cuisine || []}
                                                             onSelectionChange={(selected) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 cuisine: selected.length > 0 ? selected : undefined
                                                             })}
                                                             placeholder="Select cuisines..."
@@ -1404,9 +1495,9 @@ function RecipesListPageContent() {
                                                         </label>
                                                         <div className="grid grid-cols-2 gap-2">
                                                             <select
-                                                                value={filters.min_total_minutes || ''}
+                                                                value={getCurrentFilters().min_total_minutes || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     min_total_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1418,9 +1509,9 @@ function RecipesListPageContent() {
                                                                 <option value="60">1 hour</option>
                                                             </select>
                                                             <select
-                                                                value={filters.max_total_minutes || ''}
+                                                                value={getCurrentFilters().max_total_minutes || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     max_total_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1443,9 +1534,9 @@ function RecipesListPageContent() {
                                                         </label>
                                                         <div className="grid grid-cols-2 gap-2">
                                                             <select
-                                                                value={filters.min_prep_minutes || ''}
+                                                                value={getCurrentFilters().min_prep_minutes || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     min_prep_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1457,9 +1548,9 @@ function RecipesListPageContent() {
                                                                 <option value="30">30 min</option>
                                                             </select>
                                                             <select
-                                                                value={filters.max_prep_minutes || ''}
+                                                                value={getCurrentFilters().max_prep_minutes || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     max_prep_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1481,9 +1572,9 @@ function RecipesListPageContent() {
                                                         </label>
                                                         <div className="grid grid-cols-2 gap-2">
                                                             <select
-                                                                value={filters.min_cook_minutes || ''}
+                                                                value={getCurrentFilters().min_cook_minutes || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     min_cook_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1495,9 +1586,9 @@ function RecipesListPageContent() {
                                                                 <option value="30">30 min</option>
                                                             </select>
                                                             <select
-                                                                value={filters.max_cook_minutes || ''}
+                                                                value={getCurrentFilters().max_cook_minutes || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     max_cook_minutes: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1536,9 +1627,9 @@ function RecipesListPageContent() {
                                                 <div className="px-4 pb-4">
                                                     <div className="grid grid-cols-2 gap-2">
                                                         <select
-                                                            value={filters.min_servings || ''}
+                                                            value={getCurrentFilters().min_servings || ''}
                                                             onChange={(e) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 min_servings: e.target.value ? parseInt(e.target.value) : undefined
                                                             })}
                                                             className="input-field text-sm"
@@ -1550,9 +1641,9 @@ function RecipesListPageContent() {
                                                             <option value="6">6 servings</option>
                                                         </select>
                                                         <select
-                                                            value={filters.max_servings || ''}
+                                                            value={getCurrentFilters().max_servings || ''}
                                                             onChange={(e) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 max_servings: e.target.value ? parseInt(e.target.value) : undefined
                                                             })}
                                                             className="input-field text-sm"
@@ -1600,9 +1691,9 @@ function RecipesListPageContent() {
                                                                 min="0"
                                                                 max="5"
                                                                 step="0.5"
-                                                                value={filters.min_rating || 0}
+                                                                value={getCurrentFilters().min_rating || 0}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     min_rating: parseFloat(e.target.value) || undefined
                                                                 })}
                                                                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
@@ -1620,9 +1711,9 @@ function RecipesListPageContent() {
                                                             Minimum Reviews
                                                         </label>
                                                         <select
-                                                            value={filters.min_review_count || ''}
+                                                            value={getCurrentFilters().min_review_count || ''}
                                                             onChange={(e) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 min_review_count: e.target.value ? parseInt(e.target.value) : undefined
                                                             })}
                                                             className="w-full input-field text-sm"
@@ -1663,15 +1754,15 @@ function RecipesListPageContent() {
                                                             <label key={level} className="flex items-center">
                                                                 <input
                                                                     type="checkbox"
-                                                                    checked={filters.difficulty?.includes(level) || false}
+                                                                    checked={getCurrentFilters().difficulty?.includes(level) || false}
                                                                     onChange={(e) => {
-                                                                        const currentDifficulties = filters.difficulty || [];
+                                                                        const currentDifficulties = getCurrentFilters().difficulty || [];
                                                                         const newDifficulties = e.target.checked
                                                                             ? [...currentDifficulties, level]
                                                                             : currentDifficulties.filter(d => d !== level);
 
                                                                         handleFiltersChange({
-                                                                            ...filters,
+                                                                            ...getCurrentFilters(),
                                                                             difficulty: newDifficulties.length > 0 ? newDifficulties : undefined
                                                                         });
                                                                     }}
@@ -1715,9 +1806,9 @@ function RecipesListPageContent() {
                                                             <input
                                                                 type="number"
                                                                 placeholder="Min"
-                                                                value={filters.min_calories || ''}
+                                                                value={getCurrentFilters().min_calories || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     min_calories: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1725,9 +1816,9 @@ function RecipesListPageContent() {
                                                             <input
                                                                 type="number"
                                                                 placeholder="Max"
-                                                                value={filters.max_calories || ''}
+                                                                value={getCurrentFilters().max_calories || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     max_calories: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1745,9 +1836,9 @@ function RecipesListPageContent() {
                                                             <input
                                                                 type="number"
                                                                 placeholder="Min"
-                                                                value={filters.min_protein || ''}
+                                                                value={getCurrentFilters().min_protein || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     min_protein: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1755,9 +1846,9 @@ function RecipesListPageContent() {
                                                             <input
                                                                 type="number"
                                                                 placeholder="Max"
-                                                                value={filters.max_protein || ''}
+                                                                value={getCurrentFilters().max_protein || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     max_protein: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1775,9 +1866,9 @@ function RecipesListPageContent() {
                                                             <input
                                                                 type="number"
                                                                 placeholder="Min"
-                                                                value={filters.min_carbs || ''}
+                                                                value={getCurrentFilters().min_carbs || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     min_carbs: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1785,9 +1876,9 @@ function RecipesListPageContent() {
                                                             <input
                                                                 type="number"
                                                                 placeholder="Max"
-                                                                value={filters.max_carbs || ''}
+                                                                value={getCurrentFilters().max_carbs || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     max_carbs: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1805,9 +1896,9 @@ function RecipesListPageContent() {
                                                             <input
                                                                 type="number"
                                                                 placeholder="Min"
-                                                                value={filters.min_fat || ''}
+                                                                value={getCurrentFilters().min_fat || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     min_fat: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1815,9 +1906,9 @@ function RecipesListPageContent() {
                                                             <input
                                                                 type="number"
                                                                 placeholder="Max"
-                                                                value={filters.max_fat || ''}
+                                                                value={getCurrentFilters().max_fat || ''}
                                                                 onChange={(e) => handleFiltersChange({
-                                                                    ...filters,
+                                                                    ...getCurrentFilters(),
                                                                     max_fat: e.target.value ? parseInt(e.target.value) : undefined
                                                                 })}
                                                                 className="input-field text-sm"
@@ -1856,9 +1947,9 @@ function RecipesListPageContent() {
                                                         <input
                                                             type="text"
                                                             placeholder="Search by author..."
-                                                            value={filters.author || ''}
+                                                            value={getCurrentFilters().author || ''}
                                                             onChange={(e) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 author: e.target.value || undefined
                                                             })}
                                                             className="w-full input-field text-sm"
@@ -1873,9 +1964,9 @@ function RecipesListPageContent() {
                                                         <input
                                                             type="text"
                                                             placeholder="e.g. New York, Italy..."
-                                                            value={filters.author_location || ''}
+                                                            value={getCurrentFilters().author_location || ''}
                                                             onChange={(e) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 author_location: e.target.value || undefined
                                                             })}
                                                             className="w-full input-field text-sm"
@@ -1907,18 +1998,18 @@ function RecipesListPageContent() {
                                                     <div className="grid grid-cols-2 gap-2">
                                                         <input
                                                             type="date"
-                                                            value={filters.date_from || ''}
+                                                            value={getCurrentFilters().date_from || ''}
                                                             onChange={(e) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 date_from: e.target.value || undefined
                                                             })}
                                                             className="input-field text-sm"
                                                         />
                                                         <input
                                                             type="date"
-                                                            value={filters.date_to || ''}
+                                                            value={getCurrentFilters().date_to || ''}
                                                             onChange={(e) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 date_to: e.target.value || undefined
                                                             })}
                                                             className="input-field text-sm"
@@ -1950,9 +2041,9 @@ function RecipesListPageContent() {
                                                     <label className="flex items-center">
                                                         <input
                                                             type="checkbox"
-                                                            checked={filters.has_image || false}
+                                                            checked={getCurrentFilters().has_image || false}
                                                             onChange={(e) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 has_image: e.target.checked || undefined
                                                             })}
                                                             className="mr-2"
@@ -1985,9 +2076,9 @@ function RecipesListPageContent() {
                                                     <div className="px-4 pb-4">
                                                         <MultiSelect
                                                             options={cuisines}
-                                                            selected={filters.cuisine || []}
+                                                            selected={getCurrentFilters().cuisine || []}
                                                             onSelectionChange={(selected) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 cuisine: selected.length > 0 ? selected : undefined
                                                             })}
                                                             placeholder="Select cuisines..."
@@ -2021,9 +2112,9 @@ function RecipesListPageContent() {
                                                     <div className="px-4 pb-4">
                                                         <MultiSelect
                                                             options={categories}
-                                                            selected={filters.category || []}
+                                                            selected={getCurrentFilters().category || []}
                                                             onSelectionChange={(selected) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 category: selected.length > 0 ? selected : undefined
                                                             })}
                                                             placeholder="Select categories..."
@@ -2056,21 +2147,16 @@ function RecipesListPageContent() {
                                                 {!collapsedSections.ingredients && (
                                                     <div className="px-4 pb-4">
                                                         <MultiSelect
-                                                            options={ingredients.slice(0, 200)}
-                                                            selected={filters.ingredients || []}
+                                                            options={ingredients}
+                                                            selected={getCurrentFilters().ingredients || []}
                                                             onSelectionChange={(selected) => handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 ingredients: selected.length > 0 ? selected : undefined
                                                             })}
                                                             placeholder="Select required ingredients..."
                                                             searchable={true}
                                                             maxDisplay={3}
                                                         />
-                                                        {ingredients.length > 200 && (
-                                                            <p className="text-xs text-gray-500 mt-1">
-                                                                Showing top 200 most common ingredients
-                                                            </p>
-                                                        )}
                                                     </div>
                                                 )}
                                             </div>
@@ -2098,7 +2184,7 @@ function RecipesListPageContent() {
                                                     <input
                                                         type="text"
                                                         placeholder="e.g. healthy, quick, vegetarian..."
-                                                        value={filters.keywords?.join(', ') || ''}
+                                                        value={getCurrentFilters().keywords?.join(', ') || ''}
                                                         onChange={(e) => {
                                                             const keywords = e.target.value
                                                                 .split(',')
@@ -2106,7 +2192,7 @@ function RecipesListPageContent() {
                                                                 .filter(k => k.length > 0);
 
                                                             handleFiltersChange({
-                                                                ...filters,
+                                                                ...getCurrentFilters(),
                                                                 keywords: keywords.length > 0 ? keywords : undefined
                                                             });
                                                         }}
@@ -2118,6 +2204,49 @@ function RecipesListPageContent() {
                                                 </div>
                                             )}
                                         </div>
+
+                                        {/* Apply Filters Button - Desktop */}
+                                        {hasUnappliedFilters && (
+                                            <div className="pt-4 border-t border-gray-200">
+                                                <button
+                                                    onClick={applyPendingFilters}
+                                                    disabled={isCountingFilters}
+                                                    className={cn(
+                                                        "w-full px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 flex items-center justify-center space-x-2",
+                                                        isCountingFilters 
+                                                            ? "bg-gray-400 cursor-not-allowed"
+                                                            : "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-md hover:shadow-lg"
+                                                    )}
+                                                >
+                                                    {isCountingFilters ? (
+                                                        <>
+                                                            <LoadingSpinner className="w-5 h-5" />
+                                                            <span>Counting...</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Filter className="w-5 h-5" />
+                                                            <span>
+                                                                Apply Filters 
+                                                                {filterCount !== null && ` (${filterCount.toLocaleString()})`}
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </button>
+                                                
+                                                {filterCount !== null && filterCount === 0 && !isCountingFilters && (
+                                                    <p className="text-xs text-red-600 mt-2 text-center font-medium">
+                                                        ⚠️ No recipes match
+                                                    </p>
+                                                )}
+                                                
+                                                {filterCount !== null && filterCount > 0 && !isCountingFilters && (
+                                                    <p className="text-xs text-gray-600 mt-2 text-center">
+                                                        {filterCount.toLocaleString()} {filterCount === 1 ? 'recipe' : 'recipes'} found
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>                           
@@ -2201,7 +2330,7 @@ function RecipesListPageContent() {
                                 {loading === 'loading' && (
                                     <div className={cn(
                                         viewMode === 'grid'
-                                            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr'
+                                            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
                                             : 'space-y-4'
                                     )}>
                                         {Array.from({ length: itemsPerPage }).map((_, index) => (
@@ -2244,7 +2373,7 @@ function RecipesListPageContent() {
                                     <>
                                         <div className={cn(
                                             viewMode === 'grid'
-                                                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr'
+                                                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
                                                 : 'space-y-4'
                                         )}>
                                             {recipes.map((recipe) => (

@@ -218,39 +218,91 @@ class JSONLDParser:
         return 0
     
     def _parse_cuisine(self, data: Dict[str, Any]) -> List[str]:
-        """Parse cuisine information."""
+        """Parse cuisine information - only actual cuisines (countries/regions)."""
+        # Comprehensive list of ACTUAL cuisines (countries, regions, cultural origins)
+        VALID_CUISINES = {
+            # North America
+            'american', 'canadian', 'mexican', 'tex mex', 'cajun', 'creole',
+            'southwestern u.s.', 'native american',
+            # South America
+            'south american', 'latin', 'caribbean',
+            # Europe
+            'european', 'italian', 'french', 'spanish', 'greek', 'german',
+            'portuguese', 'british', 'irish', 'scandinavian', 'polish',
+            # Asia
+            'asian', 'chinese', 'japanese', 'korean', 'thai', 'vietnamese',
+            'indian', 'filipino', 'indonesian', 'malaysian', 'singaporean',
+            # Middle East & Africa
+            'mediterranean', 'moroccan', 'ethiopian', 'african', 'middle eastern',
+            'lebanese', 'turkish', 'persian',
+            # Oceania
+            'australian', 'new zealand', 'hawaiian',
+            # Cultural/Religious
+            'jewish', 'kosher', 'halal'
+        }
+        
         # Try to extract from keywords
         keywords = self._safe_get(data, 'keywords', '')
+        found_cuisines = []
+        
         if isinstance(keywords, str):
-            # Look for common cuisine keywords
-            cuisine_keywords = [
-                'italian', 'mexican', 'chinese', 'japanese', 'indian', 'french',
-                'thai', 'korean', 'greek', 'spanish', 'german', 'american',
-                'vietnamese', 'mediterranean', 'asian', 'european', 'latin'
-            ]
-            
-            found_cuisines = []
             keywords_lower = keywords.lower()
-            for cuisine in cuisine_keywords:
-                if cuisine in keywords_lower:
-                    found_cuisines.append(cuisine.title())
-            
-            if found_cuisines:
-                return found_cuisines
+            # Split by comma and check each keyword
+            for kw in keywords.split(','):
+                kw_clean = kw.strip().lower()
+                if kw_clean in VALID_CUISINES:
+                    found_cuisines.append(kw.strip().title())
         
-        # Try to extract from recipeCategory
-        category = self._safe_get(data, 'recipeCategory', '')
-        if category and isinstance(category, str):
-            return [category.strip()]
-        
-        return []
+        return found_cuisines
     
     def _parse_category(self, data: Dict[str, Any]) -> List[str]:
-        """Parse recipe category."""
-        category = self._safe_get(data, 'recipeCategory', '')
-        if category and isinstance(category, str):
-            return [category.strip()]
-        return []
+        """Parse recipe category - meal types, courses, and dietary tags."""
+        categories = []
+        
+        # First, get the recipeCategory field (usually the main course type)
+        recipe_category = self._safe_get(data, 'recipeCategory', '')
+        if recipe_category and isinstance(recipe_category, str):
+            categories.append(recipe_category.strip())
+        
+        # Define what should go into categories (NOT cuisines)
+        MEAL_TYPES = {
+            'breakfast', 'brunch', 'lunch', 'lunch/snacks', 'dinner', 'dessert',
+            'appetizers', 'beverages', 'snacks', 'side dishes'
+        }
+        
+        DIETARY_TAGS = {
+            'vegan', 'vegetarian', 'kosher', 'halal', 'gluten-free', 'dairy-free',
+            'egg free', 'lactose free', 'no shell fish', 'low cholesterol',
+            'low protein', 'high protein', 'high fiber', 'very low carbs',
+            'healthy', 'free of...'
+        }
+        
+        DIFFICULTY_TAGS = {
+            'beginner cook', 'easy', 'intermediate', 'advanced'
+        }
+        
+        OCCASION_TAGS = {
+            'christmas', 'thanksgiving', 'halloween', 'easter', 'birthday',
+            'summer', 'winter', 'fall', 'spring', 'weeknight', 'potluck',
+            'for large groups', 'kid friendly'
+        }
+        
+        # Parse keywords to extract valid categories
+        keywords = self._safe_get(data, 'keywords', '')
+        if isinstance(keywords, str):
+            for kw in keywords.split(','):
+                kw_clean = kw.strip().lower()
+                kw_display = kw.strip()
+                
+                # Check if it's a valid category type
+                if (kw_clean in MEAL_TYPES or 
+                    kw_clean in DIETARY_TAGS or 
+                    kw_clean in DIFFICULTY_TAGS or 
+                    kw_clean in OCCASION_TAGS):
+                    if kw_display not in categories:
+                        categories.append(kw_display)
+        
+        return categories
     
     def _parse_tools(self, data: Dict[str, Any]) -> List[str]:
         """Parse cooking tools/equipment."""

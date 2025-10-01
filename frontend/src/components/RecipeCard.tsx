@@ -50,40 +50,42 @@ export default function RecipeCard({ recipe, showScore = false, priority = false
                 {/* Content */}
                 <div className="recipe-card-content">
                     {/* Title */}
-                    <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors min-h-[3.5rem]">
+                    <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors" style={{ minHeight: '3.5rem' }}>
                         {recipe.title}
                     </h3>
 
                     {/* Description */}
                     <div className="flex-1">
-                        {recipe.description && (
-                            <p className="text-gray-600 text-sm mb-3 line-clamp-2 min-h-[2.5rem]">
+                        {recipe.description ? (
+                            <p className="text-gray-600 text-sm mb-3 line-clamp-2" style={{ minHeight: '2.5rem' }}>
                                 {recipe.description}
                             </p>
+                        ) : (
+                            <div style={{ minHeight: '2.5rem' }} />
                         )}
                     </div>
 
                     {/* Meta Information - Always at bottom */}
                     <div className="recipe-card-meta mt-auto">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
+                            <div className="flex items-center gap-3 text-sm text-gray-500 flex-shrink-0">
                                 {recipe.times?.total && (
                                     <div className="flex items-center whitespace-nowrap">
                                         <Clock className="w-4 h-4 mr-1 flex-shrink-0" />
-                                        <span className="truncate">{formatTime(recipe.times.total)}</span>
+                                        <span>{formatTime(recipe.times.total)}</span>
                                     </div>
                                 )}
                                 {recipe.yield && (
                                     <div className="flex items-center whitespace-nowrap">
                                         <Users className="w-4 h-4 mr-1 flex-shrink-0" />
-                                        <span className="truncate">{recipe.yield}</span>
+                                        <span className="truncate max-w-[100px]">{recipe.yield}</span>
                                     </div>
                                 )}
                             </div>
 
                             {rating > 0 && (
-                                <div className="flex items-center whitespace-nowrap">
-                                    <Star className="w-4 h-4 text-yellow-400 mr-1 flex-shrink-0" />
+                                <div className="flex items-center whitespace-nowrap flex-shrink-0">
+                                    <Star className="w-4 h-4 text-yellow-400 mr-1 fill-yellow-400" />
                                     <span className="text-sm font-medium text-gray-700">
                                         {rating.toFixed(1)}
                                     </span>

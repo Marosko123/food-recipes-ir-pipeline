@@ -259,6 +259,30 @@ def health():
         'searcher_initialized': searcher is not None
     })
 
+@app.route('/api/search/count', methods=['POST'])
+def search_count():
+    """Get count of recipes matching the filters without fetching full data."""
+    try:
+        data = request.get_json()
+        query = data.get('query', '').strip()
+        filters = data.get('filters', {})
+        
+        if not searcher:
+            return jsonify({'error': 'Search engine not initialized'}), 500
+        
+        # Get total count for search results
+        total_results = searcher.get_total_results(query, filters)
+        
+        return jsonify({
+            'count': total_results,
+            'query': query,
+            'filters': filters
+        })
+        
+    except Exception as e:
+        logger.error(f"Search count error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
 @app.route('/api/stats', methods=['GET'])
 def stats():
     """Get search engine statistics."""
@@ -293,27 +317,148 @@ def get_recipe(recipe_id):
         logger.error(f"Recipe fetch error: {e}")
         return jsonify({'error': 'Internal server error'}), 500
 
+def normalize_ingredient(ingredient_text):
+    """
+    Normalize an ingredient string to extract the core ingredient name.
+    Removes quantities, measurements, and preparation notes.
+    """
+    import re
+    
+    text = ingredient_text.lower().strip()
+    
+    # Remove parenthetical and bracketed notes first
+    text = re.sub(r'\([^)]*\)', '', text)
+    text = re.sub(r'\[[^\]]*\]', '', text)
+    
+    # Remove everything after commas (usually description/prep notes)
+    text = text.split(',')[0]
+    
+    # Remove everything after common separators
+    text = re.split(r'\s+(?:or|plus|&)\s+', text)[0]
+    
+    # Remove any leading numbers, fractions, measurements aggressively
+    # Pattern: digits, fractions, ranges, decimals, percentages
+    text = re.sub(r'^\s*\d+[\d\s/.\-–—%]*', '', text)
+    
+    # Remove measurement words (must be comprehensive)
+    measurements = [
+        r'\b(?:cups?|c\.?)\b', r'\b(?:tablespoons?|tbsps?|tbs?|tb)\b',
+        r'\b(?:teaspoons?|tsps?|ts)\b', r'\b(?:fluid\s+ounces?|fl\.?\s*ozs?)\b',
+        r'\b(?:milliliters?|mls?)\b', r'\b(?:liters?|ls?)\b',
+        r'\b(?:pints?|pts?)\b', r'\b(?:quarts?|qts?)\b', r'\b(?:gallons?|gals?)\b',
+        r'\b(?:pounds?|lbs?)\b', r'\b(?:ounces?|ozs?)\b',
+        r'\b(?:grams?|gs?)\b', r'\b(?:kilograms?|kgs?)\b',
+        r'\b(?:packages?|pkgs?)\b', r'\b(?:envelopes?)\b', r'\b(?:packets?)\b',
+        r'\b(?:cans?)\b', r'\b(?:jars?)\b', r'\b(?:bottles?)\b',
+        r'\b(?:boxes?)\b', r'\b(?:bags?)\b', r'\b(?:containers?)\b',
+        r'\b(?:bunches?)\b', r'\b(?:cloves?)\b', r'\b(?:pinchs?|pinches?)\b',
+        r'\b(?:dashs?|dashes?)\b', r'\b(?:handfuls?)\b', r'\b(?:slices?)\b',
+        r'\b(?:pieces?)\b', r'\b(?:stalks?)\b', r'\b(?:heads?)\b',
+        r'\b(?:sprigs?)\b', r'\b(?:lea(?:f|ves))\b', r'\b(?:strips?)\b',
+    ]
+    
+    for m in measurements:
+        text = re.sub(m, ' ', text, flags=re.IGNORECASE)
+    
+    # Remove all descriptive words and prep notes
+    descriptors = [
+        r'\b(?:chopped|minced|diced|sliced|shredded|grated|crushed|ground|peeled)\b',
+        r'\b(?:cubed|julienned|halved|quartered|crumbled|mashed|pureed|pressed)\b',
+        r'\b(?:separated|divided|pitted|seeded|deveined|skinned|boned|trimmed)\b',
+        r'\b(?:finely|coarsely|roughly|thinly|thickly|lightly)\b',
+        r'\b(?:fresh|freshly|dried|frozen|canned|jarred|bottled|packaged)\b',
+        r'\b(?:raw|cooked|roasted|grilled|toasted|fried|boiled|steamed)\b',
+        r'\b(?:large|medium|small|extra|mini|jumbo|giant|sized?)\b',
+        r'\b(?:thick|thin|heavy|light|lean)\b',
+        r'\b(?:low|reduced|fat|free|non)\b',
+        r'\b(?:optional|additional|more|less)\b',
+        r'\b(?:room\s+temperature|softened|melted|beaten|whipped)\b',
+        r'\b(?:unsalted|salted|sweetened|unsweetened)\b',
+        r'\b(?:whole|half|halves|quarter)\b',
+        r'\b(?:ripe|unripe|firm|soft|hard)\b',
+        r'\b(?:organic|natural|artificial)\b',
+        r'\b(?:regular|extra|super)\b',
+        r'\b(?:approx(?:imate)?|about|up)\b',
+        r'\b(?:total|combined|mixed)\b',
+        r'\b(?:aged|old|new|young)\b',
+        r'\b(?:pure|real|imitation)\b',
+        r'\b(?:instant|active|quick|rapid|reg)\b',
+    ]
+    
+    for d in descriptors:
+        text = re.sub(d, ' ', text, flags=re.IGNORECASE)
+    
+    # Remove common prep phrases
+    text = re.sub(r'\b(?:to taste|for serving|for garnish|as needed|as desired)\b', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\b(?:cut into|drained?|rinsed?|washed?|trimmed?)\b', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\b(?:known as|found in|equilavents?|listed)\b.*$', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\b(?:weighs?|measure)\b', '', text, flags=re.IGNORECASE)
+    
+    # Remove quantities that remain
+    text = re.sub(r'\b\d+\s*[-–—]\s*\d+\b', '', text)
+    text = re.sub(r'\b\d+\s*count\b', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\d+g\b', '', text)
+    
+    # Clean up whitespace
+    text = re.sub(r'\s+', ' ', text).strip()
+    
+    # Remove leading/trailing punctuation
+    text = text.strip(',-–—.;:&!@#$%^*()[]{}|\\/"\'`~+=%\t\n')
+    
+    # Remove leading articles and conjunctions
+    text = re.sub(r'^(?:a|an|the|of|for|to|in|on|at|with|by)\s+', '', text, flags=re.IGNORECASE)
+    
+    # Remove any remaining numbers at start
+    text = re.sub(r'^\d+[\s.\-/]*', '', text)
+    
+    # Final cleanup
+    text = text.strip(',-–—.;:&!@#$%^*()[]{}|\\/"\'`~+=%\t\n ')
+    
+    # Filter out invalid results
+    if not text or len(text) < 3:
+        return None
+    
+    # Filter out results that are mostly punctuation/numbers
+    if re.match(r'^[\d\s\-–—/.,;:!@#$%^&*()+=]+$', text):
+        return None
+    
+    # Filter out results starting with invalid characters
+    if text[0] in '.,;:-–—/\\|@#$%^&*()+=[]{}':
+        return None
+    
+    # Filter common non-food patterns
+    bad_patterns = [
+        r'^\d+\s*\.', r'^\.', r'^\-',  # Starts with numbers/punct
+        r'work\s*best', r'i\s*used?', r'depending',  # Instructional text
+        r'may\s*need', r'preferably', r'markets?',  # More instructions
+    ]
+    for pattern in bad_patterns:
+        if re.search(pattern, text, re.IGNORECASE):
+            return None
+    
+    return text
+
 @app.route('/api/ingredients', methods=['GET'])
 def get_ingredients():
-    """Get list of all ingredients."""
+    """Get list of all unique canonical ingredients from food.com links, sorted alphabetically."""
     try:
-        ingredients = set()
-        recipes_file = Path('data/normalized/recipes.jsonl')
+        # Load the canonical ingredient map extracted from HTML links
+        ingredient_map_file = Path('data/entities/ingredient_map.json')
         
-        if not recipes_file.exists():
+        if ingredient_map_file.exists():
+            with open(ingredient_map_file, 'r', encoding='utf-8') as f:
+                ingredient_map = json.load(f)
+            
+            # Get unique ingredient names, sorted alphabetically (case-insensitive)
+            unique_ingredients = set(ingredient_map.values())
+            ingredients = sorted(unique_ingredients, key=lambda x: x.lower())
+            
+            logger.info(f"Loaded {len(ingredients)} canonical ingredients from ingredient map")
+            return jsonify({'ingredients': ingredients})
+        else:
+            # Fallback: if ingredient map doesn't exist, return empty list
+            logger.warning("Ingredient map not found. Run parser/ingredient_extractor.py first.")
             return jsonify({'ingredients': []})
-        
-        with open(recipes_file, 'r', encoding='utf-8') as f:
-            for line in f:
-                recipe = json.loads(line)
-                if 'ingredients' in recipe:
-                    for ingredient in recipe['ingredients']:
-                        # Extract main ingredient name (before any quantities)
-                        clean_ingredient = ingredient.split(' ', 1)[-1].strip()
-                        if clean_ingredient:
-                            ingredients.add(clean_ingredient.lower())
-        
-        return jsonify({'ingredients': sorted(list(ingredients))})
         
     except Exception as e:
         logger.error(f"Ingredients fetch error: {e}")

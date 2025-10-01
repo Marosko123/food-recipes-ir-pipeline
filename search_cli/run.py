@@ -24,6 +24,26 @@ logger = logging.getLogger(__name__)
 class RobustRecipeSearcher:
     """Robust search engine with comprehensive error handling and validation."""
     
+    @staticmethod
+    def _safe_float(value, default=0.0):
+        """Safely convert value to float, handling strings and None."""
+        if value is None or value == '':
+            return default
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return default
+    
+    @staticmethod
+    def _safe_int(value, default=0):
+        """Safely convert value to int, handling strings and None."""
+        if value is None or value == '':
+            return default
+        try:
+            return int(float(value))  # Convert through float to handle "123.0" strings
+        except (ValueError, TypeError):
+            return default
+    
     def __init__(self, index_dir: str):
         self.index_dir = Path(index_dir)
         
@@ -673,30 +693,20 @@ class RobustRecipeSearcher:
         if filters.get('max_cook_minutes') and cook_time > filters['max_cook_minutes']:
             return False
         
-        # Rating filters
+        # Rating filters - convert string values to numbers
         ratings = recipe_data.get('ratings', {})
-        rating_value = 0.0
-        review_count_value = 0
         
         if isinstance(ratings, dict):
             # Handle different rating field names and convert strings to numbers
-            rating_raw = ratings.get('average', ratings.get('rating', ratings.get('score', 0)))
-            try:
-                rating_value = float(rating_raw) if rating_raw else 0.0
-            except (ValueError, TypeError):
-                rating_value = 0.0
+            rating_raw = ratings.get('average', ratings.get('rating', ratings.get('score')))
+            rating_value = self._safe_float(rating_raw)
             
             # Handle review count
-            review_count_raw = ratings.get('review_count', ratings.get('count', 0))
-            try:
-                review_count_value = int(review_count_raw) if review_count_raw else 0
-            except (ValueError, TypeError):
-                review_count_value = 0
+            review_count_raw = ratings.get('review_count', ratings.get('count'))
+            review_count_value = self._safe_int(review_count_raw)
         else:
-            try:
-                rating_value = float(ratings) if ratings else 0.0
-            except (ValueError, TypeError):
-                rating_value = 0.0
+            rating_value = self._safe_float(ratings)
+            review_count_value = 0
         
         if filters.get('min_rating') and rating_value < filters['min_rating']:
             return False
@@ -707,57 +717,68 @@ class RobustRecipeSearcher:
         if filters.get('min_review_count') and review_count_value < filters['min_review_count']:
             return False
         
-        # Nutrition filters
+        # Nutrition filters - convert string values to float for comparison
         nutrition = recipe_data.get('nutrition', {})
-        if filters.get('max_calories') and nutrition.get('calories', 0) > filters['max_calories']:
+        
+        calories = self._safe_float(nutrition.get('calories'))
+        if filters.get('max_calories') and calories > filters['max_calories']:
+            return False
+        if filters.get('min_calories') and calories < filters['min_calories']:
             return False
         
-        if filters.get('min_calories') and nutrition.get('calories', 0) < filters['min_calories']:
+        protein = self._safe_float(nutrition.get('protein'))
+        if filters.get('max_protein') and protein > filters['max_protein']:
+            return False
+        if filters.get('min_protein') and protein < filters['min_protein']:
             return False
         
-        if filters.get('max_protein') and nutrition.get('protein', 0) > filters['max_protein']:
+        # Handle both 'carbs' and 'carbohydrates' field names
+        carbs = self._safe_float(nutrition.get('carbs', nutrition.get('carbohydrates')))
+        if filters.get('max_carbs') and carbs > filters['max_carbs']:
+            return False
+        if filters.get('min_carbs') and carbs < filters['min_carbs']:
             return False
         
-        if filters.get('min_protein') and nutrition.get('protein', 0) < filters['min_protein']:
+        fat = self._safe_float(nutrition.get('fat'))
+        if filters.get('max_fat') and fat > filters['max_fat']:
+            return False
+        if filters.get('min_fat') and fat < filters['min_fat']:
             return False
         
-        if filters.get('max_carbs') and nutrition.get('carbs', 0) > filters['max_carbs']:
+        fiber = self._safe_float(nutrition.get('fiber'))
+        if filters.get('max_fiber') and fiber > filters['max_fiber']:
+            return False
+        if filters.get('min_fiber') and fiber < filters['min_fiber']:
             return False
         
-        if filters.get('min_carbs') and nutrition.get('carbs', 0) < filters['min_carbs']:
+        sugar = self._safe_float(nutrition.get('sugar'))
+        if filters.get('max_sugar') and sugar > filters['max_sugar']:
+            return False
+        if filters.get('min_sugar') and sugar < filters['min_sugar']:
             return False
         
-        if filters.get('max_fat') and nutrition.get('fat', 0) > filters['max_fat']:
-            return False
-        
-        if filters.get('min_fat') and nutrition.get('fat', 0) < filters['min_fat']:
-            return False
-        
-        if filters.get('max_fiber') and nutrition.get('fiber', 0) > filters['max_fiber']:
-            return False
-        
-        if filters.get('min_fiber') and nutrition.get('fiber', 0) < filters['min_fiber']:
-            return False
-        
-        if filters.get('max_sugar') and nutrition.get('sugar', 0) > filters['max_sugar']:
-            return False
-        
-        if filters.get('min_sugar') and nutrition.get('sugar', 0) < filters['min_sugar']:
-            return False
-        
-        if filters.get('max_sodium') and nutrition.get('sodium', 0) > filters['max_sodium']:
+        sodium = self._safe_float(nutrition.get('sodium'))
+        if filters.get('max_sodium') and sodium > filters['max_sodium']:
             return False
         
         if filters.get('min_sodium') and nutrition.get('sodium', 0) < filters['min_sodium']:
             return False
         
-        # Serving and yield filters
-        yield_value = recipe_data.get('yield', 0)
-        if filters.get('min_yield') and yield_value < filters['min_yield']:
-            return False
-        
-        if filters.get('max_yield') and yield_value > filters['max_yield']:
-            return False
+        # Serving and yield filters - extract numeric portion from yield string
+        yield_str = recipe_data.get('yield', '')
+        if yield_str and (filters.get('min_yield') or filters.get('max_yield')):
+            # Extract first number from yield string (e.g., "12 cookies" -> 12)
+            import re
+            match = re.search(r'(\d+(?:\.\d+)?)', str(yield_str))
+            if match:
+                yield_value = self._safe_float(match.group(1))
+                if filters.get('min_yield') and yield_value < filters['min_yield']:
+                    return False
+                if filters.get('max_yield') and yield_value > filters['max_yield']:
+                    return False
+            elif filters.get('min_yield'):
+                # No numeric value found and minimum required - filter out
+                return False
         
         # Author filters
         if filters.get('author'):
@@ -786,9 +807,10 @@ class RobustRecipeSearcher:
                     pass  # Skip date filtering if parsing fails
         
         # Image filters
-        if filters.get('has_images'):
-            images = recipe_data.get('images', [])
-            if not images or len(images) == 0:
+        if filters.get('has_image'):
+            # Check if recipe has a main image URL
+            image = recipe_data.get('image', '')
+            if not image or image.strip() == '':
                 return False
         
         # Keyword filters

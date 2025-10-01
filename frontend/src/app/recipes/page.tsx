@@ -2120,9 +2120,9 @@ function RecipesListPageContent() {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            {/* Right Column - Recipe Results */}
+                            </div>                           
+                        </div>
+                        {/* Right Column - Recipe Results */}
                             <div className="flex-1 min-w-0">
                                 {/* Results Header */}
                                 <div className="flex items-center justify-between mb-6">
@@ -2201,7 +2201,7 @@ function RecipesListPageContent() {
                                 {loading === 'loading' && (
                                     <div className={cn(
                                         viewMode === 'grid'
-                                            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+                                            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr'
                                             : 'space-y-4'
                                     )}>
                                         {Array.from({ length: itemsPerPage }).map((_, index) => (
@@ -2244,7 +2244,7 @@ function RecipesListPageContent() {
                                     <>
                                         <div className={cn(
                                             viewMode === 'grid'
-                                                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+                                                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr'
                                                 : 'space-y-4'
                                         )}>
                                             {recipes.map((recipe) => (
@@ -2338,7 +2338,6 @@ function RecipesListPageContent() {
                                     </>
                                 )}
                             </div>
-                        </div>
                     </div>
                 </div>
             </div>

@@ -62,10 +62,24 @@
 @layer components {
   .recipe-card {
     @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
   
   .recipe-card:hover {
     @apply transform -translate-y-1;
+  }
+  
+  .recipe-card-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1rem;
+  }
+  
+  .recipe-card-meta {
+    margin-top: auto;
   }
   
   .btn-primary {
@@ -152,4 +166,29 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Grid utilities for equal height rows */
+.auto-rows-fr {
+  grid-template-rows: repeat(auto-fit, 1fr);
+}
+
+/* Ensure consistent spacing and text handling */
+.recipe-card h3 {
+  line-height: 1.4;
+}
+
+.recipe-card p {
+  line-height: 1.5;
+}
+
+/* Prevent text overflow in meta information */
+.recipe-card .truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.recipe-card .whitespace-nowrap {
+  white-space: nowrap;
 }

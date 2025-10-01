@@ -18,10 +18,10 @@ export default function RecipeCard({ recipe, showScore = false, priority = false
     const reviewCount = recipe.ratings?.review_count;
 
     return (
-        <Link href={`/recipe/${recipeSlug}`}>
+        <Link href={`/recipe/${recipeSlug}`} className="h-full">
             <div className="recipe-card group cursor-pointer overflow-hidden">
                 {/* Image */}
-                <div className="relative h-48 w-full overflow-hidden">
+                <div className="relative h-48 w-full overflow-hidden flex-shrink-0">
                     <Image
                         src={recipe.image || getPlaceholderImage()}
                         alt={recipe.title}
@@ -48,73 +48,77 @@ export default function RecipeCard({ recipe, showScore = false, priority = false
                 </div>
 
                 {/* Content */}
-                <div className="p-4">
+                <div className="recipe-card-content">
                     {/* Title */}
-                    <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                    <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors min-h-[3.5rem]">
                         {recipe.title}
                     </h3>
 
                     {/* Description */}
-                    {recipe.description && (
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                            {recipe.description}
-                        </p>
-                    )}
+                    <div className="flex-1">
+                        {recipe.description && (
+                            <p className="text-gray-600 text-sm mb-3 line-clamp-2 min-h-[2.5rem]">
+                                {recipe.description}
+                            </p>
+                        )}
+                    </div>
 
-                    {/* Meta Information */}
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            {recipe.times?.total && (
-                                <div className="flex items-center">
-                                    <Clock className="w-4 h-4 mr-1" />
-                                    {formatTime(recipe.times.total)}
-                                </div>
-                            )}
-                            {recipe.yield && (
-                                <div className="flex items-center">
-                                    <Users className="w-4 h-4 mr-1" />
-                                    {recipe.yield}
+                    {/* Meta Information - Always at bottom */}
+                    <div className="recipe-card-meta mt-auto">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                {recipe.times?.total && (
+                                    <div className="flex items-center whitespace-nowrap">
+                                        <Clock className="w-4 h-4 mr-1 flex-shrink-0" />
+                                        <span className="truncate">{formatTime(recipe.times.total)}</span>
+                                    </div>
+                                )}
+                                {recipe.yield && (
+                                    <div className="flex items-center whitespace-nowrap">
+                                        <Users className="w-4 h-4 mr-1 flex-shrink-0" />
+                                        <span className="truncate">{recipe.yield}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {rating > 0 && (
+                                <div className="flex items-center whitespace-nowrap">
+                                    <Star className="w-4 h-4 text-yellow-400 mr-1 flex-shrink-0" />
+                                    <span className="text-sm font-medium text-gray-700">
+                                        {rating.toFixed(1)}
+                                    </span>
+                                    {reviewCount && (
+                                        <span className="text-xs text-gray-500 ml-1">
+                                            ({reviewCount})
+                                        </span>
+                                    )}
                                 </div>
                             )}
                         </div>
 
-                        {rating > 0 && (
-                            <div className="flex items-center">
-                                <Star className="w-4 h-4 text-yellow-400 mr-1" />
-                                <span className="text-sm font-medium text-gray-700">
-                                    {rating.toFixed(1)}
-                                </span>
-                                {reviewCount && (
-                                    <span className="text-xs text-gray-500 ml-1">
-                                        ({reviewCount})
+                        {/* Cuisine Tags */}
+                        {recipe.cuisine.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-3">
+                                {recipe.cuisine.slice(0, 3).map((cuisine, index) => (
+                                    <span key={index} className="badge badge-secondary text-xs whitespace-nowrap">
+                                        {cuisine}
+                                    </span>
+                                ))}
+                                {recipe.cuisine.length > 3 && (
+                                    <span className="badge badge-gray text-xs whitespace-nowrap">
+                                        +{recipe.cuisine.length - 3}
                                     </span>
                                 )}
                             </div>
                         )}
+
+                        {/* Author */}
+                        {recipe.author && (
+                            <div className="text-xs text-gray-500 truncate">
+                                by {recipe.author}
+                            </div>
+                        )}
                     </div>
-
-                    {/* Cuisine Tags */}
-                    {recipe.cuisine.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-3">
-                            {recipe.cuisine.slice(0, 3).map((cuisine, index) => (
-                                <span key={index} className="badge badge-secondary text-xs">
-                                    {cuisine}
-                                </span>
-                            ))}
-                            {recipe.cuisine.length > 3 && (
-                                <span className="badge badge-gray text-xs">
-                                    +{recipe.cuisine.length - 3}
-                                </span>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Author */}
-                    {recipe.author && (
-                        <div className="text-xs text-gray-500">
-                            by {recipe.author}
-                        </div>
-                    )}
                 </div>
             </div>
         </Link>

@@ -1,0 +1,240 @@
+# Workspace Rules — Food Recipes (Cursor Claude Sonnet 1M)
+
+## 0) Project metadata
+- **Author:** Maroš Bednár
+- **Email:** bednarmaros341@gmail.com
+- **AIS ID:** 116822
+- **Base website (seed):** https://www.food.com
+- **Mission:** Build a complete **recipes IR pipeline** for Food Recipes.
+
+---
+
+## 1) Scope & storage (non-negotiable)
+- End-to-end pipeline: **crawler → parser/normalization → indexer → CLI searcher (TF-IDF & BM25) → entity extraction & EN Wikipedia linking → Spark job(s) → evaluation**.
+- **No SQL databases.** Persist to files: **TSV/JSONL** (and **Parquet** only for Spark outputs).
+- Languages/tools: **Python (core)**, **Shell (scripts)**, **PySpark**.
+- Allowed libs: `re`, `argparse`, `json`, `gzip`, `hashlib`, `pathlib`, `logging`, `requests`, `lxml`/`bs4`, `ahocorasick`, `pyspark` (optional), `tqdm`.
+- Forbidden: `pandas`, `nltk`, any external/full-text indexer, any DB or library outside the allowed list.
+
+---
+
+## 2) Repository layout (create exactly)
+```
+project/
+  crawler/
+  parser/
+  indexer/
+  search_cli/
+  entities/
+  spark_jobs/
+  eval/
+  packaging/
+  docs/
+  data/          # raw/, normalized/, index/, entities/, eval/
+  tests/
+```
+- Add `__init__.py` in each Python package directory.
+
+### Required baseline files
+- `packaging/requirements.txt` → only allowed libs.
+- `packaging/run.sh` → targets: `crawl|parse|index|search|gazetteer|eval|all`; `set -e`; `usage` help.
+- `docs/README.md`, `docs/wiki_3pages.md`, `docs/slides_outline.md`.
+- `.gitignore` (pycache, venv, logs, tmp, `data/raw`, `data/normalized`, `index/`, `entities/`, `eval/`).
+
+---
+
+## 3) Data & index schemas (strict)
+- **RAW HTML:** `data/raw/{domain}/{doc_id}.html`
+- **Normalized JSONL:** `data/normalized/recipes.jsonl`  
+  Keys: `id,url,title,ingredients[],instructions[],times{prep,cook,total},cuisine[],category[],tools[],yield,author,nutrition,ratings`
+- **Index v1:**  
+  - `index/v1/terms.tsv` → `term \t df \t idf`  
+  - `index/v1/postings.tsv` → `term \t field \t docId \t tf`  
+  - `index/v1/docmeta.tsv` → `docId \t url \t title \t len_title \t len_ing \t len_instr`
+- **Entities:**  
+  - `entities/gazetteer_ingredients.tsv` → `surface \t wiki_title \t norm`  
+  - `entities/links.jsonl` → `docId \t field \t start \t end \t surface \t wiki_title`
+- **Eval:**  
+  - `eval/queries.tsv` → `qid \t query \t filters_json`  
+  - `eval/qrels.tsv` → `qid \t docId \t rel`  
+  - `eval/results_{metric}.tsv` → `qid \t docId \t rank \t score`
+
+---
+
+## 4) Crawling rules (politeness & coverage)
+- Default seed: **https://www.food.com**. **Always respect `robots.txt`** and all `Disallow` rules.
+- **Priority seeds** (in order):
+  1) **Sitemaps** declared by robots → enqueue all `/recipe/…` URLs.
+  2) **A–Z recipe listings** (letters `[0–9, A–Z]` with pagination) → collect `/recipe/…` links until **two consecutive pages add no new** URLs.
+  3) **HTML sitemap** + curated **Collections/Ideas** pages → for diversity & incremental freshness (low depth).
+- **Never** fetch disallowed paths (e.g., `/search/`, any `*finder/`, `*.php`, `*.zsp`, or any route blocked by robots).
+- Throttle with `--qps` + jitter; retries with exponential backoff; deduplicate by `sha1(canonical_url)` and numeric `doc_id`.
+- Store RAW HTML at `data/raw/{domain}/{doc_id}.html`. Log crawl metrics in `data/crawl.log`.
+
+---
+
+## 5) Parsing rules (JSON-LD first, robust fallback)
+- Prefer **JSON-LD `schema.org/Recipe`** if present.
+- Fallback via heading/structure heuristics (no brittle CSS):
+  - **title** ← main `<h1>`
+  - **times** ← parse labels like “Ready In” → normalize to **minutes**; populate `prep`/`cook` if available
+  - **yield/serves** ← “Serves”/“Yields”
+  - **ingredients[]** ← list items under heading containing “ingredients”
+  - **instructions[]** ← list items under heading containing “directions”
+  - **author** ← “Submitted by …” if present
+  - **cuisine[] / category[]** ← from breadcrumbs above title
+  - **nutrition / ratings** ← capture if present; else `null`
+- Extract numeric `<id>` from `/recipe/<slug>-<id>` and store as `id`.
+
+---
+
+## 6) Ranking & search rules
+- Tokenization: regex, lowercase, small stoplist; compute DF/IDF; track field lengths.
+- Field-aware scoring over `title`, `ingredients`, `instructions` (use weights, keep code configurable).
+- Implement **TF-IDF (cosine)** and **BM25** (`k1≈1.2`, `b≈0.75`) in `search_cli`.
+- Filters via `--filter` JSON (e.g., `{"max_total_minutes":30,"cuisine":["Mexican"]}`).
+- Output deterministic top-K with snippets (first matching ingredient/step).
+
+---
+
+## 7) CLI contracts (each must implement `-h`)
+- **Crawl:**  
+  `python -m crawler.run --seed https://www.food.com --limit 2000 --qps 0.5 --out data/raw`
+- **Parse:**  
+  `python -m parser.run --raw data/raw --out data/normalized/recipes.jsonl`
+- **Index:**  
+  `python -m indexer.run --input data/normalized/recipes.jsonl --out index/v1`
+- **Search (BM25 example):**  
+  `python -m search_cli.run --index index/v1 --metric bm25 --q "mexican chicken nachos" --k 10 --filter '{"max_total_minutes":30,"cuisine":["Mexican"]}'`
+- **Gazetteer (Spark):**  
+  `spark-submit spark_jobs/build_gazetteer.py --wiki /path/to/enwiki --out entities/gazetteer_ingredients.tsv`
+- **Eval:**  
+  `python -m eval.run --index index/v1 --metric tfidf --queries eval/queries.tsv --qrels eval/qrels.tsv --out eval/results_tfidf.tsv`
+
+---
+
+## 8) Phase-by-phase execution (do in order; audit after each)
+
+### Phase 0 — Bootstrap workspace
+**Do**
+- Create the repo tree above with empty `__init__.py` in each Python package.
+- Add `.gitignore`, `packaging/requirements.txt` (only allowed libs), `packaging/run.sh` (targets + usage).
+- Create docs skeletons (`docs/README.md`, `docs/wiki_3pages.md`, `docs/slides_outline.md`).
+
+**Audit**
+- Files/dirs exist; `bash packaging/run.sh` prints usage; no forbidden libs.
+
+---
+
+### Phase A — Web reconnaissance & seed extraction
+**Do**
+- Fetch and parse `robots.txt` from https://www.food.com; implement `is_allowed(url)`.
+- Parse sitemap index & child sitemaps; enqueue all `/recipe/…` URLs (**priority 1**).
+- Enumerate **A–Z** listing pages (letters `[0–9,A–Z]`, paginate) until two consecutive pages add **no new** recipe URLs (**priority 2**).
+- Add **HTML sitemap** and a curated set of **Collections/Ideas** hubs (**priority 3**).
+- Record counts per source, dedup ratio, HTTP distribution in `data/crawl.log`.
+
+**Audit**
+- No enqueued disallowed URLs; seeds split by priority; log shows totals and dedup%.
+
+---
+
+### Phase B — Crawler PoC
+**Do**
+- `crawler/run.py` with CLI, frontier (FIFO round-robin by source), robots check, throttle, retries, dedup, canonicalization, RAW save, logging to `data/crawl.log`.
+- Unit test: `tests/test_crawler.py` (fixture HTML, mock robots, dedup, persistence).
+
+**Audit**
+- `python -m crawler.run -h` prints help; sample crawl writes RAW files; test passes.
+
+---
+
+### Phase C — Parser & normalization
+**Do**
+- `parser/run.py` with CLI; JSON-LD Recipe extraction; fallback heuristics (sections/labels); time normalization to minutes; deterministic key order.
+- Output `data/normalized/recipes.jsonl`.
+- Unit test: `tests/test_parser.py` (page w/ JSON-LD; page without).
+
+**Audit**
+- `python -m parser.run -h` prints help; JSONL valid; ingredients/instructions non-empty; times are ints.
+
+---
+
+### Phase D — Indexer & search CLI
+**Do**
+- `indexer/run.py` builds **inverted index**; writes `terms.tsv`, `postings.tsv`, `docmeta.tsv`.
+- `search_cli/run.py` implements **TF-IDF** (cosine) and **BM25**; field weights; filters; snippets.
+- Unit tests: `tests/test_index_search.py` (toy corpus → known ranking).
+
+**Audit**
+- Files exist with exact columns; both metrics return deterministic top-K; tests pass.
+
+---
+
+### Phase E — Entities & Wikipedia linking
+**Do**
+- `entities/matcher.py` (Aho-Corasick) over gazetteer; emit matches with offsets.
+- `entities/linker.py` writes `entities/links.jsonl` (schema above).
+- CLI to run matcher+linker on `recipes.jsonl`.
+- Unit test: `tests/test_entities.py`.
+
+**Audit**
+- Gazetteer TSV present; links JSONL present; tests pass.
+
+---
+
+### Phase F — Spark job(s)
+**Do**
+- `spark_jobs/build_gazetteer.py`: read EN Wikipedia subset/abstracts; build `entities/gazetteer_ingredients.tsv` and/or Parquet stats.
+- Unit test: `tests/test_spark_jobs.py` (mini local RDD).
+
+**Audit**
+- Spark job runs locally; TSV/Parquet written; test passes.
+
+---
+
+### Phase G — Evaluation suite
+**Do**
+- `eval/run.py`: compute **P@k**, **R@k**, **MAP** (nDCG optional) for **≥10** queries (`eval/queries.tsv`, `eval/qrels.tsv`).
+- Export `eval/results_{metric}.tsv`.
+- Unit test: `tests/test_eval.py`.
+
+**Audit**
+- Metrics files exist; queries ≥ 10; BM25 vs TF-IDF comparison possible; tests pass.
+
+---
+
+### Phase H — Docs & packaging
+**Do**
+- Update `docs/README.md` with installation, `run.sh` scenarios, data structure, command examples.
+- Fill `docs/wiki_3pages.md` (problem & motivation, existing solutions, solution design, data, evaluation, how to run).
+- Update `docs/slides_outline.md` (why/what/how/demos/eval/conclusion).
+- Ensure `packaging/run.sh` orchestrates end-to-end demos.
+
+**Audit**
+- Docs complete; `run.sh` targets callable; repository ready for ZIP.
+
+---
+
+## 9) Acceptance criteria (Definition of Done)
+- Data ≥ **500 MB** (own crawl + EN Wikipedia subset/artifacts).  
+- Working crawler (RAW HTML + frontier + logs).  
+- Working parser/normalizer → `recipes.jsonl`.  
+- Own indexer & CLI searcher (TF-IDF & BM25) with filters.  
+- Entity extraction & EN Wikipedia linking.  
+- Spark job over Wikipedia subset (gazetteer/stats → Parquet/TSV).  
+- Evaluation: P@k/Recall@k for ≥10 queries; TF-IDF vs BM25 comparison.  
+- Quality: unit tests for key functions; deterministic; readable logs; Docker-friendly `run.sh`.  
+- Delivery: ZIP + `run.sh`; README; 3-page wiki doc; slides outline.
+
+---
+
+## 10) Ongoing self-audits (run each phase & weekly)
+- No forbidden imports; only allowed libs in `packaging/requirements.txt`.
+- All modules respond to `-h`.  
+- Logs exist (`data/*.log`), outputs deterministic, schemas exact.  
+- Crawler never visits disallowed paths (sample recent URLs; validate `is_allowed`).  
+- Times normalized to minutes; ingredients/instructions non-empty when parsed.  
+- Index TSVs well-formed; search deterministic under both metrics.  
+- Entities & Spark outputs present; eval metrics generated.  
+- Docs and `run.sh` reflect current CLI.

@@ -16,7 +16,6 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -30,6 +29,29 @@ env.bak/
 venv.bak/
 .virtualenv/
 
+# Node.js and frontend build artifacts
+node_modules/
+.next/
+.nuxt/
+dist/
+build/
+out/
+*.tsbuildinfo
+package-lock.json
+yarn.lock
+.env.local
+.env.*.local
+
+# Frontend specific directories
+frontend/node_modules/
+frontend/.next/
+frontend/dist/
+frontend/build/
+frontend-nextjs/node_modules/
+frontend-nextjs/.next/
+frontend-nextjs/dist/
+frontend-nextjs/build/
+
 # IDE
 .vscode/
 .idea/
@@ -37,51 +59,73 @@ venv.bak/
 *.swo
 *~
 
-# Raw data (too large for git)
-data/raw/
-data/index/
-data/entities/
-data/spark_output/
-
 # Logs
 *.log
 logs/
 data/*.log
 
-# Temporary files
-tmp/
-temp/
-.tmp/
-*.tmp
-*.temp
-
-# System files
-.DS_Store
-Thumbs.db
-AGENT_PROMPT.md
-
-# Jupyter Notebooks
-.ipynb_checkpoints/
-
-# Pytest
-.pytest_cache/
-.coverage
-
-# Spark
-derby.log
-metastore_db/
-spark-warehouse/
-
-# Data files (except samples)
-*.gz
-*.zip
-*.tar
+# Large data files (anywhere in the project)
+*.html
+*.xml
 *.csv
 *.tsv
 *.jsonl
 *.parquet
+*.gz
+*.zip
+*.tar
+*.bz2
 
-# Keep sample data
-!data/sample/
+# Keep essential config and documentation files
+!README.md
+!docs/*.md
+!*.md
+!requirements.txt
+!package.json
 !eval/queries.tsv
 !eval/qrels.tsv
+
+# Data directories and files (as per project rules)
+data/raw/
+data/normalized/
+data/index/
+data/entities/
+data/eval/
+data/seed_analysis/
+data/wikipedia_recipes/
+data/wikipedia/
+data/*.log
+data/*.json
+data/*.txt
+data/*.tsv
+data/*.jsonl
+data/*.parquet
+data/*.gz
+data/*.zip
+
+# Keep only specific sample/config files in data
+!data/sample/
+!data/config/
+!data/README.md
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json

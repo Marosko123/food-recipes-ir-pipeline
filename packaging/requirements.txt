@@ -1,0 +1,23 @@
+# Food Recipes - Complete Dependencies
+# Author: Maroš Bednár (AIS 116822)
+# Email: bednarmaros341@gmail.com
+
+# Core Python libraries (required)
+requests>=2.25.0
+lxml>=4.6.0
+beautifulsoup4>=4.9.0
+ahocorasick>=2.0.0
+tqdm>=4.60.0
+brotli>=1.1.0
+
+# Web Framework (for API server)
+flask>=2.0.0
+werkzeug>=2.0.0
+
+# Optional: PySpark for Spark jobs (Phase F)
+pyspark>=3.0.0
+
+# Development Dependencies (optional)
+pytest>=6.0.0
+black>=21.0.0
+flake8>=3.9.0

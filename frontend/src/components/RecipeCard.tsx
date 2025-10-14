@@ -10,13 +10,67 @@ interface RecipeCardProps {
     recipe: Recipe;
     showScore?: boolean;
     priority?: boolean;
+    compact?: boolean;
 }
 
-export default function RecipeCard({ recipe, showScore = false, priority = false }: RecipeCardProps) {
+export default function RecipeCard({ recipe, showScore = false, priority = false, compact = false }: RecipeCardProps) {
     const recipeSlug = generateRecipeSlug(recipe.title, recipe.id);
     const rating = formatRating(recipe.ratings?.rating);
     const reviewCount = recipe.ratings?.review_count;
 
+    // Parse nutrition values
+    const parseNutrition = (value: string | undefined): number => {
+        if (!value) return 0;
+        return parseFloat(value) || 0;
+    };
+
+    const calories = parseNutrition(recipe.nutrition?.calories);
+    const protein = parseNutrition(recipe.nutrition?.protein);
+
+    // Compact version for meal planner
+    if (compact) {
+        return (
+            <Link href={`/recipe/${recipeSlug}`}>
+                <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow bg-white">
+                    {recipe.image && (
+                        <div className="relative h-32 bg-gray-200">
+                            <Image
+                                src={recipe.image}
+                                alt={recipe.title}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                            />
+                        </div>
+                    )}
+                    <div className="p-3">
+                        <h4 className="font-semibold text-sm text-gray-900 line-clamp-2 mb-2">
+                            {recipe.title}
+                        </h4>
+                        
+                        {/* Compact Nutrition */}
+                        <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                            <div>
+                                <span className="font-medium">{Math.round(calories)}</span> cal
+                            </div>
+                            <div>
+                                <span className="font-medium">{Math.round(protein)}g</span> protein
+                            </div>
+                        </div>
+
+                        {recipe.times?.total && (
+                            <div className="flex items-center text-xs text-gray-500 mt-2">
+                                <Clock className="w-3 h-3 mr-1" />
+                                <span>{recipe.times.total} min</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </Link>
+        );
+    }
+
+    // Full version
     return (
         <Link href={`/recipe/${recipeSlug}`} className="h-full">
             <div className="recipe-card group cursor-pointer overflow-hidden">

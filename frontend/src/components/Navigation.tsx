@@ -86,6 +86,13 @@ const navigationMenus: DropdownMenu[] = [
             { label: 'Desserts', filters: { meal_type: ['desserts'] }, icon: <Cake className="w-4 h-4" /> },
             { label: 'Snacks', filters: { keywords: ['snack', 'quick'] }, icon: <Apple className="w-4 h-4" /> }
         ]
+    },
+    {
+        label: '🍱 MEAL PLANNER',
+        items: [
+            { label: 'Create Meal Plan', href: '/meal-planner', icon: <Utensils className="w-4 h-4" /> },
+            { label: 'Personalized Nutrition', href: '/meal-planner', icon: <Heart className="w-4 h-4" /> }
+        ]
     }
 ];
 

@@ -1,0 +1,13 @@
+qid	query	notes
+q1	chocolate cake	General dessert query
+q2	quick chicken dinner	Time-sensitive main dish
+q3	healthy salad	Health-conscious query
+q4	pasta carbonara	Specific Italian dish
+q5	vegetarian soup	Dietary restriction + category
+q6	breakfast eggs	Meal type query
+q7	grilled chicken	Cooking method + ingredient
+q8	low calorie dessert	Nutrition-focused dessert
+q9	mexican rice	Cuisine-specific side dish
+q10	easy cookies	Difficulty + dessert type
+q11	italian pasta sauce	Cuisine + category
+q12	chicken breast recipes	Single ingredient focus

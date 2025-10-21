@@ -897,6 +897,7 @@ def main():
     parser.add_argument('--q', required=True, help='Search query')
     parser.add_argument('--k', type=int, default=10, help='Number of results to return')
     parser.add_argument('--filter', help='JSON string with filters')
+    parser.add_argument('--quiet', action='store_true', help='Minimal output (for programmatic use)')
     
     args = parser.parse_args()
     
@@ -914,18 +915,24 @@ def main():
             logger.error(f"Invalid JSON in --filter argument: {e}")
             return 1
     
-    logger.info(f"Starting search: '{args.q}' using {args.metric}")
+    # Configure logging based on quiet mode
+    if args.quiet:
+        logging.getLogger().setLevel(logging.ERROR)
+    else:
+        logger.info(f"Starting search: '{args.q}' using {args.metric}")
     
     # Initialize searcher with error handling
     try:
         searcher = RobustRecipeSearcher(args.index)
     except FileNotFoundError as e:
         logger.error(f"Index loading failed: {e}")
-        print(f"Error: {e}")
+        if not args.quiet:
+            print(f"Error: {e}")
         return 1
     except Exception as e:
         logger.error(f"Unexpected error loading index: {e}")
-        print(f"Error: {e}")
+        if not args.quiet:
+            print(f"Error: {e}")
         return 1
     
     # Perform search
@@ -936,30 +943,38 @@ def main():
             results = searcher.search_bm25(args.q, args.k, filters)
     except Exception as e:
         logger.error(f"Search failed: {e}")
-        print(f"Error: {e}")
+        if not args.quiet:
+            print(f"Error: {e}")
         return 1
     
     # Display results
-    print(f"\nSearch Results for '{args.q}' ({args.metric.upper()}):")
-    print("=" * 60)
+    if not args.quiet:
+        print(f"\nSearch Results for '{args.q}' ({args.metric.upper()}):")
+        print("=" * 60)
     
     if not results:
-        print("No results found.")
+        if not args.quiet:
+            print("No results found.")
         return 0
     
     for i, (doc_id, score, snippet) in enumerate(results, 1):
         doc_info = searcher.get_document_info(doc_id)
-        print(f"\n{i}. {snippet}")
-        print(f"   Score: {score:.4f}")
-        print(f"   URL: {doc_info.get('url', 'N/A')}")
-        print(f"   ID: {doc_id}")
+        if args.quiet:
+            # Minimal output for programmatic use
+            print(f"   ID: {doc_id}")
+        else:
+            print(f"\n{i}. {snippet}")
+            print(f"   Score: {score:.4f}")
+            print(f"   URL: {doc_info.get('url', 'N/A')}")
+            print(f"   ID: {doc_id}")
     
     # Display statistics
-    stats = searcher.get_stats()
-    print(f"\nSearch Statistics:")
-    print(f"  Queries processed: {stats['queries_processed']}")
-    print(f"  Total results: {stats['total_results']}")
-    print(f"  Average results per query: {stats['avg_results_per_query']:.2f}")
+    if not args.quiet:
+        stats = searcher.get_stats()
+        print(f"\nSearch Statistics:")
+        print(f"  Queries processed: {stats['queries_processed']}")
+        print(f"  Total results: {stats['total_results']}")
+        print(f"  Average results per query: {stats['avg_results_per_query']:.2f}")
     
     return 0
 

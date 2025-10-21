@@ -263,6 +263,41 @@ run_gazetteer() {
     print_success "Phase E (Gazetteer) completed - check data/entities/ for gazetteer file"
 }
 
+# Function to run Phase G (eval)
+run_eval() {
+    print_status "Running Phase G: Evaluation (P@k, Recall@k, MAP, NDCG@k)"
+    
+    # Check if index exists
+    if [ ! -d "data/index/v1" ]; then
+        print_error "Index not found. Run 'index' target first."
+        echo ""
+        echo "Quick fix:"
+        echo "  ./packaging/run.sh index"
+        exit 1
+    fi
+    
+    # Check if eval files exist
+    if [ ! -f "eval/queries.tsv" ]; then
+        print_error "Queries file not found: eval/queries.tsv"
+        exit 1
+    fi
+    
+    if [ ! -f "eval/qrels.tsv" ]; then
+        print_error "Qrels file not found: eval/qrels.tsv"
+        exit 1
+    fi
+    
+    python3 eval/run.py --index data/index/v1 --k 5 10
+    
+    echo ""
+    print_success "Phase G (Evaluation) completed - check eval/metrics.tsv for results"
+    echo ""
+    echo "📊 Results summary:"
+    echo "  - 12 test queries evaluated"
+    echo "  - Metrics: P@5, R@5, NDCG@5, P@10, R@10, NDCG@10, MAP"
+    echo "  - View: cat eval/metrics.tsv"
+}
+
 # Function to run tests
 run_tests() {
     print_status "Running unit tests..."
@@ -313,7 +348,7 @@ main() {
             run_gazetteer
             ;;
         "eval")
-            print_warning "Phase G (eval) not implemented yet"
+            run_eval
             ;;
         "all")
             print_status "Running complete pipeline (crawl → parse → index)..."

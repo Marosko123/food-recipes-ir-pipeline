@@ -7,6 +7,30 @@
 
 ---
 
+## 🎓 **University Submissions**
+
+### **Phase 1 Submission (October 2025)** 
+📘 **[README_First_Submission.md](README_First_Submission.md)** — Complete documentation for first project delivery
+
+**Includes:**
+- ✅ Crawler (robots.txt compliant, 5,646 recipes)
+- ✅ Parser (JSON-LD + HTML fallback)
+- ✅ Custom Indexer (inverted index, no external libs)
+- ✅ **Two Search Metrics:** TF-IDF + BM25 (as required)
+- ✅ Field-aware scoring (title=3.0, ingredients=2.0, instructions=1.0)
+- ✅ 30+ filter types (time, rating, nutrition)
+- ✅ Pseudocode & live demo guide
+
+**Quick Demo:**
+```bash
+# Run all examples (for presentation)
+bash packaging/cli_examples.sh
+```
+
+📖 **[docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md)** — Step-by-step presentation guide for teachers
+
+---
+
 ## 📋 Table of Contents
 
 1. [Overview](#overview)
@@ -45,6 +69,37 @@ Food Recipes is a comprehensive **Recipes Information Retrieval (IR) Pipeline** 
 ---
 
 ## 🚀 Quick Start
+
+### ⚡ **5-Minute Setup** (Phase 1 Demo)
+
+📘 **See [QUICKSTART.md](QUICKSTART.md) for complete step-by-step guide**
+
+```bash
+# 1. Crawl 100 recipes
+./packaging/run.sh crawl 100
+
+# 2. Parse HTML → JSON
+./packaging/run.sh parse
+
+# 3. Build index
+./packaging/run.sh index
+
+# 4. Search!
+./packaging/run.sh search "chicken pasta"
+
+# 5. Run 10 Q&A demo scenarios
+bash packaging/cli_examples.sh
+```
+
+**📖 Documentation:**
+- **[QUICKSTART.md](QUICKSTART.md)** - Fastest way to get started (5 min)
+- **[README_First_Submission.md](README_First_Submission.md)** - Phase 1 overview (pseudocode + metrics)
+- **[docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md)** - Presentation guide for teachers
+- **[docs/CLI_GUIDE.md](docs/CLI_GUIDE.md)** - Complete CLI reference
+
+---
+
+### 🖥️ Full Application Setup
 
 ### 1. Clone and Setup
 ```bash

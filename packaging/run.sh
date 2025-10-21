@@ -31,33 +31,97 @@ print_error() {
 
 # Function to show usage
 show_usage() {
-    echo "Food Recipes - Recipes IR Pipeline"
-    echo "Author: Maroš Bednár (AIS 116822)"
-    echo ""
-    echo "Usage: $0 <target>"
-    echo ""
-    echo "Available targets:"
-    echo "  seeds     - Phase A: Web analysis + seed extraction"
-    echo "  crawl     - Phase B: Download recipe pages"
-    echo "  parse     - Phase C: Parse and normalize recipes"
-    echo "  index     - Phase D: Build search index"
-    echo "  search    - Phase D: Search CLI"
-    echo "  gazetteer - Phase E: Build entity gazetteer"
-    echo "  eval      - Phase G: Run evaluation (not implemented yet)"
-    echo "  all       - Run all phases in sequence"
-    echo "  test      - Run unit tests"
-    echo "  clean     - Clean generated data files"
-    echo "  help      - Show this help message"
-    echo ""
-    echo "Examples:"
-    echo "  $0 seeds                    # Extract recipe seeds from sitemaps"
-    echo "  $0 crawl 10                 # Crawl 10 recipes for testing"
-    echo "  $0 crawl 100                # Crawl 100 recipes"
-    echo "  $0 parse                    # Parse downloaded recipes"
-    echo "  $0 index                    # Build search index from 10 test recipes"
-    echo "  $0 search \"chicken pasta\"   # Search for recipes"
-    echo "  $0 all                      # Run complete pipeline"
-    echo "  $0 test                     # Run unit tests"
+    cat << 'EOF'
+═══════════════════════════════════════════════════════════════════════════
+   Food Recipes IR Pipeline - Central Entrypoint
+   Author: Maroš Bednár (AIS 116822)
+   Email: bednarmaros341@gmail.com
+═══════════════════════════════════════════════════════════════════════════
+
+USAGE:
+    ./packaging/run.sh <target> [options]
+
+AVAILABLE TARGETS:
+    crawl     - Download recipe pages from food.com
+    parse     - Parse HTML → normalized JSONL
+    index     - Build inverted index (TSV files)
+    search    - Interactive search CLI (TF-IDF/BM25)
+    gazetteer - Build ingredient gazetteer
+    all       - Run complete pipeline (crawl→parse→index)
+    test      - Run unit tests
+    clean     - Remove all generated data
+    help      - Show this help message
+
+───────────────────────────────────────────────────────────────────────────
+QUICK START (Phase 1 Submission):
+───────────────────────────────────────────────────────────────────────────
+
+1️⃣  CRAWL (Download 100 recipes for demo):
+    ./packaging/run.sh crawl 100
+
+2️⃣  PARSE (Extract structured data):
+    ./packaging/run.sh parse
+
+3️⃣  INDEX (Build inverted index):
+    ./packaging/run.sh index
+
+4️⃣  SEARCH (Try some queries):
+    ./packaging/run.sh search "chicken pasta"
+    ./packaging/run.sh search "chocolate dessert"
+
+5️⃣  DEMO (Run 10 Q&A examples for teacher):
+    bash packaging/cli_examples.sh
+
+───────────────────────────────────────────────────────────────────────────
+ADVANCED EXAMPLES:
+───────────────────────────────────────────────────────────────────────────
+
+Crawl with custom limit:
+    ./packaging/run.sh crawl 500           # Download 500 recipes
+    ./packaging/run.sh crawl 5000          # Full crawl (production)
+
+Search with filters (use Python directly for JSON filters):
+    python3 search_cli/run.py \
+        --index data/index/v1 \
+        --metric bm25 \
+        --q "pasta" \
+        --k 5 \
+        --filter '{"max_total_minutes": 30, "min_rating": 4.0}'
+
+Compare TF-IDF vs BM25:
+    python3 search_cli/run.py --index data/index/v1 --metric tfidf --q "pasta" --k 3
+    python3 search_cli/run.py --index data/index/v1 --metric bm25 --q "pasta" --k 3
+
+───────────────────────────────────────────────────────────────────────────
+TROUBLESHOOTING:
+───────────────────────────────────────────────────────────────────────────
+
+Missing dependencies:
+    pip3 install -r packaging/requirements.txt
+
+Missing data/raw:
+    ./packaging/run.sh crawl 100           # Crawl first
+
+Missing data/normalized/recipes.jsonl:
+    ./packaging/run.sh parse               # Parse first
+
+Missing data/index/v1:
+    ./packaging/run.sh index               # Index first
+
+Clean everything and restart:
+    ./packaging/run.sh clean
+    ./packaging/run.sh crawl 100
+    ./packaging/run.sh parse
+    ./packaging/run.sh index
+
+═══════════════════════════════════════════════════════════════════════════
+DOCUMENTATION:
+    README_First_Submission.md    - Phase 1 overview (pseudocode + metrics)
+    docs/DEMO_GUIDE.md            - Presentation guide for teacher
+    docs/CLI_GUIDE.md             - Complete CLI reference
+    packaging/cli_examples.sh     - 10 Q&A demo scenarios
+═══════════════════════════════════════════════════════════════════════════
+EOF
 }
 
 # Function to check if Python is available
@@ -86,23 +150,23 @@ run_seeds() {
 run_crawl() {
     print_status "Running Phase B: Recipe Page Crawling"
     
-    # Check if seed file exists
-    if [ ! -f "data/seed_analysis/recipe_seeds.txt" ]; then
-        print_error "Seed file not found. Run 'seeds' target first."
-        exit 1
-    fi
-    
-    # Get limit from first argument or default to 10 for testing
-    local limit=${1:-10}
-    print_status "Crawling $limit recipes for testing..."
+    # Get limit from first argument or default to 100 for demo
+    local limit=${1:-100}
+    print_status "Crawling $limit recipes from food.com..."
+    echo ""
     
     python3 -m crawler.run --phase crawl \
-        --seeds data/seed_analysis/recipe_seeds.txt \
         --out data/raw \
         --limit $limit \
         --qps 0.5
     
-    print_success "Phase B completed - check data/raw/ for downloaded pages"
+    echo ""
+    print_success "Phase B completed - downloaded $limit recipes to data/raw/"
+    echo ""
+    echo "📊 Next steps:"
+    echo "   1. Parse the HTML:  ./packaging/run.sh parse"
+    echo "   2. Build index:     ./packaging/run.sh index"
+    echo "   3. Search recipes:  ./packaging/run.sh search \"chicken\""
 }
 
 # Function to run Phase C (parse)
@@ -112,11 +176,19 @@ run_parse() {
     # Check if raw data exists
     if [ ! -d "data/raw" ] || [ -z "$(ls -A data/raw 2>/dev/null)" ]; then
         print_error "Raw data not found. Run 'crawl' target first."
+        echo ""
+        echo "Quick fix:"
+        echo "  ./packaging/run.sh crawl 100"
         exit 1
     fi
     
     python3 -m parser.run --raw data/raw --out data/normalized/recipes.jsonl
-    print_success "Phase C completed - check data/normalized/recipes.jsonl for parsed recipes"
+    
+    echo ""
+    print_success "Phase C completed - parsed recipes saved to data/normalized/recipes.jsonl"
+    echo ""
+    echo "📊 Next step:"
+    echo "   ./packaging/run.sh index"
 }
 
 # Function to run Phase D (index)
@@ -126,11 +198,24 @@ run_index() {
     # Check if normalized data exists
     if [ ! -f "data/normalized/recipes.jsonl" ]; then
         print_error "Normalized recipe data not found. Run 'parse' target first."
+        echo ""
+        echo "Quick fix:"
+        echo "  ./packaging/run.sh parse"
         exit 1
     fi
     
     python3 -m indexer.run --input data/normalized/recipes.jsonl --out data/index/v1
-    print_success "Phase D (Index) completed - check data/index/v1/ for index files"
+    
+    echo ""
+    print_success "Phase D (Index) completed - index files saved to data/index/v1/"
+    echo ""
+    echo "📊 Next steps:"
+    echo "   1. Try a search:     ./packaging/run.sh search \"chicken pasta\""
+    echo "   2. Run 10 Q&A demo:  bash packaging/cli_examples.sh"
+    echo ""
+    echo "📖 Full CLI documentation:"
+    echo "   - docs/CLI_GUIDE.md           (complete reference)"
+    echo "   - README_First_Submission.md  (Phase 1 overview)"
 }
 
 # Function to run Phase D (search)
@@ -140,15 +225,34 @@ run_search() {
     # Check if index exists
     if [ ! -d "data/index/v1" ]; then
         print_error "Index not found. Run 'index' target first."
+        echo ""
+        echo "Quick fix:"
+        echo "  ./packaging/run.sh index"
         exit 1
     fi
     
     # Get search query from second argument or use default
     local query=${1:-"chicken pasta"}
-    print_status "Searching for: '$query'"
+    print_status "Searching for: '$query' (using BM25)"
+    echo ""
     
     python3 -m search_cli.run --index data/index/v1 --metric bm25 --q "$query" --k 5
+    
+    echo ""
     print_success "Search completed"
+    echo ""
+    echo "💡 Try more examples:"
+    echo "   ./packaging/run.sh search \"chocolate dessert\""
+    echo "   ./packaging/run.sh search \"italian pasta\""
+    echo "   ./packaging/run.sh search \"healthy salad\""
+    echo ""
+    echo "📖 For advanced filters, use Python directly:"
+    echo "   python3 search_cli/run.py --index data/index/v1 --metric bm25 \\"
+    echo "       --q \"pasta\" --k 3 \\"
+    echo "       --filter '{\"max_total_minutes\": 30, \"min_rating\": 4.0}'"
+    echo ""
+    echo "🎯 Run 10 Q&A demo scenarios:"
+    echo "   bash packaging/cli_examples.sh"
 }
 
 # Function to run Phase E (gazetteer)
@@ -212,9 +316,21 @@ main() {
             print_warning "Phase G (eval) not implemented yet"
             ;;
         "all")
-            print_status "Running all phases..."
-            run_seeds
-            print_warning "Remaining phases not implemented yet"
+            print_status "Running complete pipeline (crawl → parse → index)..."
+            echo ""
+            local limit=${2:-100}
+            print_status "Step 1/3: Crawling $limit recipes..."
+            run_crawl $limit
+            echo ""
+            print_status "Step 2/3: Parsing recipes..."
+            run_parse
+            echo ""
+            print_status "Step 3/3: Building index..."
+            run_index
+            echo ""
+            print_success "✅ Pipeline completed! Now try:"
+            echo "   ./packaging/run.sh search \"chicken pasta\""
+            echo "   bash packaging/cli_examples.sh"
             ;;
         "test")
             run_tests

@@ -42,15 +42,18 @@ USAGE:
     ./packaging/run.sh <target> [options]
 
 AVAILABLE TARGETS:
-    crawl     - Download recipe pages from food.com
-    parse     - Parse HTML → normalized JSONL
-    index     - Build inverted index (TSV files)
-    search    - Interactive search CLI (TF-IDF/BM25)
-    gazetteer - Build ingredient gazetteer
-    all       - Run complete pipeline (crawl→parse→index)
-    test      - Run unit tests
-    clean     - Remove all generated data
-    help      - Show this help message
+    crawl       - Download recipe pages from food.com
+    parse       - Parse HTML → normalized JSONL (Food.com only)
+    wiki_clean  - Remove Wikipedia artifacts (safe: keeps raw data)
+    wiki_parse  - Extract culinary entities from Wikipedia dumps
+    enrich      - Combine Food.com + Wikipedia → enriched recipes
+    index       - Build inverted index (TSV files)
+    search      - Interactive search CLI (TF-IDF/BM25)
+    gazetteer   - Build ingredient gazetteer
+    all         - Run complete pipeline (parse→wiki→enrich→index)
+    test        - Run unit tests
+    clean       - Remove all generated data
+    help        - Show this help message
 
 ───────────────────────────────────────────────────────────────────────────
 QUICK START (Phase 1 Submission):
@@ -171,7 +174,7 @@ run_crawl() {
 
 # Function to run Phase C (parse)
 run_parse() {
-    print_status "Running Phase C: Parser & Normalization"
+    print_status "Running Phase C: Parser & Normalization (Food.com only)"
     
     # Check if raw data exists
     if [ ! -d "data/raw" ] || [ -z "$(ls -A data/raw 2>/dev/null)" ]; then
@@ -182,10 +185,140 @@ run_parse() {
         exit 1
     fi
     
-    python3 -m parser.run --raw data/raw --out data/normalized/recipes.jsonl
+    python3 -m parser.run --raw data/raw --out data/normalized/recipes_foodcom.jsonl
+    
+    # Create symlink for backward compatibility
+    if [ ! -f "data/normalized/recipes.jsonl" ] || [ ! -L "data/normalized/recipes.jsonl" ]; then
+        ln -sf recipes_foodcom.jsonl data/normalized/recipes.jsonl
+    fi
     
     echo ""
-    print_success "Phase C completed - parsed recipes saved to data/normalized/recipes.jsonl"
+    print_success "Phase C completed - parsed recipes saved to data/normalized/recipes_foodcom.jsonl"
+    echo ""
+    echo "📊 Next steps:"
+    echo "   1. Extract Wikipedia entities:  ./packaging/run.sh wiki_parse"
+    echo "   2. Enrich recipes:              ./packaging/run.sh enrich"
+    echo "   3. Build index:                 ./packaging/run.sh index"
+}
+
+# Function to clean Wikipedia artifacts (SAFE DELETE per §4)
+run_wiki_clean() {
+    print_status "Cleaning Wikipedia-derived artifacts (SAFE: keeps raw data)"
+    
+    print_warning "This will delete:"
+    echo "  - data/normalized/wiki_culinary*.jsonl"
+    echo "  - data/normalized/recipes_enriched*.jsonl"
+    echo "  - entities/wiki_gazetteer*.tsv"
+    echo "  - entities/*_test.*"
+    echo ""
+    echo "This will KEEP (safe):"
+    echo "  - data/raw/** (crawler data)"
+    echo "  - data/enwiki/** (Wikipedia dumps)"
+    echo "  - data/normalized/recipes_foodcom.jsonl (Food.com parse)"
+    echo "  - data/index/v1/** (baseline index)"
+    echo ""
+    
+    read -p "Continue? (y/N) " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_warning "Cancelled by user"
+        exit 0
+    fi
+    
+    # Delete only wiki artifacts
+    rm -f data/normalized/wiki_culinary*.jsonl
+    rm -f data/normalized/recipes_enriched*.jsonl
+    rm -f entities/wiki_gazetteer*.tsv
+    rm -f entities/*_test.*
+    rm -f data/normalized/*_test.jsonl
+    
+    print_success "Wiki artifacts cleaned successfully"
+    echo ""
+    echo "📊 Next step:"
+    echo "   ./packaging/run.sh wiki_parse"
+}
+
+# Function to run Wikipedia parsing (Spark job per §5)
+run_wiki_parse() {
+    print_status "Running Wikipedia Entity Extraction (PySpark-style streaming)"
+    
+    # Check if Wikipedia dumps exist
+    if [ ! -f "data/enwiki/enwiki-latest-pages-articles-multistream.xml.bz2" ]; then
+        print_error "Wikipedia dump not found"
+        echo ""
+        echo "Expected file: data/enwiki/enwiki-latest-pages-articles-multistream.xml.bz2"
+        echo ""
+        echo "Download with:"
+        echo "  mkdir -p data/enwiki"
+        echo "  cd data/enwiki"
+        echo "  wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles-multistream.xml.bz2"
+        echo "  wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-redirect.sql.gz"
+        exit 1
+    fi
+    
+    # Get limit from argument (optional)
+    local limit_arg=""
+    if [ -n "$1" ]; then
+        limit_arg="--limit $1"
+        print_status "Processing limit: $1 pages"
+    else
+        print_status "Processing FULL dump (no limit) - this may take 2-4 hours"
+    fi
+    
+    echo ""
+    python3 spark_jobs/enwiki_parser.py \
+        --dump data/enwiki/enwiki-latest-pages-articles-multistream.xml.bz2 \
+        --redirects data/enwiki/enwiki-latest-redirect.sql.gz \
+        $limit_arg \
+        --out-gazetteer entities/wiki_gazetteer.tsv \
+        --out-jsonl data/normalized/wiki_culinary.jsonl
+    
+    echo ""
+    print_success "Wikipedia parsing completed"
+    echo ""
+    echo "📊 Outputs created:"
+    echo "   - entities/wiki_gazetteer.tsv"
+    echo "   - data/normalized/wiki_culinary.jsonl"
+    echo ""
+    echo "📊 Next step:"
+    echo "   ./packaging/run.sh enrich"
+}
+
+# Function to enrich recipes with Wikipedia knowledge (per §6)
+run_enrich() {
+    print_status "Enriching Food.com recipes with Wikipedia knowledge"
+    
+    # Check if required files exist
+    if [ ! -f "data/normalized/recipes_foodcom.jsonl" ]; then
+        print_error "Food.com recipes not found: data/normalized/recipes_foodcom.jsonl"
+        echo "Run: ./packaging/run.sh parse"
+        exit 1
+    fi
+    
+    if [ ! -f "entities/wiki_gazetteer.tsv" ]; then
+        print_error "Wikipedia gazetteer not found: entities/wiki_gazetteer.tsv"
+        echo "Run: ./packaging/run.sh wiki_parse"
+        exit 1
+    fi
+    
+    if [ ! -f "data/normalized/wiki_culinary.jsonl" ]; then
+        print_error "Wikipedia entities not found: data/normalized/wiki_culinary.jsonl"
+        echo "Run: ./packaging/run.sh wiki_parse"
+        exit 1
+    fi
+    
+    echo ""
+    python3 entities/enricher.py \
+        --recipes data/normalized/recipes_foodcom.jsonl \
+        --gazetteer entities/wiki_gazetteer.tsv \
+        --wiki-entities data/normalized/wiki_culinary.jsonl \
+        --output data/normalized/recipes_enriched.jsonl
+    
+    echo ""
+    print_success "Recipe enrichment completed"
+    echo ""
+    echo "📊 Output created:"
+    echo "   - data/normalized/recipes_enriched.jsonl"
     echo ""
     echo "📊 Next step:"
     echo "   ./packaging/run.sh index"
@@ -338,6 +471,15 @@ main() {
         "parse")
             run_parse
             ;;
+        "wiki_clean")
+            run_wiki_clean
+            ;;
+        "wiki_parse")
+            run_wiki_parse $2
+            ;;
+        "enrich")
+            run_enrich
+            ;;
         "index")
             run_index
             ;;
@@ -351,20 +493,40 @@ main() {
             run_eval
             ;;
         "all")
-            print_status "Running complete pipeline (crawl → parse → index)..."
+            print_status "Running complete pipeline (parse → wiki → enrich → index)..."
             echo ""
-            local limit=${2:-100}
-            print_status "Step 1/3: Crawling $limit recipes..."
-            run_crawl $limit
+            
+            # Step 1: Parse Food.com (skip if already done)
+            if [ ! -f "data/normalized/recipes_foodcom.jsonl" ]; then
+                print_status "Step 1/4: Parsing Food.com recipes..."
+                run_parse
+            else
+                print_status "Step 1/4: Skipping parse (recipes_foodcom.jsonl exists)"
+            fi
             echo ""
-            print_status "Step 2/3: Parsing recipes..."
-            run_parse
+            
+            # Step 2: Wikipedia parsing (skip if already done)
+            if [ ! -f "data/normalized/wiki_culinary.jsonl" ]; then
+                print_status "Step 2/4: Parsing Wikipedia entities..."
+                local wiki_limit=${2:-100000}
+                run_wiki_parse $wiki_limit
+            else
+                print_status "Step 2/4: Skipping wiki_parse (wiki_culinary.jsonl exists)"
+            fi
             echo ""
-            print_status "Step 3/3: Building index..."
+            
+            # Step 3: Enrichment
+            print_status "Step 3/4: Enriching recipes with Wikipedia..."
+            run_enrich
+            echo ""
+            
+            # Step 4: Indexing
+            print_status "Step 4/4: Building search index..."
             run_index
             echo ""
+            
             print_success "✅ Pipeline completed! Now try:"
-            echo "   ./packaging/run.sh search \"chicken pasta\""
+            echo "   ./packaging/run.sh search \"mexican chicken\""
             echo "   bash packaging/cli_examples.sh"
             ;;
         "test")

@@ -96,6 +96,7 @@ data/normalized/
 data/index/
 data/entities/
 data/eval/
+data/enwiki/
 data/seed_analysis/
 data/wikipedia_recipes/
 data/wikipedia/

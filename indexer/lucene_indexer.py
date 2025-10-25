@@ -108,51 +108,37 @@ class LupyneRecipeIndexer:
         logger.info(f"Created Lupyne Indexer at {self.output_dir}")
     
     def _extract_wiki_abstracts(self, recipe: Dict[str, Any]) -> str:
-        """
-        Extract and concatenate Wikipedia abstracts from wiki_links.
-        
-        Args:
-            recipe: Recipe document with wiki_links field
-        
-        Returns:
-            Concatenated abstracts as single string
-        """
+        """Extract and join wiki abstracts."""
+        # TODO: Add caching for repeated abstracts
+        # FIXME: Memory usage spikes with large abstracts (>5KB)
         wiki_links = recipe.get('wiki_links', [])
         if not wiki_links:
             return ""
         
-        abstracts = []
+        abs_list = []
         for link in wiki_links:
             abstract = link.get('abstract', '').strip()
             if abstract:
-                abstracts.append(abstract)
+                abs_list.append(abstract)
         
         self.stats['total_wiki_links'] += len(wiki_links)
-        if abstracts:
+        if abs_list:
             self.stats['docs_with_wiki'] += 1
         
-        return " ".join(abstracts)
+        return " ".join(abs_list)
     
     def _normalize_ingredients(self, ingredients: List[str]) -> List[str]:
-        """
-        Normalize ingredients for keyword matching.
-        
-        Args:
-            ingredients: List of ingredient strings
-        
-        Returns:
-            Normalized ingredients (lowercase, trimmed)
-        """
-        normalized = []
+        """Lowercase and trim ingredients."""
+        norm_ings = []
         for ing in ingredients:
             if not ing:
                 continue
             # Lowercase and remove extra whitespace
             ing_norm = ' '.join(str(ing).lower().strip().split())
             if ing_norm:
-                normalized.append(ing_norm)
+                norm_ings.append(ing_norm)
         
-        return normalized
+        return norm_ings
     
     def _prepare_document_fields(self, recipe: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -237,7 +223,8 @@ class LupyneRecipeIndexer:
         
         cuisine_display = recipe.get('cuisine', [])
         if cuisine_display:
-            fields['cuisine'] = ', '.join(str(c) for c in cuisine_display if c)
+            cuisines_clean = [str(c).strip() for c in cuisine_display if c]
+            fields['cuisine'] = ', '.join(cuisines_clean)
         else:
             fields['cuisine'] = ''
         
@@ -262,6 +249,7 @@ class LupyneRecipeIndexer:
             fields['wiki_abstracts'] = wiki_abstracts
         
         # Keyword fields (repeated) - Lupyne handles lists automatically
+        # TODO: Support incremental indexing (append mode)
         normalized_ingredients = self._normalize_ingredients(ingredients_list)
         if normalized_ingredients:
             fields['ingredients_kw'] = normalized_ingredients

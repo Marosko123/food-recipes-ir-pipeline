@@ -161,6 +161,8 @@ class LupyneRecipeSearcher:
                         filter_queries.append(cuisine_builder.build())
             
             # Time range filter (use LongPoint, Lupyne dimensions=1 uses 8 bytes)
+            # TODO: Cache parsed queries for better performance
+            # FIXME: Filter validation is weak, needs proper schema
             if 'max_total_minutes' in filters:
                 from org.apache.lucene.document import LongPoint
                 max_minutes = int(filters['max_total_minutes'])
@@ -263,7 +265,7 @@ class RobustRecipeSearcher:
     
     @staticmethod
     def _safe_float(value, default=0.0):
-        """Safely convert value to float, handling strings and None."""
+        """Safely convert to float."""
         if value is None or value == '':
             return default
         try:
@@ -273,7 +275,7 @@ class RobustRecipeSearcher:
     
     @staticmethod
     def _safe_int(value, default=0):
-        """Safely convert value to int, handling strings and None."""
+        """Safely convert to int."""
         if value is None or value == '':
             return default
         try:
@@ -1005,7 +1007,7 @@ class RobustRecipeSearcher:
         yield_str = recipe_data.get('yield', '')
         if yield_str and (filters.get('min_yield') or filters.get('max_yield')):
             # Extract first number from yield string (e.g., "12 cookies" -> 12)
-            import re
+            # re is already imported at top-level
             match = re.search(r'(\d+(?:\.\d+)?)', str(yield_str))
             if match:
                 yield_value = self._safe_float(match.group(1))
@@ -1200,6 +1202,7 @@ Examples:
     else:
         logger.info(f"Starting search: '{args.q}' using {args.metric}")
     
+    # TODO: Suggest query corrections (did you mean...?)
     # Detect index type
     index_path = Path(args.index)
     if not index_path.exists():
@@ -1297,9 +1300,9 @@ Examples:
                 print()
                 
                 # Extract all available fields
-                description = result.get('description', '')
-                ingredients = result.get('ingredients', '')
-                instructions = result.get('instructions', '')
+                desc = result.get('description', '')
+                ings = result.get('ingredients', '')
+                instr = result.get('instructions', '')
                 prep_minutes = result.get('prep_minutes', '')
                 cook_minutes = result.get('cook_minutes', '')
                 cuisine = result.get('cuisine', '')
@@ -1312,11 +1315,11 @@ Examples:
                 nutrition = result.get('nutrition', '')
                 ratings = result.get('ratings', '')
                 date_published = result.get('date_published', '')
-                wiki_abstracts = result.get('wiki_abstracts', '')
+                wiki_text = result.get('wiki_abstracts', '')
                 
                 # food.com section
                 print(f"📖 FROM food.com:")
-                print(f"   DESCRIPTION: {description if description else 'N/A'}")
+                print(f"   DESCRIPTION: {desc if desc else 'N/A'}")
                 print(f"   TOTAL_TIME: {total_minutes} min" if total_minutes else "   TOTAL_TIME: N/A")
                 print(f"   PREP_TIME: {prep_minutes} min" if prep_minutes else "   PREP_TIME: N/A")
                 print(f"   COOK_TIME: {cook_minutes} min" if cook_minutes else "   COOK_TIME: N/A")
@@ -1331,13 +1334,13 @@ Examples:
                 print(f"   NUTRITION: {nutrition if nutrition else 'N/A'}")
                 print(f"   TOOLS: {tools if tools else 'N/A'}")
                 print(f"   INGREDIENTS:")
-                if ingredients:
-                    print(f"      {ingredients}")
+                if ings:
+                    print(f"      {ings}")
                 else:
                     print(f"      N/A")
                 print(f"   INSTRUCTIONS:")
-                if instructions:
-                    print(f"      {instructions}")
+                if instr:
+                    print(f"      {instr}")
                 else:
                     print(f"      N/A")
                 
@@ -1357,6 +1360,7 @@ Examples:
                         by_type[entity_type].append(link)
                     
                     # Display each type
+                    # FIXME: Sometimes shows duplicate entities with different surfaces
                     for entity_type, links in sorted(by_type.items()):
                         print(f"\n   {entity_type.upper()}S:")
                         for link in links[:5]:  # Max 5 per type
@@ -1368,7 +1372,7 @@ Examples:
                             # Clean abstract
                             if abstract:
                                 abstract_clean = abstract.replace('(, ; )', '').replace('()', '')
-                                import re
+                                # re is already imported at top-level
                                 abstract_clean = re.sub(r'\|[a-z\-]+=', ' ', abstract_clean)
                                 abstract_clean = ' '.join(abstract_clean.split()).strip()
                                 abstract_short = abstract_clean[:150] + ('...' if len(abstract_clean) > 150 else '')

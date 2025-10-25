@@ -34,6 +34,8 @@ class WikiCulinaryExtractor:
     """Extract culinary entities from Wikipedia dumps."""
     
     def __init__(self):
+        # TODO: Filter by article quality score (stub vs featured)
+        # XXX: Current regex for categories is brittle
         # Infobox patterns we care about
         self.infobox_patterns = [
             re.compile(r'{{\s*Infobox\s+food', re.IGNORECASE),

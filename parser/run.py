@@ -50,6 +50,7 @@ def parse_recipe_file(html_file: Path, url: str) -> Dict[str, Any]:
 
 def run_parse_phase(args) -> Dict[str, Any]:
     """Run Phase C: Parse and normalize recipe data."""
+    # TODO: Add multi-threading for faster parsing
     logger.info("Starting Phase C: Parser & Normalization")
     
     # Create output directory
@@ -89,6 +90,7 @@ def run_parse_phase(args) -> Dict[str, Any]:
             
             logger.info(f"Parsing {i+1}/{len(html_files)}: {html_file.name}")
             
+            # FIXME: Some recipes have malformed JSON-LD, handle gracefully
             recipe = parse_recipe_file(html_file, url)
             
             if recipe and recipe.get('title'):

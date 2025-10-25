@@ -46,7 +46,7 @@ class RecipeEnricher:
         }
     
     def load_gazetteer(self, gazetteer_file: Path):
-        """Load gazetteer TSV file."""
+        """Load gazetteer TSV."""
         logger.info(f"Loading gazetteer from {gazetteer_file}")
         
         count = 0
@@ -87,7 +87,9 @@ class RecipeEnricher:
         logger.info(f"Loaded {len(self.wiki_entities)} Wikipedia entities with metadata")
     
     def build_automaton(self):
-        """Build Aho-Corasick automaton for fast string matching."""
+        """Build Aho-Corasick automaton."""
+        # XXX: Slow for >100k patterns, consider using Trie instead
+        # TODO: Benchmark against pygtrie or marisa-trie
         logger.info("Building Aho-Corasick automaton...")
         
         self.automaton = ahocorasick.Automaton()
@@ -104,7 +106,8 @@ class RecipeEnricher:
         logger.info(f"Automaton built with {len(self.automaton)} patterns")
     
     def find_entities(self, text: str) -> List[Dict]:
-        """Find entity mentions in text using Aho-Corasick."""
+        """Find entity mentions in text."""
+        # TODO: Add fuzzy matching for typos (Levenshtein distance?)
         if not text or not self.automaton:
             return []
         
@@ -136,39 +139,40 @@ class RecipeEnricher:
         return matches
     
     def enrich_recipe(self, recipe: Dict) -> Dict:
-        """Enrich a single recipe with Wikipedia knowledge."""
+        """Enrich recipe with Wikipedia knowledge."""
+        # FIXME: Sometimes shows duplicate entities with different surfaces
         enriched = recipe.copy()
         
         # Find entities in different fields
-        all_links = []
+        links = []
         
         # 1. Match title (for dish articles like "Caesar Salad")
         title_links = self.find_entities(recipe.get('title', ''))
-        all_links.extend(title_links)
+        links.extend(title_links)
         
         # 2. Match ingredients
         ingredients_text = ' '.join(recipe.get('ingredients', []))
         ingredient_links = self.find_entities(ingredients_text)
-        all_links.extend(ingredient_links)
+        links.extend(ingredient_links)
         
         # 3. Match instructions (for techniques)
         instructions_text = ' '.join(recipe.get('instructions', []))
         instruction_links = self.find_entities(instructions_text)
-        all_links.extend(instruction_links)
+        links.extend(instruction_links)
         
         # 4. Match existing cuisine field
         cuisine_text = ' '.join(recipe.get('cuisine', []))
         cuisine_links = self.find_entities(cuisine_text)
-        all_links.extend(cuisine_links)
+        links.extend(cuisine_links)
         
         # Remove duplicates (same wiki_title)
-        unique_links = {}
-        for link in all_links:
+        seen = {}
+        for link in links:
             title = link['wiki_title']
-            if title not in unique_links:
-                unique_links[title] = link
+            if title not in seen:
+                seen[title] = link
         
-        wiki_links = list(unique_links.values())
+        wiki_links = list(seen.values())
         
         # Add wiki_links field
         enriched['wiki_links'] = wiki_links

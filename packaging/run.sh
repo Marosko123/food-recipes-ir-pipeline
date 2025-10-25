@@ -42,18 +42,21 @@ USAGE:
     ./packaging/run.sh <target> [options]
 
 AVAILABLE TARGETS:
-    crawl       - Download recipe pages from food.com
-    parse       - Parse HTML → normalized JSONL (Food.com only)
-    wiki_clean  - Remove Wikipedia artifacts (safe: keeps raw data)
-    wiki_parse  - Extract culinary entities from Wikipedia dumps
-    enrich      - Combine Food.com + Wikipedia → enriched recipes
-    index       - Build inverted index (TSV files)
-    search      - Interactive search CLI (TF-IDF/BM25)
-    gazetteer   - Build ingredient gazetteer
-    all         - Run complete pipeline (parse→wiki→enrich→index)
-    test        - Run unit tests
-    clean       - Remove all generated data
-    help        - Show this help message
+    crawl        - Download recipe pages from food.com
+    parse        - Parse HTML → normalized JSONL (Food.com only)
+    wiki_clean   - Remove Wikipedia artifacts (safe: keeps raw data)
+    wiki_parse   - Extract culinary entities from Wikipedia dumps
+    enrich       - Combine Food.com + Wikipedia → enriched recipes
+    index        - Build inverted index (TSV files, baseline)
+    index_lucene - Build PyLucene index (BM25/TF-IDF, production)
+    search       - Interactive search CLI (TF-IDF/BM25, baseline)
+    search_lucene- PyLucene search with filters
+    gazetteer    - Build ingredient gazetteer
+    eval         - Run evaluation (P@k, MAP, nDCG)
+    all          - Run complete pipeline (parse→wiki→enrich→index)
+    test         - Run unit tests
+    clean        - Remove all generated data
+    help         - Show this help message
 
 ───────────────────────────────────────────────────────────────────────────
 QUICK START (Phase 1 Submission):
@@ -324,9 +327,9 @@ run_enrich() {
     echo "   ./packaging/run.sh index"
 }
 
-# Function to run Phase D (index)
+# Function to run Phase D (index) - TSV baseline
 run_index() {
-    print_status "Running Phase D: Build Search Index"
+    print_status "Running Phase D: Build Search Index (TSV baseline)"
     
     # Check if normalized data exists
     if [ ! -f "data/normalized/recipes.jsonl" ]; then
@@ -351,25 +354,144 @@ run_index() {
     echo "   - README_First_Submission.md  (Phase 1 overview)"
 }
 
-# Function to run Phase D (search)
-run_search() {
-    print_status "Running Phase D: Search CLI"
+# Function to run PyLucene indexer (production)
+run_index_lucene() {
+    print_status "Building Lupyne index (BM25) from enriched recipes"
     
-    # Check if index exists
-    if [ ! -d "data/index/v1" ]; then
-        print_error "Index not found. Run 'index' target first."
+    # Check if enriched data exists
+    if [ ! -f "data/normalized/recipes_enriched.jsonl" ]; then
+        print_error "Enriched recipes not found: data/normalized/recipes_enriched.jsonl"
         echo ""
-        echo "Quick fix:"
-        echo "  ./packaging/run.sh index"
+        echo "Run enrichment first:"
+        echo "  ./packaging/run.sh enrich"
         exit 1
     fi
     
-    # Get search query from second argument or use default
-    local query=${1:-"chicken pasta"}
-    print_status "Searching for: '$query' (using BM25)"
+    # Check if Homebrew Python with Lupyne is available
+    PYTHON_CMD="python3"
+    if [ -f "/usr/local/Cellar/python@3.14/3.14.0/bin/python3.14" ]; then
+        PYTHON_CMD="/usr/local/Cellar/python@3.14/3.14.0/bin/python3.14"
+        print_status "Using Homebrew Python: $PYTHON_CMD"
+    else
+        print_warning "Homebrew Python not found. Using system Python."
+        print_warning "If indexing fails, install PyLucene + Lupyne (see LUPYNE_INSTALL.md)"
+    fi
+    
+    # Get similarity type from argument (default: bm25)
+    local similarity=${1:-bm25}
+    
+    # Set output directory based on similarity
+    local output_dir="index/lucene/v2"
+    if [ "$similarity" = "tfidf" ]; then
+        output_dir="index/lucene/v2_tfidf"
+    fi
+    
+    print_status "Similarity: $similarity"
+    print_status "Output: $output_dir"
     echo ""
     
-    python3 -m search_cli.run --index data/index/v1 --metric bm25 --q "$query" --k 5
+    $PYTHON_CMD indexer/lucene_indexer.py \
+        --input data/normalized/recipes_enriched.jsonl \
+        --output "$output_dir" \
+        --similarity "$similarity"
+    
+    echo ""
+    print_success "PyLucene index built successfully!"
+    echo ""
+    echo "📊 Index location: $output_dir"
+    echo "📊 Log: data/logs/lucene_indexing.log"
+    echo ""
+    echo "📊 Next steps:"
+    echo "   1. Search:  ./packaging/run.sh search_lucene"
+    echo "   2. Eval:    ./packaging/run.sh eval"
+}
+
+# Function to run unified searcher (TSV or Lupyne)
+run_search_lucene() {
+    print_status "Running unified search (supports TSV and Lupyne)"
+    
+    # Check if Homebrew Python with Lupyne is available
+    PYTHON_CMD="python3"
+    if [ -f "/usr/local/Cellar/python@3.14/3.14.0/bin/python3.14" ]; then
+        PYTHON_CMD="/usr/local/Cellar/python@3.14/3.14.0/bin/python3.14"
+    fi
+    
+    # Default parameters
+    local query=${1:-"mexican chicken"}
+    local k=${2:-10}
+    local index=${3:-"index/lucene/v2"}
+    
+    # Check if specified index exists, fallback to TSV
+    if [ ! -d "$index" ]; then
+        print_warning "Index not found: $index"
+        if [ -d "data/index/v1" ]; then
+            print_status "Falling back to TSV index: data/index/v1"
+            index="data/index/v1"
+        else
+            print_error "No index found. Build an index first:"
+            echo "  ./packaging/run.sh index        # TSV index"
+            echo "  ./packaging/run.sh index_lucene # Lupyne index"
+            exit 1
+        fi
+    fi
+    
+    print_status "Index: $index"
+    print_status "Query: '$query'"
+    print_status "Results: $k"
+    echo ""
+    
+    # Use unified search CLI (auto-detects index type)
+    $PYTHON_CMD search_cli/run.py \
+        --index "$index" \
+        --q "$query" \
+        --k "$k" \
+        --metric bm25 \
+        --index-type auto
+    
+    echo ""
+    print_success "Search completed"
+    echo ""
+    echo "💡 Advanced usage:"
+    echo "   # With filters (PyLucene index)"
+    echo "   python3 search_cli/run.py \\"
+    echo "       --index index/lucene/v2 \\"
+    echo "       --q \"chicken pasta\" \\"
+    echo "       --k 10 \\"
+    echo "       --filter '{\"max_total_minutes\": 30, \"cuisine\": \"Mexican\"}'"
+    echo ""
+    echo "   # Force TSV index"
+    echo "   python3 search_cli/run.py \\"
+    echo "       --index data/index/v1 \\"
+    echo "       --q \"pasta\" \\"
+    echo "       --k 5 \\"
+    echo "       --index-type tsv"
+}
+
+# Function to run Phase D (search) - unified CLI
+run_search() {
+    print_status "Running unified search CLI (auto-detects TSV/PyLucene)"
+    
+    # Get search query from argument or use default
+    local query=${1:-"chicken pasta"}
+    
+    # Try PyLucene index first, fallback to TSV
+    local index="data/index/v1"
+    if [ -d "index/lucene/v2" ]; then
+        index="index/lucene/v2"
+        print_status "Using PyLucene index: $index"
+    elif [ -d "data/index/v1" ]; then
+        print_status "Using TSV index: $index"
+    else
+        print_error "No index found. Build an index first:"
+        echo "  ./packaging/run.sh index        # TSV index"
+        echo "  ./packaging/run.sh index_lucene # PyLucene index"
+        exit 1
+    fi
+    
+    print_status "Query: '$query' (BM25)"
+    echo ""
+    
+    python3 search_cli/run.py --index "$index" --metric bm25 --q "$query" --k 5 --index-type auto
     
     echo ""
     print_success "Search completed"
@@ -379,13 +501,15 @@ run_search() {
     echo "   ./packaging/run.sh search \"italian pasta\""
     echo "   ./packaging/run.sh search \"healthy salad\""
     echo ""
-    echo "📖 For advanced filters, use Python directly:"
-    echo "   python3 search_cli/run.py --index data/index/v1 --metric bm25 \\"
-    echo "       --q \"pasta\" --k 3 \\"
-    echo "       --filter '{\"max_total_minutes\": 30, \"min_rating\": 4.0}'"
+    echo "📖 For advanced usage:"
+    echo "   # PyLucene with filters"
+    echo "   python3 search_cli/run.py --index index/lucene/v2 --metric bm25 \\"
+    echo "       --q \"pasta\" --k 10 \\"
+    echo "       --filter '{\"max_total_minutes\": 30, \"cuisine\": \"Italian\"}'"
     echo ""
-    echo "🎯 Run 10 Q&A demo scenarios:"
-    echo "   bash packaging/cli_examples.sh"
+    echo "   # TSV index (baseline)"
+    echo "   python3 search_cli/run.py --index data/index/v1 --metric bm25 \\"
+    echo "       --q \"chicken\" --k 5"
 }
 
 # Function to run Phase E (gazetteer)
@@ -483,8 +607,14 @@ main() {
         "index")
             run_index
             ;;
+        "index_lucene")
+            run_index_lucene $2
+            ;;
         "search")
             run_search $2
+            ;;
+        "search_lucene")
+            run_search_lucene $2 $3
             ;;
         "gazetteer")
             run_gazetteer

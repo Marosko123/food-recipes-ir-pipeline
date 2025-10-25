@@ -17,6 +17,14 @@ werkzeug>=2.0.0
 # Optional: PySpark for Spark jobs (Phase F)
 pyspark>=3.0.0
 
+# Lupyne (Pythonic PyLucene wrapper) - RECOMMENDED for indexing/search
+# Note: Requires PyLucene to be installed first!
+# See LUPYNE_INSTALL.md for installation instructions:
+#   - Homebrew: brew install coady/tap/pylucene
+#   - Docker: docker pull coady/pylucene
+#   - Pip: pip install lucene (may not work on newer macOS)
+lupyne[graphql,rest]>=2.0.0
+
 # Development Dependencies (optional)
 pytest>=6.0.0
 black>=21.0.0

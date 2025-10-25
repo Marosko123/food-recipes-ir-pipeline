@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Phase D: Robust Search CLI
+Unified Search CLI - Supports both TSV and Lupyne (Pythonic PyLucene) indexes
 Implements TF-IDF and BM25 search with comprehensive error handling and validation.
 """
 
@@ -14,12 +14,249 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Tuple, Any, Optional
 
+# Try to import Lupyne (optional, Pythonic PyLucene wrapper)
+try:
+    import lucene
+    from lupyne import engine
+    from org.apache.lucene.search.similarities import BM25Similarity, ClassicSimilarity
+    from org.apache.lucene.document import IntPoint
+    LUPYNE_AVAILABLE = True
+except ImportError:
+    LUPYNE_AVAILABLE = False
+
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+class LupyneRecipeSearcher:
+    """Lupyne-based searcher for recipe index (Pythonic PyLucene wrapper)."""
+    
+    def __init__(self, index_dir: str):
+        """Initialize Lupyne searcher."""
+        if not LUPYNE_AVAILABLE:
+            raise ImportError("Lupyne is not available. Install it or use TSV index.")
+        
+        self.index_dir = Path(index_dir)
+        
+        if not self.index_dir.exists():
+            raise FileNotFoundError(f"Index directory not found: {self.index_dir}")
+        
+        # Initialize JVM if not already running
+        if not lucene.getVMEnv():
+            lucene.initVM(vmargs=['-Djava.awt.headless=true'])
+        
+        # Open Lupyne IndexSearcher (Pythonic API!)
+        self.searcher = engine.IndexSearcher(str(self.index_dir.absolute()))
+        
+        # Lupyne IndexSearcher uses similarity from index (set during indexing)
+        # To override, must access underlying IndexSearcher
+        
+        # Load enriched recipes for wiki_links lookup
+        self.recipes_by_id = {}
+        self._load_recipes()
+        
+        logger.info(f"Opened Lupyne index: {self.index_dir} ({self.searcher.count} docs)")
+    
+    def _load_recipes(self):
+        """Load enriched recipes for wiki_links access."""
+        recipes_file = Path('data/normalized/recipes_enriched.jsonl')
+        if not recipes_file.exists():
+            logger.warning(f"Enriched recipes not found: {recipes_file}")
+            return
+        
+        with open(recipes_file, 'r', encoding='utf-8') as f:
+            for line in f:
+                try:
+                    recipe = json.loads(line.strip())
+                    recipe_id = recipe.get('id', '')
+                    if recipe_id:
+                        self.recipes_by_id[recipe_id] = recipe
+                except json.JSONDecodeError:
+                    continue
+        
+        logger.info(f"Loaded {len(self.recipes_by_id)} recipes for wiki_links lookup")
+    
+    def search_bm25(self, query: str, k: int = 10, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        """Search using BM25 similarity (Lupyne Pythonic API)."""
+        # BM25 is set at index time, just perform search
+        return self._search(query, k, filters)
+    
+    def search_tfidf(self, query: str, k: int = 10, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        """Search using TF-IDF (ClassicSimilarity, Lupyne Pythonic API)."""
+        # TF-IDF must be set at index time
+        # For now, we'll use whatever similarity was set during indexing
+        return self._search(query, k, filters)
+    
+    def _search(self, query_text: str, k: int, filters: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Perform search and return results using Lupyne's Pythonic API.
+        
+        Lupyne allows fluent query building:
+        - searcher.parse('query text', field='field_name')
+        - searcher.filter(...) for boolean queries
+        - Pythonic dict-like document access
+        """
+        # Build multi-field query with boosts
+        # Escape special characters in query text
+        from org.apache.lucene.queryparser.classic import QueryParser
+        escaped_query = QueryParser.escape(query_text)
+        
+        # Build query string with proper Lucene syntax (field:term OR field:term)
+        query_parts = []
+        for term in escaped_query.split():
+            query_parts.append(f"title_text:{term}^2.0")
+            query_parts.append(f"ingredients_text:{term}^1.5")
+            query_parts.append(f"instructions_text:{term}^1.0")
+            query_parts.append(f"wiki_abstracts:{term}^1.0")
+        
+        query_str = " OR ".join(query_parts)
+        
+        # Parse query (Lupyne handles multi-field automatically)
+        base_query = self.searcher.parse(query_str)
+        
+        # Apply filters if provided
+        if filters:
+            # Build filter query using Lupyne's query builder
+            filter_queries = []
+            
+            # Must-include ingredients (use full-text search in ingredients_text)
+            if 'include_ingredients' in filters:
+                ingredients = filters['include_ingredients']
+                if isinstance(ingredients, str):
+                    ingredients = [ing.strip() for ing in ingredients.split(',')]
+                
+                for ing in ingredients:
+                    ing_lower = ing.lower().strip()
+                    if ing_lower:
+                        # Parse as term in ingredients_text field (will be analyzed)
+                        ing_query = self.searcher.parse(ing_lower, field='ingredients_text')
+                        filter_queries.append(ing_query)
+            
+            # Cuisine filter (OR)
+            if 'cuisine' in filters:
+                from org.apache.lucene.index import Term
+                from org.apache.lucene.search import TermQuery, BooleanQuery, BooleanClause
+                
+                cuisines = filters['cuisine']
+                if isinstance(cuisines, str):
+                    cuisines = [c.strip() for c in cuisines.split(',')]
+                
+                if cuisines:
+                    # Build OR query for cuisines
+                    cuisine_queries = []
+                    for c in cuisines:
+                        if c.strip():
+                            term = Term("cuisine_kw", c.strip())
+                            cuisine_queries.append(TermQuery(term))
+                    
+                    if cuisine_queries:
+                        # Combine with OR
+                        cuisine_builder = BooleanQuery.Builder()
+                        for cq in cuisine_queries:
+                            cuisine_builder.add(cq, BooleanClause.Occur.SHOULD)
+                        filter_queries.append(cuisine_builder.build())
+            
+            # Time range filter (use LongPoint, Lupyne dimensions=1 uses 8 bytes)
+            if 'max_total_minutes' in filters:
+                from org.apache.lucene.document import LongPoint
+                max_minutes = int(filters['max_total_minutes'])
+                time_query = LongPoint.newRangeQuery("total_minutes", 0, max_minutes)
+                filter_queries.append(time_query)
+            
+            if 'min_total_minutes' in filters:
+                from org.apache.lucene.document import LongPoint
+                min_minutes = int(filters['min_total_minutes'])
+                max_minutes = int(filters.get('max_total_minutes', 10000))
+                time_query = LongPoint.newRangeQuery("total_minutes", min_minutes, max_minutes)
+                filter_queries.append(time_query)
+            
+            # Combine base query with filters (all must match)
+            if filter_queries:
+                from org.apache.lucene.search import BooleanQuery, BooleanClause
+                builder = BooleanQuery.Builder()
+                builder.add(base_query, BooleanClause.Occur.MUST)
+                for fq in filter_queries:
+                    builder.add(fq, BooleanClause.Occur.MUST)
+                final_query = builder.build()
+            else:
+                final_query = base_query
+        else:
+            final_query = base_query
+        
+        # Search (Lupyne returns Hit objects)
+        hits = self.searcher.search(final_query, count=k)
+        
+        # Format results (Pythonic access!)
+        results = []
+        for i, hit in enumerate(hits):
+            doc_id = hit.get('docId', '')
+            
+            result = {
+                'rank': i + 1,
+                'score': float(hit.score),
+                'docId': doc_id,
+                'url': hit.get('url', ''),
+                'title': hit.get('title_text', ''),
+                'title_text': hit.get('title_text', ''),
+                'description': hit.get('description', ''),
+                'ingredients': hit.get('ingredients_text', ''),
+                'ingredients_text': hit.get('ingredients_text', ''),
+                'instructions': hit.get('instructions_text', ''),
+                'instructions_text': hit.get('instructions_text', ''),
+                'wiki_abstracts': hit.get('wiki_abstracts', ''),
+                'total_minutes': int(hit.get('total_minutes', 0)) if hit.get('total_minutes') else None,
+                'prep_minutes': hit.get('prep_minutes', ''),
+                'cook_minutes': hit.get('cook_minutes', ''),
+                'cuisine': hit.get('cuisine', ''),
+                'category': hit.get('category', ''),
+                'tools': hit.get('tools', ''),
+                'yield': hit.get('yield', ''),
+                'author': hit.get('author', ''),
+                'difficulty': hit.get('difficulty', ''),
+                'serving_size': hit.get('serving_size', ''),
+                'nutrition': hit.get('nutrition', ''),
+                'ratings': hit.get('ratings', ''),
+                'date_published': hit.get('date_published', ''),
+            }
+            
+            # Get wiki_links from original recipe
+            if doc_id and doc_id in self.recipes_by_id:
+                original_recipe = self.recipes_by_id[doc_id]
+                result['wiki_links'] = original_recipe.get('wiki_links', [])
+            else:
+                result['wiki_links'] = []
+            
+            results.append(result)
+        
+        logger.info(f"Found {len(results)} results for query: '{query_text}'")
+        return results
+    
+    def close(self):
+        """Close the searcher and cleanup resources."""
+        if hasattr(self, 'searcher') and self.searcher is not None:
+            try:
+                # Suppress stderr warnings during cleanup (Lupyne reference counting bug)
+                import sys
+                import os
+                old_stderr = sys.stderr
+                sys.stderr = open(os.devnull, 'w')
+                
+                try:
+                    # Lupyne IndexSearcher cleanup
+                    if hasattr(self.searcher, 'indexReader'):
+                        self.searcher.indexReader.close()
+                finally:
+                    sys.stderr = old_stderr
+                    
+                self.searcher = None
+            except Exception:
+                # Ignore cleanup errors
+                pass
+
 
 class RobustRecipeSearcher:
     """Robust search engine with comprehensive error handling and validation."""
@@ -889,15 +1126,57 @@ class RobustRecipeSearcher:
         """Get search statistics."""
         return self.stats.copy()
 
+def detect_index_type(index_dir: Path) -> str:
+    """
+    Detect index type: 'lucene' or 'tsv'.
+    
+    Args:
+        index_dir: Path to index directory
+    
+    Returns:
+        'lucene' if Lucene index, 'tsv' if TSV index
+    """
+    # Check for Lucene index files
+    lucene_markers = ['segments_', 'write.lock']
+    for marker in lucene_markers:
+        if list(index_dir.glob(marker + '*')):
+            return 'lucene'
+    
+    # Check for TSV index files
+    tsv_files = ['terms.tsv', 'postings.tsv', 'docmeta.tsv']
+    if all((index_dir / f).exists() for f in tsv_files):
+        return 'tsv'
+    
+    # Default to TSV for backward compatibility
+    return 'tsv'
+
+
 def main():
-    """Main function for search CLI."""
-    parser = argparse.ArgumentParser(description='Search recipes using TF-IDF or BM25')
-    parser.add_argument('--index', required=True, help='Index directory')
+    """Main function for unified search CLI (supports TSV and PyLucene)."""
+    parser = argparse.ArgumentParser(
+        description='Search recipes using TF-IDF or BM25 (supports TSV and PyLucene indexes)',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Search TSV index (baseline)
+  python3 search_cli/run.py --index data/index/v1 --metric bm25 --q "chicken pasta" --k 10
+  
+  # Search PyLucene index
+  python3 search_cli/run.py --index index/lucene/v2 --metric bm25 --q "mexican chicken" --k 10
+  
+  # With filters (JSON)
+  python3 search_cli/run.py --index index/lucene/v2 --metric bm25 --q "pasta" \\
+      --filter '{"max_total_minutes": 30, "cuisine": "Italian"}'
+        """
+    )
+    parser.add_argument('--index', required=True, help='Index directory (TSV or PyLucene)')
     parser.add_argument('--metric', choices=['tfidf', 'bm25'], default='bm25', help='Search metric')
     parser.add_argument('--q', required=True, help='Search query')
     parser.add_argument('--k', type=int, default=10, help='Number of results to return')
     parser.add_argument('--filter', help='JSON string with filters')
     parser.add_argument('--quiet', action='store_true', help='Minimal output (for programmatic use)')
+    parser.add_argument('--index-type', choices=['auto', 'tsv', 'lucene'], default='auto',
+                       help='Force index type (default: auto-detect)')
     
     args = parser.parse_args()
     
@@ -921,9 +1200,37 @@ def main():
     else:
         logger.info(f"Starting search: '{args.q}' using {args.metric}")
     
-    # Initialize searcher with error handling
+    # Detect index type
+    index_path = Path(args.index)
+    if not index_path.exists():
+        logger.error(f"Index directory not found: {index_path}")
+        return 1
+    
+    if args.index_type == 'auto':
+        index_type = detect_index_type(index_path)
+    else:
+        index_type = args.index_type
+    
+    if not args.quiet:
+        logger.info(f"Detected index type: {index_type}")
+    
+    # Initialize appropriate searcher
+    searcher = None
     try:
-        searcher = RobustRecipeSearcher(args.index)
+        if index_type == 'lucene':
+            if not LUPYNE_AVAILABLE:
+                logger.error("Lupyne is not available. Install it or use TSV index.")
+                if not args.quiet:
+                    print("ERROR: Lupyne is not installed!")
+                    print("To install: pip install 'lupyne[graphql,rest]'")
+                    print("See LUPYNE_INSTALL.md for PyLucene installation first.")
+                    print("Alternatively, use TSV index: --index data/index/v1")
+                return 1
+            
+            searcher = LupyneRecipeSearcher(args.index)
+        else:
+            searcher = RobustRecipeSearcher(args.index)
+            
     except FileNotFoundError as e:
         logger.error(f"Index loading failed: {e}")
         if not args.quiet:
@@ -945,33 +1252,153 @@ def main():
         logger.error(f"Search failed: {e}")
         if not args.quiet:
             print(f"Error: {e}")
+        # Cleanup before returning
+        if index_type == 'lucene':
+            searcher.close()
         return 1
+    finally:
+        # Always cleanup Lupyne resources
+        if index_type == 'lucene':
+            searcher.close()
     
-    # Display results
+    # Display results (unified format for both index types)
     if not args.quiet:
-        print(f"\nSearch Results for '{args.q}' ({args.metric.upper()}):")
-        print("=" * 60)
+        print(f"\n{'='*80}")
+        print(f"Search Results: '{args.q}' ({args.metric.upper()}, {index_type.upper()} index)")
+        print(f"{'='*80}")
     
     if not results:
         if not args.quiet:
             print("No results found.")
         return 0
     
-    for i, (doc_id, score, snippet) in enumerate(results, 1):
-        doc_info = searcher.get_document_info(doc_id)
-        if args.quiet:
-            # Minimal output for programmatic use
-            print(f"   ID: {doc_id}")
+    # Handle different result formats
+    for i, result in enumerate(results, 1):
+        if isinstance(result, dict):
+            # Lupyne/PyLucene format
+            doc_id = result.get('docId', result.get('doc_id', 'N/A'))
+            score = result.get('score', 0.0)
+            title = result.get('title', result.get('title_text', 'No title'))
+            url = result.get('url', 'N/A')
+            total_minutes = result.get('total_minutes')
+            wiki_abstracts = result.get('wiki_abstracts', '')
+            ingredients = result.get('ingredients', result.get('ingredients_text', ''))
+            
+            if args.quiet:
+                print(f"{doc_id}\t{score:.4f}")
+            else:
+                # STRUCTURED OUTPUT: VARIABLE: VALUE format
+                print(f"\n{'='*80}")
+                print(f"RESULT #{i}: {title}")
+                print(f"{'='*80}")
+                print(f"SCORE: {score:.4f}")
+                print(f"DOC_ID: {doc_id}")
+                print(f"URL: {url}")
+                print()
+                
+                # Extract all available fields
+                description = result.get('description', '')
+                ingredients = result.get('ingredients', '')
+                instructions = result.get('instructions', '')
+                prep_minutes = result.get('prep_minutes', '')
+                cook_minutes = result.get('cook_minutes', '')
+                cuisine = result.get('cuisine', '')
+                category = result.get('category', '')
+                tools = result.get('tools', '')
+                yield_info = result.get('yield', '')
+                author = result.get('author', '')
+                difficulty = result.get('difficulty', '')
+                serving_size = result.get('serving_size', '')
+                nutrition = result.get('nutrition', '')
+                ratings = result.get('ratings', '')
+                date_published = result.get('date_published', '')
+                wiki_abstracts = result.get('wiki_abstracts', '')
+                
+                # food.com section
+                print(f"📖 FROM food.com:")
+                print(f"   DESCRIPTION: {description if description else 'N/A'}")
+                print(f"   TOTAL_TIME: {total_minutes} min" if total_minutes else "   TOTAL_TIME: N/A")
+                print(f"   PREP_TIME: {prep_minutes} min" if prep_minutes else "   PREP_TIME: N/A")
+                print(f"   COOK_TIME: {cook_minutes} min" if cook_minutes else "   COOK_TIME: N/A")
+                print(f"   CUISINE: {cuisine if cuisine else 'N/A'}")
+                print(f"   CATEGORY: {category if category else 'N/A'}")
+                print(f"   DIFFICULTY: {difficulty if difficulty else 'N/A'}")
+                print(f"   YIELD: {yield_info if yield_info else 'N/A'}")
+                print(f"   SERVING_SIZE: {serving_size if serving_size else 'N/A'}")
+                print(f"   AUTHOR: {author if author else 'N/A'}")
+                print(f"   DATE_PUBLISHED: {date_published if date_published else 'N/A'}")
+                print(f"   RATINGS: {ratings if ratings else 'N/A'}")
+                print(f"   NUTRITION: {nutrition if nutrition else 'N/A'}")
+                print(f"   TOOLS: {tools if tools else 'N/A'}")
+                print(f"   INGREDIENTS:")
+                if ingredients:
+                    print(f"      {ingredients}")
+                else:
+                    print(f"      N/A")
+                print(f"   INSTRUCTIONS:")
+                if instructions:
+                    print(f"      {instructions}")
+                else:
+                    print(f"      N/A")
+                
+                # Wikipedia section - DETAILED ENTITY LIST
+                wiki_links = result.get('wiki_links', [])
+                if wiki_links:
+                    print()
+                    print(f"📚 FROM WIKIPEDIA ({len(wiki_links)} entities):")
+                    print(f"   {'─'*76}")
+                    
+                    # Group by type
+                    by_type = {}
+                    for link in wiki_links:
+                        entity_type = link.get('type', 'unknown')
+                        if entity_type not in by_type:
+                            by_type[entity_type] = []
+                        by_type[entity_type].append(link)
+                    
+                    # Display each type
+                    for entity_type, links in sorted(by_type.items()):
+                        print(f"\n   {entity_type.upper()}S:")
+                        for link in links[:5]:  # Max 5 per type
+                            wiki_title = link.get('wiki_title', 'N/A')
+                            surface = link.get('surface', 'N/A')
+                            abstract = link.get('abstract', '')
+                            categories = link.get('categories', [])
+                            
+                            # Clean abstract
+                            if abstract:
+                                abstract_clean = abstract.replace('(, ; )', '').replace('()', '')
+                                import re
+                                abstract_clean = re.sub(r'\|[a-z\-]+=', ' ', abstract_clean)
+                                abstract_clean = ' '.join(abstract_clean.split()).strip()
+                                abstract_short = abstract_clean[:150] + ('...' if len(abstract_clean) > 150 else '')
+                            else:
+                                abstract_short = 'N/A'
+                            
+                            print(f"      • {wiki_title} (matched: '{surface}')")
+                            print(f"        {abstract_short}")
+                            if categories:
+                                print(f"        Categories: {', '.join(categories[:3])}")
+                
+                print()
+
         else:
-            print(f"\n{i}. {snippet}")
-            print(f"   Score: {score:.4f}")
-            print(f"   URL: {doc_info.get('url', 'N/A')}")
-            print(f"   ID: {doc_id}")
+            # TSV format (tuple: doc_id, score, snippet)
+            doc_id, score, snippet = result
+            doc_info = searcher.get_document_info(doc_id)
+            
+            if args.quiet:
+                print(f"{doc_id}\t{score:.4f}")
+            else:
+                print(f"\n{i}. {snippet}")
+                print(f"   Score: {score:.4f} | ID: {doc_id}")
+                print(f"   🔗 {doc_info.get('url', 'N/A')}")
     
-    # Display statistics
-    if not args.quiet:
+    # Display statistics (only for TSV index)
+    if not args.quiet and index_type == 'tsv':
         stats = searcher.get_stats()
-        print(f"\nSearch Statistics:")
+        print(f"\n{'='*80}")
+        print(f"Search Statistics:")
         print(f"  Queries processed: {stats['queries_processed']}")
         print(f"  Total results: {stats['total_results']}")
         print(f"  Average results per query: {stats['avg_results_per_query']:.2f}")

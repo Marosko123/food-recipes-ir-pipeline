@@ -5,6 +5,11 @@
 
 set -e  # Exit on any error
 
+# Activate venv if it exists
+if [ -d "venv/bin" ]; then
+    source venv/bin/activate
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -42,21 +47,22 @@ USAGE:
     ./packaging/run.sh <target> [options]
 
 AVAILABLE TARGETS:
-    crawl        - Download recipe pages from food.com
-    parse        - Parse HTML → normalized JSONL (Food.com only)
-    wiki_clean   - Remove Wikipedia artifacts (safe: keeps raw data)
-    wiki_parse   - Extract culinary entities from Wikipedia dumps
-    enrich       - Combine Food.com + Wikipedia → enriched recipes
-    index        - Build inverted index (TSV files, baseline)
-    index_lucene - Build PyLucene index (BM25/TF-IDF, production)
-    search       - Interactive search CLI (TF-IDF/BM25, baseline)
-    search_lucene- PyLucene search with filters
-    gazetteer    - Build ingredient gazetteer
-    eval         - Run evaluation (P@k, MAP, nDCG)
-    all          - Run complete pipeline (parse→wiki→enrich→index)
-    test         - Run unit tests
-    clean        - Remove all generated data
-    help         - Show this help message
+    crawl           - Download recipe pages from food.com
+    parse           - Parse HTML → normalized JSONL (Food.com only)
+    wiki_clean      - Remove Wikipedia artifacts (safe: keeps raw data)
+    wiki_parse_test - Extract entities from small Wikipedia sample (TEST)
+    wiki_parse      - Extract entities from FULL Wikipedia dump (2-4 hours)
+    enrich          - Combine Food.com + Wikipedia → enriched recipes
+    index           - Build inverted index (TSV files, baseline)
+    index_lucene    - Build PyLucene index (BM25/TF-IDF, production)
+    search          - Interactive search CLI (TF-IDF/BM25, baseline)
+    search_lucene   - PyLucene search with filters
+    gazetteer       - Build ingredient gazetteer
+    eval            - Run evaluation (P@k, MAP, nDCG)
+    all             - Run complete pipeline (parse→wiki→enrich→index)
+    test            - Run unit tests
+    clean           - Remove all generated data
+    help            - Show this help message
 
 ───────────────────────────────────────────────────────────────────────────
 QUICK START (Phase 1 Submission):
@@ -241,21 +247,72 @@ run_wiki_clean() {
     echo "   ./packaging/run.sh wiki_parse"
 }
 
-# Function to run Wikipedia parsing (Spark job per §5)
-run_wiki_parse() {
-    print_status "Running Wikipedia Entity Extraction (PySpark-style streaming)"
+# Function to run Wikipedia parsing TEST (small sample)
+run_wiki_parse_test() {
+    print_status "Running Wikipedia Entity Extraction TEST (PySpark on small sample)"
     
-    # Check if Wikipedia dumps exist
-    if [ ! -f "data/enwiki/enwiki-latest-pages-articles-multistream.xml.bz2" ]; then
-        print_error "Wikipedia dump not found"
+    # Check if small sample exists
+    if [ ! -f "data/enwiki/enwiki-latest-pages-articles11.xml-p5399367p6899366.bz2" ]; then
+        print_error "Small Wikipedia sample not found"
         echo ""
-        echo "Expected file: data/enwiki/enwiki-latest-pages-articles-multistream.xml.bz2"
+        echo "Expected file: data/enwiki/enwiki-latest-pages-articles11.xml-p5399367p6899366.bz2"
+        echo ""
+        echo "This is a small sample (~150 MB) for testing."
+        echo "Make sure you have it downloaded first."
+        exit 1
+    fi
+    
+    # Get limit from argument (optional)
+    local limit_arg=""
+    if [ -n "$1" ]; then
+        limit_arg="--limit $1"
+        print_status "Processing limit: $1 pages"
+    else
+        print_status "Processing full small sample (no limit)"
+    fi
+    
+    echo ""
+    print_status "Running PySpark job on small sample..."
+    python3 spark_jobs/enwiki_spark_parser.py \
+        --input data/enwiki/enwiki-latest-pages-articles11.xml-p5399367p6899366.bz2 \
+        $limit_arg \
+        --output-gazetteer entities/wiki_gazetteer_small.tsv \
+        --output-jsonl data/normalized/wiki_culinary_small.jsonl
+    
+    echo ""
+    print_success "Wikipedia TEST parsing completed"
+    echo ""
+    echo "📊 Outputs created:"
+    echo "   - entities/wiki_gazetteer_small.tsv"
+    echo "   - data/normalized/wiki_culinary_small.jsonl"
+    echo ""
+    echo "📊 Next step (test enrichment):"
+    echo "   python3 entities/recipe_enricher.py \\"
+    echo "       --recipes data/normalized/recipes_foodcom.jsonl \\"
+    echo "       --wiki data/normalized/wiki_culinary_small.jsonl \\"
+    echo "       --gazetteer entities/wiki_gazetteer_small.tsv \\"
+    echo "       --output data/normalized/recipes_enriched_test.jsonl"
+}
+
+# Function to run Wikipedia parsing (Spark job per §5) - PRODUCTION
+run_wiki_parse() {
+    print_status "Running Wikipedia Entity Extraction (PySpark on FULL dump)"
+    
+    # Check if large dump exists
+    if [ ! -f "data/enwiki/enwiki-latest-pages-articles.xml.bz2" ]; then
+        print_error "Large Wikipedia dump not found"
+        echo ""
+        echo "Expected file: data/enwiki/enwiki-latest-pages-articles.xml.bz2"
+        echo ""
+        echo "This is the FULL dump (~20 GB compressed)."
         echo ""
         echo "Download with:"
         echo "  mkdir -p data/enwiki"
         echo "  cd data/enwiki"
-        echo "  wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles-multistream.xml.bz2"
-        echo "  wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-redirect.sql.gz"
+        echo "  wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2"
+        echo ""
+        echo "Or use the smaller sample for testing:"
+        echo "  ./packaging/run.sh wiki_parse_test"
         exit 1
     fi
     
@@ -269,19 +326,33 @@ run_wiki_parse() {
     fi
     
     echo ""
-    python3 spark_jobs/enwiki_parser.py \
-        --dump data/enwiki/enwiki-latest-pages-articles-multistream.xml.bz2 \
-        --redirects data/enwiki/enwiki-latest-redirect.sql.gz \
-        $limit_arg \
-        --out-gazetteer entities/wiki_gazetteer.tsv \
-        --out-jsonl data/normalized/wiki_culinary.jsonl
+    print_warning "This will process the FULL Wikipedia dump. This may take hours."
+    echo "Consider using wiki_parse_test first to validate the pipeline."
+    echo ""
+    read -p "Continue with FULL dump? (y/N) " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_warning "Cancelled by user. Use wiki_parse_test for small sample."
+        exit 0
+    fi
     
     echo ""
-    print_success "Wikipedia parsing completed"
+    print_status "Running PySpark job on FULL dump..."
+    python3 spark_jobs/enwiki_spark_parser.py \
+        --input data/enwiki/enwiki-latest-pages-articles.xml.bz2 \
+        $limit_arg \
+        --output-gazetteer entities/wiki_gazetteer_v2.tsv \
+        --output-jsonl data/normalized/wiki_culinary_v2.jsonl
+    
+    echo ""
+    print_success "Wikipedia parsing completed (v2 - 11 fields including History + Infobox)"
     echo ""
     echo "📊 Outputs created:"
-    echo "   - entities/wiki_gazetteer.tsv"
-    echo "   - data/normalized/wiki_culinary.jsonl"
+    echo "   - entities/wiki_gazetteer_v2.tsv"
+    echo "   - data/normalized/wiki_culinary_v2.jsonl"
+    echo ""
+    echo "📊 Schema (11 fields): wiki_id, wiki_title, type, abstract, history, infobox,"
+    echo "   origin_country, origin_region, year_origin, categories, ingredients_mentioned"
     echo ""
     echo "📊 Next step:"
     echo "   ./packaging/run.sh enrich"
@@ -298,33 +369,37 @@ run_enrich() {
         exit 1
     fi
     
-    if [ ! -f "entities/wiki_gazetteer.tsv" ]; then
-        print_error "Wikipedia gazetteer not found: entities/wiki_gazetteer.tsv"
+    if [ ! -f "entities/wiki_gazetteer_v2.tsv" ]; then
+        print_error "Wikipedia gazetteer not found: entities/wiki_gazetteer_v2.tsv"
         echo "Run: ./packaging/run.sh wiki_parse"
         exit 1
     fi
     
-    if [ ! -f "data/normalized/wiki_culinary.jsonl" ]; then
-        print_error "Wikipedia entities not found: data/normalized/wiki_culinary.jsonl"
+    if [ ! -f "data/normalized/wiki_culinary_v2.jsonl" ]; then
+        print_error "Wikipedia entities not found: data/normalized/wiki_culinary_v2.jsonl"
         echo "Run: ./packaging/run.sh wiki_parse"
         exit 1
     fi
     
     echo ""
-    python3 entities/enricher.py \
+    python3 entities/recipe_enricher.py \
         --recipes data/normalized/recipes_foodcom.jsonl \
-        --gazetteer entities/wiki_gazetteer.tsv \
-        --wiki-entities data/normalized/wiki_culinary.jsonl \
+        --gazetteer entities/wiki_gazetteer_v2.tsv \
+        --wiki data/normalized/wiki_culinary_v2.jsonl \
         --output data/normalized/recipes_enriched.jsonl
     
     echo ""
     print_success "Recipe enrichment completed"
     echo ""
     echo "📊 Output created:"
-    echo "   - data/normalized/recipes_enriched.jsonl"
+    echo "   - data/normalized/recipes_enriched.jsonl (enriched with Wikipedia data)"
+    echo ""
+    echo "📊 Schema comparison:"
+    echo "   Original (Food.com):  id, title, ingredients, instructions, times, cuisine, ..."
+    echo "   Enriched (+ Wiki):    + wiki_links, historical_context, dish_info, ingredient_origins"
     echo ""
     echo "📊 Next step:"
-    echo "   ./packaging/run.sh index"
+    echo "   ./packaging/run.sh index_lucene"
 }
 
 # Function to run Phase D (index) - TSV baseline
@@ -597,6 +672,9 @@ main() {
             ;;
         "wiki_clean")
             run_wiki_clean
+            ;;
+        "wiki_parse_test")
+            run_wiki_parse_test $2
             ;;
         "wiki_parse")
             run_wiki_parse $2

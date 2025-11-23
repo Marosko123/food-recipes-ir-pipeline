@@ -40,7 +40,7 @@ Sitemap: https://www.food.com/sitemap-recipes.xml.gz
         
         self.assertIn("disallow", result)
         self.assertIn("sitemaps", result)
-        self.assertEqual(len(result["disallow"]), 4)  # All disallow rules
+        self.assertEqual(len(result["disallow"]), 5)  # All disallow rules (4 from * + 1 from FoodRecipesBot)
         self.assertEqual(len(result["sitemaps"]), 2)
         self.assertIn("/search/", result["disallow"])
         self.assertIn("https://www.food.com/sitemap.xml", result["sitemaps"])
@@ -91,6 +91,7 @@ class TestSitemapParsing(unittest.TestCase):
             with patch('requests.get') as mock_get:
                 mock_response = MagicMock()
                 mock_response.text = sitemap_xml
+                mock_response.content = sitemap_xml.encode('utf-8')
                 mock_response.headers = {}
                 mock_get.return_value = mock_response
                 

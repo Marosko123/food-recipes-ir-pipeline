@@ -63,9 +63,20 @@ class LupyneRecipeSearcher:
     
     def _load_recipes(self):
         """Load enriched recipes for wiki_links access."""
-        recipes_file = Path('data/normalized/recipes_enriched.jsonl')
-        if not recipes_file.exists():
-            logger.warning(f"Enriched recipes not found: {recipes_file}")
+        # Try v2 first, then fallback to standard name
+        possible_files = [
+            Path('data/normalized/recipes_enriched_v2.jsonl'),
+            Path('data/normalized/recipes_enriched.jsonl')
+        ]
+        
+        recipes_file = None
+        for p in possible_files:
+            if p.exists():
+                recipes_file = p
+                break
+        
+        if not recipes_file:
+            logger.warning(f"Enriched recipes not found in: {[str(p) for p in possible_files]}")
             return
         
         with open(recipes_file, 'r', encoding='utf-8') as f:
@@ -82,13 +93,14 @@ class LupyneRecipeSearcher:
     
     def search_bm25(self, query: str, k: int = 10, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """Search using BM25 similarity (Lupyne Pythonic API)."""
-        # BM25 is set at index time, just perform search
+        from org.apache.lucene.search.similarities import BM25Similarity
+        self.searcher.setSimilarity(BM25Similarity())
         return self._search(query, k, filters)
     
     def search_tfidf(self, query: str, k: int = 10, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """Search using TF-IDF (ClassicSimilarity, Lupyne Pythonic API)."""
-        # TF-IDF must be set at index time
-        # For now, we'll use whatever similarity was set during indexing
+        from org.apache.lucene.search.similarities import ClassicSimilarity
+        self.searcher.setSimilarity(ClassicSimilarity())
         return self._search(query, k, filters)
     
     def _search(self, query_text: str, k: int, filters: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -873,9 +885,17 @@ class RobustRecipeSearcher:
             if not any(cuisine.lower() in recipe_cuisines for cuisine in filters['cuisine']):
                 return False
         
-        if filters.get('ingredients'):
+        # Support both 'ingredients' and 'include_ingredients'
+        ingredients_filter = filters.get('ingredients') or filters.get('include_ingredients')
+        if ingredients_filter:
+            # Handle string input (comma-separated) or list
+            if isinstance(ingredients_filter, str):
+                ingredients_filter = [i.strip() for i in ingredients_filter.split(',')]
+            
             recipe_ingredients = [ing.lower() for ing in recipe_data.get('ingredients', [])]
-            if not any(ing.lower() in recipe_ingredients for ing in filters['ingredients']):
+            # Check if ANY of the filter ingredients are present (OR logic)
+            # For AND logic, we would need to change this
+            if not any(ing.lower() in recipe_ingredients for ing in ingredients_filter):
                 return False
         
         if filters.get('difficulty'):

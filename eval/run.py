@@ -172,7 +172,20 @@ class RecipeEvaluator:
             # Parse output to extract document IDs in ranked order
             doc_ids = []
             for line in result.stdout.split('\n'):
-                if line.strip() and line.startswith('   ID: '):
+                line = line.strip()
+                if not line:
+                    continue
+                
+                # Handle quiet mode output (doc_id\tscore)
+                if '\t' in line:
+                    parts = line.split('\t')
+                    if len(parts) >= 1:
+                        doc_ids.append(parts[0])
+                # Handle verbose mode output (fallback)
+                elif line.startswith('ID: ') or line.startswith('DOC_ID: '):
+                    doc_id = line.split(':', 1)[1].strip()
+                    doc_ids.append(doc_id)
+                elif '   ID: ' in line:
                     doc_id = line.replace('   ID:', '').strip()
                     doc_ids.append(doc_id)
             

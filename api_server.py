@@ -17,6 +17,11 @@ project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
 from search_cli.run import RobustRecipeSearcher
+try:
+    from search_cli.lupyne_searcher import LupyneRecipeSearcher
+    LUPYNE_AVAILABLE = True
+except ImportError:
+    LUPYNE_AVAILABLE = False
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -31,19 +36,41 @@ searcher = None
 def initialize_searcher():
     """Initialize the search engine."""
     global searcher
-    try:
-        searcher = RobustRecipeSearcher('data/index/v1')
-        logger.info("Search engine initialized successfully")
-        return True
-    except Exception as e:
-        logger.error(f"Failed to initialize search engine: {e}")
-        return False
+    
+    # 1. Try PyLucene Index (v2)
+    lucene_index_path = 'index/lucene/v2'
+    if LUPYNE_AVAILABLE and Path(lucene_index_path).exists():
+        try:
+            logger.info(f"Attempting to load PyLucene index from {lucene_index_path}...")
+            searcher = LupyneRecipeSearcher(lucene_index_path)
+            logger.info("✅ PyLucene search engine initialized successfully")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to initialize PyLucene index: {e}")
+            # Fallback to TSV
+    
+    # 2. Fallback to TSV Index (v1)
+    tsv_index_path = 'data/index/v1'
+    if Path(tsv_index_path).exists():
+        try:
+            logger.info(f"Loading TSV index from {tsv_index_path}...")
+            searcher = RobustRecipeSearcher(tsv_index_path)
+            logger.info("✅ TSV search engine initialized successfully")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to initialize TSV search engine: {e}")
+            return False
+            
+    logger.error("No valid index found (checked PyLucene v2 and TSV v1)")
+    return False
 
 def get_default_recipes(limit=10000):
     """Get default recipes from the normalized data."""
     try:
         # Try different normalized data paths
         possible_paths = [
+            'data/normalized/recipes_enriched_v2.jsonl',
+            'data/normalized/recipes_enriched.jsonl',
             'data/normalized/recipes.jsonl'
         ]
         
@@ -90,8 +117,20 @@ def get_default_recipes(limit=10000):
 def get_total_recipe_count():
     """Get total number of recipes in the database."""
     try:
-        recipes_file = Path('data/normalized/recipes.jsonl')
-        if not recipes_file.exists():
+        # Try different normalized data paths
+        possible_paths = [
+            'data/normalized/recipes_enriched_v2.jsonl',
+            'data/normalized/recipes_enriched.jsonl',
+            'data/normalized/recipes.jsonl'
+        ]
+        
+        recipes_file = None
+        for path in possible_paths:
+            if Path(path).exists():
+                recipes_file = Path(path)
+                break
+                
+        if not recipes_file:
             return 0
         
         count = 0
@@ -107,8 +146,20 @@ def get_total_recipe_count():
 def get_default_recipes_paginated(offset, limit):
     """Get paginated default recipes from the normalized data."""
     try:
-        recipes_file = Path('data/normalized/recipes.jsonl')
-        if not recipes_file.exists():
+        # Try different normalized data paths
+        possible_paths = [
+            'data/normalized/recipes_enriched_v2.jsonl',
+            'data/normalized/recipes_enriched.jsonl',
+            'data/normalized/recipes.jsonl'
+        ]
+        
+        recipes_file = None
+        for path in possible_paths:
+            if Path(path).exists():
+                recipes_file = Path(path)
+                break
+                
+        if not recipes_file:
             return []
         
         recipes = []
@@ -301,8 +352,19 @@ def get_recipe(recipe_id):
     """Get detailed recipe information."""
     try:
         # Load the normalized recipes to get full details
-        recipes_file = Path('data/normalized/recipes.jsonl')
-        if not recipes_file.exists():
+        possible_paths = [
+            'data/normalized/recipes_enriched_v2.jsonl',
+            'data/normalized/recipes_enriched.jsonl',
+            'data/normalized/recipes.jsonl'
+        ]
+        
+        recipes_file = None
+        for path in possible_paths:
+            if Path(path).exists():
+                recipes_file = Path(path)
+                break
+                
+        if not recipes_file:
             return jsonify({'error': 'Recipes not found'}), 404
         
         with open(recipes_file, 'r', encoding='utf-8') as f:
@@ -469,9 +531,20 @@ def get_cuisines():
     """Get list of all cuisines."""
     try:
         cuisines = set()
-        recipes_file = Path('data/normalized/recipes.jsonl')
         
-        if not recipes_file.exists():
+        possible_paths = [
+            'data/normalized/recipes_enriched_v2.jsonl',
+            'data/normalized/recipes_enriched.jsonl',
+            'data/normalized/recipes.jsonl'
+        ]
+        
+        recipes_file = None
+        for path in possible_paths:
+            if Path(path).exists():
+                recipes_file = Path(path)
+                break
+        
+        if not recipes_file:
             return jsonify({'cuisines': []})
         
         with open(recipes_file, 'r', encoding='utf-8') as f:

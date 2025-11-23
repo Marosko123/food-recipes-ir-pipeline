@@ -52,9 +52,20 @@ class LupyneRecipeSearcher:
     
     def _load_recipes(self):
         """Load enriched recipes."""
-        recipes_file = Path('data/normalized/recipes_enriched.jsonl')
-        if not recipes_file.exists():
-            logger.warning(f"Enriched recipes not found: {recipes_file}")
+        # Try v2 first, then fallback to standard name
+        possible_files = [
+            Path('data/normalized/recipes_enriched_v2.jsonl'),
+            Path('data/normalized/recipes_enriched.jsonl')
+        ]
+        
+        recipes_file = None
+        for p in possible_files:
+            if p.exists():
+                recipes_file = p
+                break
+        
+        if not recipes_file:
+            logger.warning(f"Enriched recipes not found in: {[str(p) for p in possible_files]}")
             return
         
         with open(recipes_file, 'r', encoding='utf-8') as f:
@@ -71,10 +82,14 @@ class LupyneRecipeSearcher:
     
     def search_bm25(self, query: str, k: int = 10, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """Search using BM25."""
+        from org.apache.lucene.search.similarities import BM25Similarity
+        self.searcher.setSimilarity(BM25Similarity())
         return self._search(query, k, filters)
     
     def search_tfidf(self, query: str, k: int = 10, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """Search using TF-IDF."""
+        from org.apache.lucene.search.similarities import ClassicSimilarity
+        self.searcher.setSimilarity(ClassicSimilarity())
         return self._search(query, k, filters)
     
     def _search(self, query_text: str, k: int, filters: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:

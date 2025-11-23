@@ -150,7 +150,8 @@ def filter_recipe_urls(urls: Iterator[str], base_domain: str = "www.food.com") -
     """
     import re
     
-    recipe_pattern = re.compile(rf"https://{re.escape(base_domain)}/recipe/[^/]*-(\d+)(?:/.*)?$")
+    # Allow optional query parameters or trailing slash at the end
+    recipe_pattern = re.compile(rf"https://{re.escape(base_domain)}/recipe/[^/]*-(\d+)(?:[/?].*)?$")
     
     for url in urls:
         if recipe_pattern.match(url):

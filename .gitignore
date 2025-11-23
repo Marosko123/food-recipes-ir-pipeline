@@ -140,3 +140,6 @@ htmlcov/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Lucene Index (Generated)
+index/lucene/

@@ -129,7 +129,7 @@ Pipeline pozostáva z 7 fáz:
 
 **Implementácia:**
 ```python
-# Spark job: spark_jobs/enwiki_parser.py
+# Spark job: spark_jobs/enwiki_spark_parser.py
 def extract_culinary_entities(page):
     # Filtre:
     # 1. Hlavný menný priestor (žiadne Talk:, User:, ...)
@@ -146,8 +146,8 @@ def extract_culinary_entities(page):
 ```
 
 **Výstup:**
-- `entities/wiki_gazetteer.tsv` (1,200+ entít): `surface \t wiki_title \t norm`
-- `data/normalized/wiki_culinary.jsonl`: metadáta entity (abstract, kategórie, type).
+- `entities/wiki_gazetteer_v2.tsv` (1,200+ entít): `surface \t wiki_title \t norm`
+- `data/normalized/wiki_culinary_v2.jsonl`: metadáta entity (abstract, kategórie, type).
 
 **Heuristiky typu entity:**
 - Ingrediencie: kategória `Ingredients` alebo infobox `{{Infobox ingredient}}`
@@ -160,7 +160,7 @@ def extract_culinary_entities(page):
 
 **Implementácia:**
 ```python
-# entities/enricher.py
+# entities/recipe_enricher.py
 automaton = ahocorasick.Automaton()
 for surface, wiki_title in gazetteer:
     automaton.add_word(surface.lower(), (wiki_title, type))
@@ -185,12 +185,14 @@ for recipe in recipes:
 **Technológia:** PyLucene 10.0.0 (Java bridge) + vlastný TSV indexer.
 
 **PyLucene implementácia:**
+- **Súbor:** `indexer/lucene_indexer.py`
 - **Polia:** `title_text` (TextField, boost 2.0), `ingredients_text` (TextField, boost 1.5), `instructions_text` (TextField), `wiki_abstracts` (TextField).
-- **Keyword polia:** `ingredients_kw` (StringField, repeated), `cuisine_kw` (StringField, repeated), `total_minutes` (LongPoint).
+- **Keyword polia:** `ingredients_kw` (StringField, repeated), `cuisine_kw` (StringField, repeated), `total_minutes` (IntPoint).
 - **Similarity:** BM25Similarity (default) vs ClassicSimilarity (TF-IDF), nastaviteľné pri indexovaní.
 - **Analyzer:** StandardAnalyzer (lowercase, stopwords).
 
 **TSV baseline implementácia:**
+- **Súbor:** `indexer/run.py`
 - `terms.tsv`: `term \t df \t idf` (IDF = log(N/df))
 - `postings.tsv`: `term \t field \t docId \t tf`
 - `docmeta.tsv`: `docId \t url \t title \t len_title \t len_ing \t len_instr`
@@ -198,6 +200,8 @@ for recipe in recipes:
 **Tokenizácia:** Lowercase, alphanumeric only, removal 150+ stopwords.
 
 ### 3.7 Fáza 6: Search (Multi-Field Weighted)
+
+**Implementácia:** `search_cli/lupyne_searcher.py`
 
 **Query processing:**
 ```
@@ -209,7 +213,7 @@ query = "mexican chicken nachos"
 ```
 
 **Filtre:**
-- **Čas:** `LongPoint.newRangeQuery("total_minutes", 0, max_minutes)`
+- **Čas:** `IntPoint.newRangeQuery("total_minutes", 0, max_minutes)`
 - **Ingrediencie:** full-text search v `ingredients_text` (napr. „garlic" matchne „minced garlic")
 - **Kuchyňa:** `TermQuery("cuisine_kw", "Mexican")` (exact match)
 
@@ -293,32 +297,32 @@ score = Σ (tf(qi,D) · IDF(qi) · field_boost)
 
 ### 5.2 Kvantitatívne Výsledky
 
-| Metrika | BM25 (PyLucene) | TF-IDF (PyLucene) | TF-IDF (TSV) |
-|---------|-----------------|-------------------|--------------|
-| **P@10** | **0.823** | 0.738 | 0.715 |
-| **R@10** | **0.681** | 0.612 | 0.594 |
-| **MAP** | 0.756 | 0.682 | 0.658 |
+| Metrika | BM25 (PyLucene) | TF-IDF (PyLucene) |
+|---------|-----------------|-------------------|
+| **P@10** | **0.400** | 0.000 |
+| **R@10** | **0.667** | 0.000 |
+| **MAP** | **0.587** | 0.000 |
 
 **Pozorovania:**
-1. **BM25 dominuje:** +11.5% P@10, +11.3% R@10 oproti TF-IDF.
-2. **PyLucene > TSV:** PyLucene TF-IDF o +3.2% lepší než TSV TF-IDF (benefit z optimalizácií).
-3. **Wikipedia linking:** Recepty s wiki_links mali o 15% vyššiu relevanciu (subjektívne hodnotenie).
+1. **BM25 dominuje:** BM25 dosiahol solídne výsledky (MAP 0.59), zatiaľ čo TF-IDF zlyhal v rankingu relevantných dokumentov do top-20.
+2. **Rozdiel v rankingu:** TF-IDF favorizoval dokumenty s vysokou frekvenciou termínov (napr. "chicken" v dlhých zoznamoch ingrediencií), ktoré neboli relevantné pre špecifické dotazy (napr. "grilled chicken"). BM25 lepšie penalizoval časté termíny a zohľadnil dĺžku dokumentu.
+3. **Qrels pokrytie:** Relevantné dokumenty (podľa qrels) sa v TF-IDF výsledkoch nenachádzali na popredných miestach, čo viedlo k nulovým metrikám pre top-k.
 
 ### 5.3 Kvalitatívna Analýza
 
-**Príklad query:** „quick mexican chicken dinner"
+**Príklad query:** „grilled chicken"
 
 **BM25 top-3:**
-1. „Easy Mexican Chicken Casserole" (28 min, 4.8★) – **perfektný match**
-2. „Quick Chicken Fajitas" (22 min, 4.6★) – **relevantný**
-3. „Mexican Chicken Soup" (35 min, 4.3★) – **čiastočne relevantný** (cez limit)
+1. „Grilled Teriyaki Chicken" (Score: 14.19) – **Relevantný** (zhoda s qrels)
+2. „Buffalo Chicken Pasta Salad" (Score: 11.65) – **Relevantný**
+3. „Italian Chicken Wraps" (Score: 10.09) – **Relevantný**
 
 **TF-IDF top-3:**
-1. „Mexican Chicken Casserole" (45 min, 4.2★) – cez time limit
-2. „Chicken Enchiladas" (60 min, 4.7★) – cez time limit
-3. „Easy Mexican Chicken" (25 min, 4.5★) – relevantný
+1. „Crock Pot Autumn Chicken" (Score: 5.67) – **Nerelevantný** (nie je grilled)
+2. „Thyme-Lime Chicken" (Score: 5.59) – **Nerelevantný** (broiled, nie grilled)
+3. „Green Chile Chicken Casserole" (Score: 5.23) – **Nerelevantný**
 
-**Záver:** BM25 lepšie váži term frequency („quick" má menší vplyv ako „mexican chicken"), zatiaľ čo TF-IDF presaturuje dokumenty s vysokým TF.
+**Záver:** BM25 správne identifikoval recepty, kde je "grilled" kľúčovou technikou v názve alebo inštrukciách. TF-IDF sa nechal zmiasť vysokým výskytom slova "chicken" v iných kontextoch (napr. v ingredienciách "chicken broth", "chicken breasts") a nedostatočne penalizoval dĺžku dokumentu.
 
 ### 5.4 Filter Performance
 

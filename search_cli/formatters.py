@@ -100,7 +100,30 @@ def print_result_dict(result: Dict[str, Any], rank: int):
         
         # Display each type
         for entity_type, links in sorted(by_type.items()):
-            print(f"\n   {entity_type.upper()}S:")
+            clean_type = entity_type.strip().lower()
+            header = entity_type.upper().strip()
+            
+            # Pluralization logic
+            if header.endswith('S'):
+                header += "ES"
+            elif header.endswith('H') or header.endswith('X'):
+                header += "ES"
+            else:
+                header += "S"
+            
+            # Overrides
+            if clean_type == 'dish':
+                header = "DISHES"
+            elif clean_type == 'technique':
+                header = "TECHNIQUES"
+            elif clean_type == 'ingredient':
+                header = "INGREDIENTS"
+            elif clean_type == 'tool':
+                header = "TOOLS"
+            elif clean_type == 'condiment':
+                header = "CONDIMENTS"
+
+            print(f"\n   {header}:")
             for link in links[:5]:  # Max 5 per type
                 wiki_title = link.get('wiki_title', 'N/A')
                 surface = link.get('surface', 'N/A')

@@ -100,6 +100,7 @@ class LupyneRecipeIndexer:
         analyzer = StandardAnalyzer()
         config = IndexWriterConfig(analyzer)
         config.setSimilarity(similarity)
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE)  # Overwrite existing index
         writer = IndexWriter(directory, config)
         writer.close()  # Close to flush config
         

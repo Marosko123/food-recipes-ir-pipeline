@@ -429,26 +429,10 @@ class JSONLDParser:
         
         # If HTML content is provided, also extract images from HTML
         if html_content:
-            from lxml import html
-            doc = html.fromstring(html_content)
-            
-            # Extract additional images from HTML, prioritizing higher quality versions
-            # Primary images - get the highest quality version
-            primary_images = doc.xpath('//div[contains(@class, "primary-image")]//img[@src]')
-            for img in primary_images:
-                src = img.get('src', '')
-                if src and self._is_recipe_image(src):
-                    # Extract base URL without size parameters for deduplication
-                    base_url = self._extract_base_image_url(src)
-                    if base_url not in seen_urls:
-                        images.append(src)
-                        seen_urls.add(base_url)
-            
-            # Other images - get the highest quality version
-            other_images = doc.xpath('//div[contains(@class, "other-images")]//img[@src]')
-            for img in other_images:
-                src = img.get('src', '')
-                if src and self._is_recipe_image(src):
+            # Regex fallback for images instead of lxml
+            img_tags = re.findall(r'<img[^>]+src=["\']([^"\']+)["\']', html_content, re.IGNORECASE)
+            for src in img_tags:
+                 if src and self._is_recipe_image(src):
                     # Extract base URL without size parameters for deduplication
                     base_url = self._extract_base_image_url(src)
                     if base_url not in seen_urls:

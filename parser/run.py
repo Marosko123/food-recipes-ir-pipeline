@@ -116,7 +116,7 @@ def run_parse_phase(args) -> Dict[str, Any]:
             stats["parse_failed"] += 1
     
     # Save results
-    output_file = output_dir / "recipes.jsonl"
+    output_file = output_dir / "recipes_foodcom.jsonl"
     with open(output_file, 'w', encoding='utf-8') as f:
         for recipe in recipes:
             f.write(json.dumps(recipe, ensure_ascii=False) + '\n')

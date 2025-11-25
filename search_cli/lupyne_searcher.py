@@ -52,10 +52,10 @@ class LupyneRecipeSearcher:
     
     def _load_recipes(self):
         """Load enriched recipes."""
-        # Try v2 first, then fallback to standard name
+        # Prioritize the standard output filename
         possible_files = [
-            Path('data/normalized/recipes_enriched_v2.jsonl'),
-            Path('data/normalized/recipes_enriched.jsonl')
+            Path('data/normalized/recipes_enriched.jsonl'),
+            Path('data/normalized/recipes_enriched_v2.jsonl')
         ]
         
         recipes_file = None
@@ -78,7 +78,7 @@ class LupyneRecipeSearcher:
                 except json.JSONDecodeError:
                     continue
         
-        logger.info(f"Loaded {len(self.recipes_by_id)} recipes")
+        logger.info(f"Loaded {len(self.recipes_by_id)} recipes from {recipes_file}")
     
     def search_bm25(self, query: str, k: int = 10, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """Search using BM25."""

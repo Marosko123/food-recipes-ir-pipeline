@@ -341,15 +341,15 @@ run_wiki_parse() {
     python3 spark_jobs/enwiki_spark_parser.py \
         --input data/enwiki/enwiki-latest-pages-articles.xml.bz2 \
         $limit_arg \
-        --output-gazetteer entities/wiki_gazetteer_v2.tsv \
-        --output-jsonl data/normalized/wiki_culinary_v2.jsonl
+        --output-gazetteer entities/wiki_gazetteer.tsv \
+        --output-jsonl data/normalized/wiki_culinary.jsonl
     
     echo ""
-    print_success "Wikipedia parsing completed (v2 - 11 fields including History + Infobox)"
+    print_success "Wikipedia parsing completed (11 fields including History + Infobox)"
     echo ""
     echo "📊 Outputs created:"
-    echo "   - entities/wiki_gazetteer_v2.tsv"
-    echo "   - data/normalized/wiki_culinary_v2.jsonl"
+    echo "   - entities/wiki_gazetteer.tsv"
+    echo "   - data/normalized/wiki_culinary.jsonl"
     echo ""
     echo "📊 Schema (11 fields): wiki_id, wiki_title, type, abstract, history, infobox,"
     echo "   origin_country, origin_region, year_origin, categories, ingredients_mentioned"
@@ -369,14 +369,14 @@ run_enrich() {
         exit 1
     fi
     
-    if [ ! -f "entities/wiki_gazetteer_v2.tsv" ]; then
-        print_error "Wikipedia gazetteer not found: entities/wiki_gazetteer_v2.tsv"
+    if [ ! -f "entities/wiki_gazetteer.tsv" ]; then
+        print_error "Wikipedia gazetteer not found: entities/wiki_gazetteer.tsv"
         echo "Run: ./packaging/run.sh wiki_parse"
         exit 1
     fi
     
-    if [ ! -f "data/normalized/wiki_culinary_v2.jsonl" ]; then
-        print_error "Wikipedia entities not found: data/normalized/wiki_culinary_v2.jsonl"
+    if [ ! -f "data/normalized/wiki_culinary.jsonl" ]; then
+        print_error "Wikipedia entities not found: data/normalized/wiki_culinary.jsonl"
         echo "Run: ./packaging/run.sh wiki_parse"
         exit 1
     fi
@@ -384,8 +384,8 @@ run_enrich() {
     echo ""
     python3 entities/recipe_enricher.py \
         --recipes data/normalized/recipes_foodcom.jsonl \
-        --gazetteer entities/wiki_gazetteer_v2.tsv \
-        --wiki data/normalized/wiki_culinary_v2.jsonl \
+        --gazetteer entities/wiki_gazetteer.tsv \
+        --wiki data/normalized/wiki_culinary.jsonl \
         --output data/normalized/recipes_enriched.jsonl
     
     echo ""
@@ -464,6 +464,12 @@ run_index_lucene() {
     print_status "Similarity: $similarity"
     print_status "Output: $output_dir"
     echo ""
+    
+    # Clean existing index to prevent duplicates
+    if [ -d "$output_dir" ]; then
+        print_status "Cleaning existing index: $output_dir"
+        rm -rf "$output_dir"
+    fi
     
     $PYTHON_CMD indexer/lucene_indexer.py \
         --input data/normalized/recipes_enriched.jsonl \
@@ -546,6 +552,12 @@ run_search_lucene() {
 run_search() {
     print_status "Running unified search CLI (auto-detects TSV/PyLucene)"
     
+    # Check if Homebrew Python with Lupyne is available
+    PYTHON_CMD="python3"
+    if [ -f "/usr/local/Cellar/python@3.14/3.14.0/bin/python3.14" ]; then
+        PYTHON_CMD="/usr/local/Cellar/python@3.14/3.14.0/bin/python3.14"
+    fi
+    
     # Get search query from argument or use default
     local query=${1:-"chicken pasta"}
     
@@ -566,7 +578,7 @@ run_search() {
     print_status "Query: '$query' (BM25)"
     echo ""
     
-    python3 search_cli/run.py --index "$index" --metric bm25 --q "$query" --k 5 --index-type auto
+    $PYTHON_CMD search_cli/run.py --index "$index" --metric bm25 --q "$query" --k 5 --index-type auto
     
     echo ""
     print_success "Search completed"
@@ -689,10 +701,10 @@ main() {
             run_index_lucene $2
             ;;
         "search")
-            run_search $2
+            run_search "$2"
             ;;
         "search_lucene")
-            run_search_lucene $2 $3
+            run_search_lucene "$2" "$3"
             ;;
         "gazetteer")
             run_gazetteer

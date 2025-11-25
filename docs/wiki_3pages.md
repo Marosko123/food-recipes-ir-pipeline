@@ -97,11 +97,11 @@ Pipeline pozostáva z 7 fáz:
 
 ### 3.3 Fáza 2: Parser (Schema.org Recipe)
 
-**Technológia:** Python + `lxml`, primárne JSON-LD parsing.
+**Technológia:** Python + `re` (Regex), primárne JSON-LD parsing.
 
 **Implementácia:**
 - Extrakcia `<script type="application/ld+json">` s Recipe schema.
-- Fallback HTML parsing pre chýbajúce polia (heuristiky pre `<li>` ingrediencie).
+- Fallback HTML parsing pre chýbajúce polia (Regex heuristiky pre `<li>` ingrediencie, bez XPath).
 - Normalizácia času: ISO-8601 → integer minúty, validácia `prep + cook == total`.
 - Výstup: JSONL s deterministickým schémou.
 

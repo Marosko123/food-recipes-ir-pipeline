@@ -240,7 +240,8 @@ class RecipeEnricher:
                 'wiki_title': e['wiki_title'],
                 'type': e['type'],
                 'origin_country': e.get('origin_country'),
-                'origin_region': e.get('origin_region')
+                'origin_region': e.get('origin_region'),
+                'abstract': self.wiki_articles.get(e['wiki_title'], {}).get('abstract', '')[:500]  # Include abstract for indexing
             }
             for e in entities
         ]

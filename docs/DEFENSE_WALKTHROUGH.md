@@ -113,7 +113,36 @@ Teraz to spusti naživo. To je "wow efekt".
 
 ---
 
-## 6. Záver
+## 6. Kapitola: Evolúcia (Starý vs. Nový Index)
+
+**🗣 Čo povedať:**
+"Na začiatku som napísal vlastný indexer v čistom Pythone (TSV súbory). Fungoval, ale bol limitovaný.
+Potom som prešiel na **PyLucene**, čo je priemyselný štandard.
+Môžem vám ukázať rozdiel."
+
+**💻 Čo ukázať:**
+
+**1. Starý Index (Custom Python implementation):**
+*   Je to len sada textových súborov (`terms.tsv`, `postings.tsv`).
+*   Nemá pokročilé funkcie (žiadne fuzzy vyhľadávanie, pomalé rozsahy).
+```bash
+# Ukážka starého vyhľadávania (všimnite si jednoduchší výstup)
+python3 search_cli/run.py --index data/index/v1 --q "chicken" --k 3
+```
+
+**2. Nový Index (PyLucene):**
+*   Binárny formát, kompresia, caching.
+*   Podporuje komplexné filtre a je oveľa robustnejší.
+```bash
+# Ukážka nového vyhľadávania (bohatší výstup, wiki entity)
+python3 search_cli/run.py --index index/lucene/v2 --q "chicken" --k 3
+```
+
+*(Komentár: "Vidíte, že nový index vráti nielen text, ale aj štruktúrované dáta a wiki kontext. Starý index bol dobrý na pochopenie princípov, ale PyLucene je production-ready.")*
+
+---
+
+## 7. Záver
 
 **🗣 Čo povedať:**
 "Na záver – podarilo sa mi vytvoriť funkčný prototyp vyhľadávača, ktorý kombinuje klasické full-text vyhľadávanie so sémantickou znalosťou z Wikipédie.

@@ -77,6 +77,15 @@ Je to štruktúra podobná registru na konci knihy.
 *   Napríklad pre slovo "chicken": `chicken -> [Doc1, Doc5, Doc99]`.
 *   To umožňuje extrémne rýchle vyhľadávanie, lebo nemusíme prechádzať všetky texty, len sa pozrieme do indexu.
 
+**Otázka: Prečo ste prešli z vlastného indexera na PyLucene? (Old vs New)**
+**Odpoveď:**
+Začal som s vlastným indexerom (`indexer/run.py`), ktorý ukladal dáta do TSV súborov.
+*   **Starý (TSV):** Jednoduchý na pochopenie, ale pomalý pri veľkých dátach, nepodporuje pokročilé query (fuzzy, ranges) a nemá kompresiu.
+*   **Nový (PyLucene):** Profesionálne riešenie. Je to wrapper nad Java Lucene.
+    *   **Rýchlosť:** Binárny formát, memory mapping.
+    *   **Funkcie:** BM25 ranking (lepší ako TF-IDF), stemming, stop-words, range queries (pre čas a dátumy).
+    *   **Výsledok:** PyLucene je o rády rýchlejší a presnejší.
+
 **Otázka: Ako funguje BM25 (Best Matching 25)? Prečo nie len TF-IDF?**
 **Odpoveď:**
 BM25 je vylepšenie TF-IDF.

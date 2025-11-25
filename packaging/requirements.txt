@@ -4,8 +4,6 @@
 
 # Core Python libraries (required)
 requests>=2.25.0
-lxml>=4.6.0
-beautifulsoup4>=4.9.0
 ahocorasick>=2.0.0
 tqdm>=4.60.0
 brotli>=1.1.0

@@ -10,7 +10,6 @@ from typing import Optional, Iterator, Callable, Any
 from contextlib import contextmanager
 from urllib.parse import urlparse, urljoin
 import requests
-from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -28,17 +27,25 @@ def canonicalize(url: str, html: Optional[str] = None) -> str:
     """
     if html:
         try:
-            soup = BeautifulSoup(html, 'html.parser')
-            canonical_link = soup.find('link', rel='canonical')
-            if canonical_link and canonical_link.get('href'):
-                canonical_url = canonical_link['href']
-                # Make absolute if relative
-                if canonical_url.startswith('/'):
-                    parsed = urlparse(url)
-                    canonical_url = f"{parsed.scheme}://{parsed.netloc}{canonical_url}"
-                elif not canonical_url.startswith('http'):
-                    canonical_url = urljoin(url, canonical_url)
-                return canonical_url
+            # Use regex to find canonical link instead of BeautifulSoup
+            # Look for <link ... rel="canonical" ...> or <link ... rel='canonical' ...>
+            # We iterate over all link tags to be safe about attribute order
+            link_tags = re.findall(r'<link[^>]+>', html, re.IGNORECASE)
+            for tag in link_tags:
+                # Check if it is a canonical link
+                if re.search(r'rel=["\']canonical["\']', tag, re.IGNORECASE):
+                    # Extract href
+                    href_match = re.search(r'href=["\']([^"\']+)["\']', tag, re.IGNORECASE)
+                    if href_match:
+                        canonical_url = href_match.group(1)
+                        
+                        # Make absolute if relative
+                        if canonical_url.startswith('/'):
+                            parsed = urlparse(url)
+                            canonical_url = f"{parsed.scheme}://{parsed.netloc}{canonical_url}"
+                        elif not canonical_url.startswith('http'):
+                            canonical_url = urljoin(url, canonical_url)
+                        return canonical_url
         except Exception as e:
             logger.debug(f"Error extracting canonical URL from HTML: {e}")
     

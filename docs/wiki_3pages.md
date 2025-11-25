@@ -123,7 +123,7 @@ Pipeline pozostáva z 7 fáz:
 
 ### 3.4 Fáza 3: Wikipedia Processing (Spark)
 
-**Technológia:** PySpark + lxml (streaming XML parsing).
+**Technológia:** PySpark + bz2/re (streaming XML parsing).
 
 **Vstup:** `enwiki-latest-pages-articles-multistream.xml.bz2` (27 GB komprimované).
 

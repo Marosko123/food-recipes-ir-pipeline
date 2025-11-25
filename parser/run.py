@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Dict, List, Any
 import time
 
-from .json_ld_parser import JSONLDParser
 from .html_parser import HTMLParser
 
 def setup_logging(level: int = logging.INFO):
@@ -32,15 +31,9 @@ def parse_recipe_file(html_file: Path, url: str) -> Dict[str, Any]:
         with open(html_file, 'r', encoding='utf-8') as f:
             html_content = f.read()
         
-        # Try JSON-LD parser first
-        json_ld_parser = JSONLDParser()
-        recipe = json_ld_parser.parse_recipe(html_content, url)
-        
-        # If JSON-LD parsing failed or returned empty data, try HTML parser
-        if not recipe.get('title') or not recipe.get('ingredients'):
-            logger.debug(f"JSON-LD parsing failed for {url}, trying HTML parser")
-            html_parser = HTMLParser()
-            recipe = html_parser.parse_recipe(html_content, url)
+        # Try HTML parser
+        html_parser = HTMLParser()
+        recipe = html_parser.parse_recipe(html_content, url)
         
         return recipe
         

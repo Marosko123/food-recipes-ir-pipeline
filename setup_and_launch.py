@@ -81,8 +81,6 @@ class FoodRecipesLauncher:
         """Get project requirements."""
         return [
             'requests>=2.25.0',
-            'beautifulsoup4>=4.9.0',
-            'lxml>=4.6.0',
             'ahocorasick>=2.0.0',
             'tqdm>=4.60.0',
             'pyspark>=3.0.0'  # Optional for Spark jobs

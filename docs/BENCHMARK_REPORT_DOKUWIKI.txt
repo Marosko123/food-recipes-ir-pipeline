@@ -1,0 +1,183 @@
+====== Detailné Porovnanie a Benchmark ======
+
+Detailná analýza a porovnanie vyhľadávacích systémov implementovaných v rámci projektu.
+
+===== 1. Metodológia Hodnotenia =====
+
+==== 1.1 Testované Systémy ====
+
+^ ID ^ Systém ^ Typ Indexu ^ Ranking Metrika ^
+| **S1** | Simple BM25 | TSV invertovaný index | BM25 (Okapi) |
+| **S2** | Simple TF-IDF | TSV invertovaný index | TF-IDF |
+| **L1** | Lucene BM25 | PyLucene binárny | BM25Similarity |
+| **L2** | Lucene TF-IDF | PyLucene binárny | ClassicSimilarity |
+| **FC** | Food.com | Produkčný | Proprietárny (tag-based) |
+
+==== 1.2 Metriky ====
+
+  * **Precision@K**: Pomer relevantných dokumentov v top K výsledkoch.
+  * **Recall@K**: Pomer nájdených relevantných dokumentov z celkového počtu relevantných.
+  * **F1-Score**: Harmonický priemer Precision a Recall.
+
+===== 2. Detailné Porovnanie - 5 Príkladových Queries =====
+
+==== 2.1 Query: "italian sausage soup" ====
+
+**Kategória:** Štandardná query | **Food.com:** ✅ Má výsledky
+
+^ Rank ^ S1 (Simple BM25) ^ S2 (Simple TF-IDF) ^ L1 (Lucene BM25) ^ L2 (Lucene TF-IDF) ^ Food.com ^
+| 1 | Lentil Soup With Italian Sausage ✅ | Baked Italian Heros ❌ | **Italian Sausage Soup** ✅ | **Italian Sausage Soup** ✅ | Italian Sausage Vegetable Soup ⭐(124) |
+| 2 | **Italian Sausage Soup** ✅ | Meaty Mostaccioli ❌ | Lentil Soup With Italian Sausage ✅ | Italian (Turkey) Sausage Soup ✅ | **Italian Sausage Soup** ⭐(25) |
+| 3 | Italian (Turkey) Sausage Soup ✅ | Orecchiette With Broccoli Rabe ❌ | Sausage Scaloppine ❌ | Italian Sausage & Potatoes ✅ | Italian Sausage Crockpot Soup |
+| 4 | Italian Sausage and Vegetable Saute ✅ | Polpette Alla Casalinga ❌ | Italian (Turkey) Sausage Soup ✅ | Italian Sausage Meatballs ✅ | **Italian Sausage Soup** ⭐(8) |
+| 5 | Italian Stuffed Beef & Sausage ✅ | Italian Ziti Medley ❌ | Italian Style Chicken, Sausage ✅ | Lentil Soup With Italian Sausage ✅ | Italian (Turkey) Sausage Soup |
+
+**Ground Truth Pool:** 18 relevantných dokumentov
+
+^ Systém ^ Relevantné v Top 5 ^ P@5 ^ R@5 ^
+| **S1** | 5/5 | **100%** | 28% |
+| **S2** | 1/5 | 20% | 6% |
+| **L1** | 5/5 | **100%** | 28% |
+| **L2** | 5/5 | **100%** | 28% |
+| **FC** | 5/5 | **100%** | 28% |
+
+==== 2.2 Query: "thai peanut noodles" ====
+
+**Kategória:** Cuisine query | **Food.com:** ✅ Má presné výsledky
+
+^ Rank ^ S1 (Simple BM25) ^ S2 (Simple TF-IDF) ^ L1 (Lucene BM25) ^ L2 (Lucene TF-IDF) ^ Food.com ^
+| 1 | Thai Chicken Noodle Salad ✅ | Tom Yum Goong ❌ | Robin Miller's Thai Salad ✅ | **Thai Peanut Sauce** ✅ | **Spicy Thai Peanut Noodles** ⭐ |
+| 2 | King Du Noodles ✅ | Thai Mango Salad ❌ | Oodle Noodles ✅ | Thai Peanut Coconut Chicken ✅ | **Thai Peanut Noodles** ⭐ |
+| 3 | Thai Salad Rolls ✅ | Thai-curried Game Hens ❌ | Thai Mango Salad ❌ | Parmesan Noodles ❌ | Magic Noodles |
+| 4 | Tom Yum Goong ❌ | Basic Thai Sweet Chili ❌ | Thai Salad Rolls ✅ | Oodle Noodles ✅ | Thai Veggie Peanut Noodles |
+| 5 | Robin Miller's Thai Salad ✅ | Thai Red Rice Pudding ❌ | Butterscotch Haystacks ❌ | Sesame Noodles ❌ | Thai Peanut Noodles |
+
+**Ground Truth Pool:** 16 relevantných dokumentov
+
+^ Systém ^ Relevantné v Top 5 ^ P@5 ^ R@5 ^
+| **S1** | 4/5 | 80% | 25% |
+| **S2** | 5/5 | **100%** | 31% |
+| **L1** | 3/5 | 60% | 19% |
+| **L2** | 2/5 | 40% | 12% |
+| **FC** | 5/5 | **100%** | 31% |
+
+==== 2.3 Query: "low carb cheesecake" ====
+
+**Kategória:** Dietary query | **Food.com:** ✅ Má 51 výsledkov
+
+^ Rank ^ S1 (Simple BM25) ^ S2 (Simple TF-IDF) ^ L1 (Lucene BM25) ^ L2 (Lucene TF-IDF) ^ Food.com ^
+| 1 | Guilt Free Low Cal Pumpkin Cheesecake ✅ | Low Carb-One Minute Chocolate ❌ | Low Carb Peanut Dipping Sauce ❌ | Low Carb Chili ❌ | **Low-Carb Cheesecake** ⭐(69) |
+| 2 | Low Carb-One Minute Chocolate ❌ | Swirled Cranberry Cheesecake ✅ | Low Carb Chicken Casserole ❌ | Low Carb Pasta ❌ | Super Simple Low Carb No-Bake ⭐(32) |
+| 3 | Pond Scum Soup(Low Carb) ❌ | Low Carb Chili ❌ | Guilt Free Low Cal Pumpkin Cheesecake ✅ | Low Carb Chicken Casserole ❌ | Low Carb Cheesecake No Crust |
+| 4 | Cheesecake Factory's Oreo Dream ✅ | Low Carb Peanut Dipping Sauce ❌ | Low Carb Hungarian Goulash ❌ | Low Carb Peanut Dipping Sauce ❌ | Mackie's Low Carb/Sugar Free |
+| 5 | Ww Fast Strawberry Cheesecake ✅ | Triple Chocolate Cheesecake ✅ | Low-Carb Spaghetti Squash ❌ | Low Carb Hungarian Goulash ❌ | Low Carb Mini Cheesecakes |
+
+**Ground Truth Pool:** 7 relevantných dokumentov
+
+^ Systém ^ Relevantné v Top 5 ^ P@5 ^ R@5 ^
+| **S1** | 3/5 | **60%** | **43%** |
+| **S2** | 2/5 | 40% | 29% |
+| **L1** | 1/5 | 20% | 14% |
+| **L2** | 0/5 | 0% | 0% |
+| **FC** | 5/5 | **100%** | 71% |
+
+==== 2.4 Query: "vegan chocolate mousse" ====
+
+**Kategória:** Dietary + Dessert | **Food.com:** ✅ Má presné výsledky
+
+^ Rank ^ S1 (Simple BM25) ^ S2 (Simple TF-IDF) ^ L1 (Lucene BM25) ^ L2 (Lucene TF-IDF) ^ Food.com ^
+| 1 | Vegan Heart Attack Chocolate Doughnuts ✅ | Easy Vegan Ravioli ❌ | Gordon Ramsay Chocolate Mousse ✅ | Blender Chocolate Mousse ✅ | **Vegan Chocolate Mousse** ⭐(4) |
+| 2 | Gordon Ramsay Chocolate Mousse ✅ | Favorite Vegan Chili ❌ | Chocolate Raspberry Cake ❌ | Gordon Ramsay Chocolate Mousse ✅ | Vegan Chocolate Chilli Pepper |
+| 3 | Easy Vegan Ravioli ❌ | Vegan Heart Attack Chocolate ✅ | Blender Chocolate Mousse ✅ | Oreo Chocolate Mousse ✅ | **Vegan Chocolate Mousse** |
+| 4 | Vegan Cowboy Cookies ✅ | Vegan Banana Crumble ❌ | Oreo Chocolate Mousse ✅ | Chocolate Peanut Butter Mousse ✅ | Raw Vegan Chocolate Cinnamon |
+| 5 | Oreo Chocolate Mousse ✅ | Vegan Shepherd's Pie ❌ | Chocolate Banana Strawberry Mousse ✅ | Chocolate Banana Strawberry Mousse ✅ | Vegan Chocolate Orange Mousse |
+
+**Ground Truth Pool:** 9 relevantných dokumentov
+
+^ Systém ^ Relevantné v Top 5 ^ P@5 ^ R@5 ^
+| **S1** | 3/5 | 60% | 33% |
+| **S2** | 1/5 | 20% | 11% |
+| **L1** | 4/5 | 80% | 44% |
+| **L2** | 5/5 | **100%** | **56%** |
+| **FC** | 5/5 | **100%** | 56% |
+
+==== 2.5 Query: "mexican beef tacos" ====
+
+**Kategória:** Cuisine query | **Food.com:** ❌ **0 výsledkov**
+
+^ Rank ^ S1 (Simple BM25) ^ S2 (Simple TF-IDF) ^ L1 (Lucene BM25) ^ L2 (Lucene TF-IDF) ^ Food.com ^
+| 1 | Taco Casserole ✅ | Taco Soup With Venison ✅ | Tacos De Pollo ✅ | Easy Tacos ✅ | ❌ **0 výsledkov** |
+| 2 | Cornbread Taco Bake ✅ | Slow Cooker Mexican Beef Stew ✅ | Easy Tacos ✅ | Mexican Beef Skillet ✅ | - |
+| 3 | Taco Surprise Casserole ✅ | Taco Chicken Wings ✅ | Mexican Steak Casserole ✅ | Tacos De Pollo ✅ | - |
+| 4 | Taco Taters ✅ | Quick and Easy Taco Salad ✅ | Mexican Manicotti ❌ | Slow Cooker Mexican Beef Stew ✅ | - |
+| 5 | Tacos De Pollo ✅ | Easy Taco Casserole ✅ | Low Cal Beef Taco Soup ✅ | Machaca (Mexican Shredded Beef) ✅ | - |
+
+**Ground Truth Pool:** 21 relevantných dokumentov
+
+^ Systém ^ Relevantné v Top 5 ^ P@5 ^ R@5 ^
+| **S1** | 5/5 | **100%** | 24% |
+| **S2** | 5/5 | **100%** | 24% |
+| **L1** | 3/5 | 60% | 14% |
+| **L2** | 5/5 | **100%** | 24% |
+| **FC** | 0/0 | N/A | **0%** |
+
+**Poznámka:** Food.com vrátil 0 výsledkov pre túto query!
+
+===== 3. Pokročilé Filtrovanie =====
+
+==== 3.1 Ingrediencie (Ingredient Filtering) ====
+
+Test query: "chicken garlic" (musí obsahovať oboje)
+
+^ Systém ^ Mean P@5 (Ingredient Queries) ^
+| **S1** | **100%** |
+| **S2** | 93% |
+| **L1** | 93% |
+| **L2** | 33% |
+
+==== 3.2 Kuchyňa (Cuisine Filtering) ====
+
+Test query: "italian pasta"
+
+^ Systém ^ Mean P@5 (Cuisine Queries) ^
+| **S1** | 5.0% |
+| **L1** | 2.5% |
+| **L2** | 2.5% |
+| **S2** | 0.0% |
+
+===== 4. Súhrnné Výsledky =====
+
+==== 4.1 Rýchlosť vyhľadávania ====
+
+Priemerné časy odozvy na 25 testovacích dopytov:
+
+^ Systém ^ Priemerný čas (ms) ^ Throughput (queries/s) ^ Poznámka ^
+| **S2 (Simple TF-IDF)** | **1.96** | **510** | Najrýchlejší |
+| **S1 (Simple BM25)** | **2.36** | **424** | Veľmi rýchly |
+| **L2 (Lucene TF-IDF)** | 13.53 | 74 | JVM overhead |
+| **L1 (Lucene BM25)** | 19.61 | 51 | JVM overhead |
+
+**Záver:** Simple indexy sú **8-10× rýchlejšie** pre malé datasety (< 10k dokumentov). PyLucene škáluje lepšie pre väčšie datasety a ponúka pokročilé funkcie (fuzzy search, phrase queries).
+
+==== 4.2 Celkové Precision@5 (10 Štandardných Queries) ====
+
+^ Systém ^ Mean P@5 ^ Mean R@5 ^ F1-Score ^ ZRR (Zero Result Rate) ^
+| 🥇 **S1 (Simple BM25)** | **84%** | **29%** | **44%** | 0% |
+| 🥈 **L2 (Lucene TF-IDF)** | 72% | 23% | 35% | 0% |
+| 🥉 **L1 (Lucene BM25)** | 66% | 21% | 32% | 0% |
+| 4. **S2 (Simple TF-IDF)** | 56% | 20% | 29% | 0% |
+| 5. **Food.com** | Variable | Variable | Variable | **30%** |
+
+==== 4.3 Extended Benchmark (40 Pokročilých Queries) ====
+
+^ Systém ^ Mean P@5 ^ Mean R@5 ^ Mean F1 ^ ZRR ^
+| 🥇 **S1** | **63.0%** | **32.7%** | **35.5%** | 7.5% |
+| 🥈 **L1** | 53.0% | 26.2% | 29.4% | 7.5% |
+| 🥉 **L2** | 51.5% | 26.3% | 29.2% | 7.5% |
+| **S2** | 30.5% | 9.2% | 13.8% | 7.5% |
+
+===== 5. Záver =====
+
+  * **Simple BM25 (S1)** sa ukázal ako najrobustnejší systém pre všeobecné vyhľadávanie.
+  * **Food.com** má vysokú presnosť pre presné názvy, ale zlyháva pri komplexnejších dopytoch (vysoký Zero-Result Rate).
+  * **Lucene indexy** poskytujú dobrý kompromis a sú vhodné pre produkčné nasadenie vďaka škálovateľnosti.

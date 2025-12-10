@@ -1,0 +1,2445 @@
+{
+  "metadata": {
+    "simple_index": "index/v1",
+    "lucene_index": "index/v2",
+    "lucene_available": true,
+    "queries_file": "eval/queries.tsv",
+    "k": 10,
+    "num_queries": 25
+  },
+  "queries": [
+    {
+      "qid": "q1",
+      "query": "chocolate cake",
+      "notes": "General dessert query",
+      "simple_bm25": {
+        "time_ms": 2.68,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "20661",
+            "title": "Chocolate Raspberry Cake",
+            "score": 31.6903
+          },
+          {
+            "docId": "27779",
+            "title": "Pistachio Chocolate Chip Cake",
+            "score": 30.3001
+          },
+          {
+            "docId": "279326",
+            "title": "Devilishly Good Chocolate Cake",
+            "score": 29.9693
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 1.07,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "49238",
+            "title": "Chocolate Layer Cake with Chocolate Glaze",
+            "score": 44.9108
+          },
+          {
+            "docId": "282165",
+            "title": "Slice of Heaven Cake",
+            "score": 43.5451
+          },
+          {
+            "docId": "18854",
+            "title": "French Chocolate Buttercream Cake",
+            "score": 43.2521
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.6,
+        "kendall_tau": 0.333
+      },
+      "lucene_bm25": {
+        "time_ms": 114.87,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "20661",
+            "title": "Chocolate Raspberry Cake",
+            "score": 18.6988
+          },
+          {
+            "docId": "27779",
+            "title": "Pistachio Chocolate Chip Cake",
+            "score": 18.4272
+          },
+          {
+            "docId": "27792",
+            "title": "Chocolate Chip Streusel Cake",
+            "score": 18.2701
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 41.05,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "20661",
+            "title": "Chocolate Raspberry Cake",
+            "score": 13.7966
+          },
+          {
+            "docId": "16944",
+            "title": "Ultimate Chocolate Cake",
+            "score": 12.4942
+          },
+          {
+            "docId": "27779",
+            "title": "Pistachio Chocolate Chip Cake",
+            "score": 12.3403
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 1.0,
+        "kendall_tau": 0.867
+      }
+    },
+    {
+      "qid": "q2",
+      "query": "quick chicken dinner",
+      "notes": "Time-sensitive main dish",
+      "simple_bm25": {
+        "time_ms": 1.97,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "291896",
+            "title": "Arnies Chicken Dinner",
+            "score": 27.4575
+          },
+          {
+            "docId": "138306",
+            "title": "Foil Pack Taco Chicken Dinner",
+            "score": 22.6229
+          },
+          {
+            "docId": "60972",
+            "title": "Quick Chicken Cacciatore",
+            "score": 21.3761
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 1.02,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "138306",
+            "title": "Foil Pack Taco Chicken Dinner",
+            "score": 26.9319
+          },
+          {
+            "docId": "291896",
+            "title": "Arnies Chicken Dinner",
+            "score": 25.7602
+          },
+          {
+            "docId": "109348",
+            "title": "Quick &amp; Easy Chicken-Sausage Gumbo",
+            "score": 23.1473
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.524
+      },
+      "lucene_bm25": {
+        "time_ms": 28.68,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "291896",
+            "title": "Arnies Chicken Dinner",
+            "score": 13.648
+          },
+          {
+            "docId": "138306",
+            "title": "Foil Pack Taco Chicken Dinner",
+            "score": 11.5286
+          },
+          {
+            "docId": "430923",
+            "title": "Chicken Scallopini",
+            "score": 10.3136
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 16.62,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "291896",
+            "title": "Arnies Chicken Dinner",
+            "score": 14.0977
+          },
+          {
+            "docId": "60972",
+            "title": "Quick Chicken Cacciatore",
+            "score": 11.6847
+          },
+          {
+            "docId": "72609",
+            "title": "Amy's Quick Kielbasa Skillet Dinner",
+            "score": 11.5763
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 0.357
+      }
+    },
+    {
+      "qid": "q3",
+      "query": "healthy salad",
+      "notes": "Health-conscious query",
+      "simple_bm25": {
+        "time_ms": 0.5,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "226377",
+            "title": "Healthy Egg Salad Sandwich",
+            "score": 22.2515
+          },
+          {
+            "docId": "278645",
+            "title": "Hand Held Caesar Salad",
+            "score": 18.9295
+          },
+          {
+            "docId": "69136",
+            "title": "Healthy Manicotti",
+            "score": 18.7434
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.22,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "226377",
+            "title": "Healthy Egg Salad Sandwich",
+            "score": 22.5698
+          },
+          {
+            "docId": "278645",
+            "title": "Hand Held Caesar Salad",
+            "score": 20.3173
+          },
+          {
+            "docId": "202634",
+            "title": "Chinese Chicken Salad With Peanut Butter Dressing",
+            "score": 18.7777
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.3,
+        "kendall_tau": 1.0
+      },
+      "lucene_bm25": {
+        "time_ms": 20.79,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "278645",
+            "title": "Hand Held Caesar Salad",
+            "score": 10.4642
+          },
+          {
+            "docId": "28139",
+            "title": "Fawlty Towers' Cheese Salad",
+            "score": 9.4234
+          },
+          {
+            "docId": "449645",
+            "title": "Honey Mustard Salad Dressing",
+            "score": 9.1918
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 10.06,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "226377",
+            "title": "Healthy Egg Salad Sandwich",
+            "score": 10.8909
+          },
+          {
+            "docId": "69136",
+            "title": "Healthy Manicotti",
+            "score": 9.4674
+          },
+          {
+            "docId": "277788",
+            "title": "Healthy Steamed Squash",
+            "score": 7.7301
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.143
+      }
+    },
+    {
+      "qid": "q4",
+      "query": "pasta carbonara",
+      "notes": "Specific Italian dish",
+      "simple_bm25": {
+        "time_ms": 0.73,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "142026",
+            "title": "Pasta Carbonara Salad",
+            "score": 41.7503
+          },
+          {
+            "docId": "295328",
+            "title": "Pasta Carbonara (Rachael Ray)",
+            "score": 38.3742
+          },
+          {
+            "docId": "337364",
+            "title": "Artichoke Heart and Anchovy Carbonara",
+            "score": 33.2395
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.47,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "295328",
+            "title": "Pasta Carbonara (Rachael Ray)",
+            "score": 47.9258
+          },
+          {
+            "docId": "142026",
+            "title": "Pasta Carbonara Salad",
+            "score": 43.3622
+          },
+          {
+            "docId": "337364",
+            "title": "Artichoke Heart and Anchovy Carbonara",
+            "score": 41.2966
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.619
+      },
+      "lucene_bm25": {
+        "time_ms": 11.83,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "142026",
+            "title": "Pasta Carbonara Salad",
+            "score": 18.2218
+          },
+          {
+            "docId": "295328",
+            "title": "Pasta Carbonara (Rachael Ray)",
+            "score": 17.1126
+          },
+          {
+            "docId": "337364",
+            "title": "Artichoke Heart and Anchovy Carbonara",
+            "score": 13.1711
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 10.59,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "142026",
+            "title": "Pasta Carbonara Salad",
+            "score": 17.0944
+          },
+          {
+            "docId": "295328",
+            "title": "Pasta Carbonara (Rachael Ray)",
+            "score": 15.159
+          },
+          {
+            "docId": "131622",
+            "title": "Pepperoni Pasta",
+            "score": 9.8737
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 0.929
+      }
+    },
+    {
+      "qid": "q5",
+      "query": "vegetarian soup",
+      "notes": "Dietary restriction + category",
+      "simple_bm25": {
+        "time_ms": 1.08,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "281515",
+            "title": "Vegetarian &quot;hamburger&quot; Soup",
+            "score": 34.0035
+          },
+          {
+            "docId": "278109",
+            "title": "Vegetarian Taquitos",
+            "score": 27.7747
+          },
+          {
+            "docId": "187594",
+            "title": "Vegetarian Split Pea Soup",
+            "score": 27.1801
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.54,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "281515",
+            "title": "Vegetarian &quot;hamburger&quot; Soup",
+            "score": 34.9108
+          },
+          {
+            "docId": "187594",
+            "title": "Vegetarian Split Pea Soup",
+            "score": 31.2097
+          },
+          {
+            "docId": "327773",
+            "title": "Campbell's Abc's Vegetarian Vegetable Soup",
+            "score": 29.3905
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.714
+      },
+      "lucene_bm25": {
+        "time_ms": 20.59,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "281515",
+            "title": "Vegetarian &quot;hamburger&quot; Soup",
+            "score": 12.6377
+          },
+          {
+            "docId": "187594",
+            "title": "Vegetarian Split Pea Soup",
+            "score": 11.8304
+          },
+          {
+            "docId": "278109",
+            "title": "Vegetarian Taquitos",
+            "score": 10.798
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 10.69,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "187594",
+            "title": "Vegetarian Split Pea Soup",
+            "score": 11.5198
+          },
+          {
+            "docId": "281515",
+            "title": "Vegetarian &quot;hamburger&quot; Soup",
+            "score": 10.987
+          },
+          {
+            "docId": "278109",
+            "title": "Vegetarian Taquitos",
+            "score": 10.525
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.714
+      }
+    },
+    {
+      "qid": "q6",
+      "query": "breakfast eggs",
+      "notes": "Meal type query",
+      "simple_bm25": {
+        "time_ms": 2.4,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "230453",
+            "title": "Low Carb Breakfast &quot;cupcakes&quot;",
+            "score": 25.157
+          },
+          {
+            "docId": "229069",
+            "title": "Easy Breakfast Bake",
+            "score": 22.6924
+          },
+          {
+            "docId": "280820",
+            "title": "Savory Ham-And-Swiss Breakfast Pie",
+            "score": 20.4499
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 1.32,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "280820",
+            "title": "Savory Ham-And-Swiss Breakfast Pie",
+            "score": 26.722
+          },
+          {
+            "docId": "229069",
+            "title": "Easy Breakfast Bake",
+            "score": 26.01
+          },
+          {
+            "docId": "230453",
+            "title": "Low Carb Breakfast &quot;cupcakes&quot;",
+            "score": 24.2795
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.619
+      },
+      "lucene_bm25": {
+        "time_ms": 14.28,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "230453",
+            "title": "Low Carb Breakfast &quot;cupcakes&quot;",
+            "score": 12.5141
+          },
+          {
+            "docId": "7906",
+            "title": "Scrambled Eggs Benedict",
+            "score": 11.9899
+          },
+          {
+            "docId": "225108",
+            "title": "Eggs Benedict",
+            "score": 11.5942
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 18.84,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "127986",
+            "title": "No Eggs Breakfast Casserole",
+            "score": 12.0588
+          },
+          {
+            "docId": "482308",
+            "title": "Basted Eggs",
+            "score": 10.3816
+          },
+          {
+            "docId": "225108",
+            "title": "Eggs Benedict",
+            "score": 10.0667
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.4,
+        "kendall_tau": 1.0
+      }
+    },
+    {
+      "qid": "q7",
+      "query": "grilled chicken",
+      "notes": "Cooking method + ingredient",
+      "simple_bm25": {
+        "time_ms": 1.9,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "177552",
+            "title": "Grilled Teriyaki Chicken",
+            "score": 26.102
+          },
+          {
+            "docId": "282423",
+            "title": "Grilled Chicken Breasts With Green Pea and Mint Sauce",
+            "score": 20.8486
+          },
+          {
+            "docId": "35570",
+            "title": "Grilled Chicken Livers in 7-Up",
+            "score": 19.9466
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 1.01,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "177552",
+            "title": "Grilled Teriyaki Chicken",
+            "score": 25.5945
+          },
+          {
+            "docId": "282423",
+            "title": "Grilled Chicken Breasts With Green Pea and Mint Sauce",
+            "score": 25.3976
+          },
+          {
+            "docId": "93961",
+            "title": "Grilled Chicken and Veggie Kabobs Atop Sage Rice",
+            "score": 25.2429
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.3,
+        "kendall_tau": 1.0
+      },
+      "lucene_bm25": {
+        "time_ms": 15.32,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "177552",
+            "title": "Grilled Teriyaki Chicken",
+            "score": 13.3067
+          },
+          {
+            "docId": "282423",
+            "title": "Grilled Chicken Breasts With Green Pea and Mint Sauce",
+            "score": 11.3237
+          },
+          {
+            "docId": "235755",
+            "title": "Buffalo Chicken Pasta Salad",
+            "score": 11.0094
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 8.18,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "177552",
+            "title": "Grilled Teriyaki Chicken",
+            "score": 12.0737
+          },
+          {
+            "docId": "128105",
+            "title": "Grilled Bourbon Chicken",
+            "score": 11.4438
+          },
+          {
+            "docId": "183731",
+            "title": "Japanese Grilled Chicken",
+            "score": 11.1673
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.905
+      }
+    },
+    {
+      "qid": "q8",
+      "query": "low calorie dessert",
+      "notes": "Nutrition-focused dessert",
+      "simple_bm25": {
+        "time_ms": 1.38,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "389441",
+            "title": "Low Calorie Banana Bread",
+            "score": 25.7045
+          },
+          {
+            "docId": "220847",
+            "title": "Cran-Raspberry Smoothie",
+            "score": 22.2072
+          },
+          {
+            "docId": "281108",
+            "title": "Low- Calorie, Low-Fat  Garlic Hummus",
+            "score": 21.9692
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.74,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "281820",
+            "title": "Guilt and Fat Free Low Calorie Pumpkin Cheesecake Pudding",
+            "score": 29.9929
+          },
+          {
+            "docId": "281108",
+            "title": "Low- Calorie, Low-Fat  Garlic Hummus",
+            "score": 27.269
+          },
+          {
+            "docId": "389441",
+            "title": "Low Calorie Banana Bread",
+            "score": 27.0635
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.9,
+        "kendall_tau": 0.444
+      },
+      "lucene_bm25": {
+        "time_ms": 10.36,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "281108",
+            "title": "Low- Calorie, Low-Fat  Garlic Hummus",
+            "score": 12.3594
+          },
+          {
+            "docId": "389441",
+            "title": "Low Calorie Banana Bread",
+            "score": 12.0021
+          },
+          {
+            "docId": "11765",
+            "title": "Crown Jewel Dessert",
+            "score": 10.4789
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 14.39,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "389441",
+            "title": "Low Calorie Banana Bread",
+            "score": 13.1945
+          },
+          {
+            "docId": "281108",
+            "title": "Low- Calorie, Low-Fat  Garlic Hummus",
+            "score": 12.5817
+          },
+          {
+            "docId": "159739",
+            "title": "Spicy Szechwan Pork Stew (Low Fat &amp; Low Calorie)",
+            "score": 10.1305
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.333
+      }
+    },
+    {
+      "qid": "q9",
+      "query": "mexican rice",
+      "notes": "Cuisine-specific side dish",
+      "simple_bm25": {
+        "time_ms": 1.29,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "318960",
+            "title": "M-M-M- Good Mexican Rice",
+            "score": 29.9069
+          },
+          {
+            "docId": "374935",
+            "title": "Mexican Brown Rice",
+            "score": 26.0149
+          },
+          {
+            "docId": "67059",
+            "title": "Brazilian Chicken and Black Beans and Rice",
+            "score": 25.7775
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.67,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "67059",
+            "title": "Brazilian Chicken and Black Beans and Rice",
+            "score": 32.8298
+          },
+          {
+            "docId": "318960",
+            "title": "M-M-M- Good Mexican Rice",
+            "score": 30.4665
+          },
+          {
+            "docId": "280610",
+            "title": "Mexican Steak Casserole",
+            "score": 25.7774
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.9,
+        "kendall_tau": 0.611
+      },
+      "lucene_bm25": {
+        "time_ms": 12.7,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "318960",
+            "title": "M-M-M- Good Mexican Rice",
+            "score": 15.2388
+          },
+          {
+            "docId": "67059",
+            "title": "Brazilian Chicken and Black Beans and Rice",
+            "score": 14.3288
+          },
+          {
+            "docId": "374935",
+            "title": "Mexican Brown Rice",
+            "score": 14.306
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 20.33,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "374935",
+            "title": "Mexican Brown Rice",
+            "score": 13.6159
+          },
+          {
+            "docId": "167348",
+            "title": "Mexican Rice Casserole",
+            "score": 13.5267
+          },
+          {
+            "docId": "278526",
+            "title": "Grandma Vicky's Mexican Rice",
+            "score": 12.2306
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 0.786
+      }
+    },
+    {
+      "qid": "q10",
+      "query": "easy cookies",
+      "notes": "Difficulty + dessert type",
+      "simple_bm25": {
+        "time_ms": 6.3,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "253610",
+            "title": "Easy Devil's Food Chocolate Cookies (Gift Mix in a Jar)",
+            "score": 15.281
+          },
+          {
+            "docId": "405298",
+            "title": "Easy Coconut Macaroons",
+            "score": 14.2713
+          },
+          {
+            "docId": "426449",
+            "title": "Super Easy 4 Ingredient Lace Cookies",
+            "score": 14.2605
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 21.41,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "253610",
+            "title": "Easy Devil's Food Chocolate Cookies (Gift Mix in a Jar)",
+            "score": 21.028
+          },
+          {
+            "docId": "271023",
+            "title": "Snickerdoodle Cookies - Super Easy Version",
+            "score": 16.5837
+          },
+          {
+            "docId": "426449",
+            "title": "Super Easy 4 Ingredient Lace Cookies",
+            "score": 15.6618
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 0.357
+      },
+      "lucene_bm25": {
+        "time_ms": 51.08,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "77169",
+            "title": "Christmas Sugar Cookies",
+            "score": 11.5259
+          },
+          {
+            "docId": "273900",
+            "title": "Frosted Ginger Cookies",
+            "score": 9.7194
+          },
+          {
+            "docId": "253610",
+            "title": "Easy Devil's Food Chocolate Cookies (Gift Mix in a Jar)",
+            "score": 9.219
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 19.77,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "346500",
+            "title": "Easy Chocolate Chip Cookies",
+            "score": 8.9216
+          },
+          {
+            "docId": "271023",
+            "title": "Snickerdoodle Cookies - Super Easy Version",
+            "score": 8.1283
+          },
+          {
+            "docId": "84122",
+            "title": "Easy Bake Oven Angel Cookies",
+            "score": 8.0945
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.2,
+        "kendall_tau": 1.0
+      }
+    },
+    {
+      "qid": "q11",
+      "query": "italian pasta sauce",
+      "notes": "Cuisine + category",
+      "simple_bm25": {
+        "time_ms": 5.58,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "162722",
+            "title": "Bow Tie Pepperoni Pasta Salad",
+            "score": 29.709
+          },
+          {
+            "docId": "144607",
+            "title": "Mexican Pasta (Sopa?)",
+            "score": 27.0913
+          },
+          {
+            "docId": "281412",
+            "title": "Pasta and White Bean Casserole",
+            "score": 26.4426
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 2.96,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "165960",
+            "title": "Pasta Fonzanoon – Pasta Primavera With Chicken, if You Prefer",
+            "score": 40.2884
+          },
+          {
+            "docId": "144607",
+            "title": "Mexican Pasta (Sopa?)",
+            "score": 38.3747
+          },
+          {
+            "docId": "72237",
+            "title": "Mostaccioli (Baked Pasta With Creamy Sauce &amp; Italian Sausag",
+            "score": 37.7558
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.4,
+        "kendall_tau": 0.333
+      },
+      "lucene_bm25": {
+        "time_ms": 17.49,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "162722",
+            "title": "Bow Tie Pepperoni Pasta Salad",
+            "score": 19.433
+          },
+          {
+            "docId": "72237",
+            "title": "Mostaccioli (Baked Pasta With Creamy Sauce &amp; Italian Sausag",
+            "score": 18.4576
+          },
+          {
+            "docId": "281412",
+            "title": "Pasta and White Bean Casserole",
+            "score": 17.8143
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 18.57,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "72237",
+            "title": "Mostaccioli (Baked Pasta With Creamy Sauce &amp; Italian Sausag",
+            "score": 13.1643
+          },
+          {
+            "docId": "192856",
+            "title": "Light Pasta and Cheese Sauce",
+            "score": 11.4833
+          },
+          {
+            "docId": "101456",
+            "title": "Italian Cooking Sauce Mix",
+            "score": 11.4577
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.6,
+        "kendall_tau": 0.6
+      }
+    },
+    {
+      "qid": "q12",
+      "query": "chicken breast recipes",
+      "notes": "Single ingredient focus",
+      "simple_bm25": {
+        "time_ms": 3.4,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "430923",
+            "title": "Chicken Scallopini",
+            "score": 25.6992
+          },
+          {
+            "docId": "392476",
+            "title": "Smoked Turkey Breast",
+            "score": 24.3325
+          },
+          {
+            "docId": "342478",
+            "title": "Bacon-Wrapped Chicken",
+            "score": 23.2455
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 1.71,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "61927",
+            "title": "Pan-Roasted Chicken Breast With Sage-Vermouth Sauce",
+            "score": 29.7593
+          },
+          {
+            "docId": "151331",
+            "title": "Stuffed Chicken Breasts With Marsala Cream Sauce",
+            "score": 29.3403
+          },
+          {
+            "docId": "430923",
+            "title": "Chicken Scallopini",
+            "score": 29.3403
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.4,
+        "kendall_tau": 1.0
+      },
+      "lucene_bm25": {
+        "time_ms": 28.8,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "16064",
+            "title": "Beautiful Baked Chicken Kievs",
+            "score": 13.7096
+          },
+          {
+            "docId": "430923",
+            "title": "Chicken Scallopini",
+            "score": 12.8646
+          },
+          {
+            "docId": "66552",
+            "title": "Santa Fe Chicken Breast",
+            "score": 12.8611
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 13.06,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "66552",
+            "title": "Santa Fe Chicken Breast",
+            "score": 12.3559
+          },
+          {
+            "docId": "218457",
+            "title": "Stuffed Chicken Breast Marinara",
+            "score": 11.8171
+          },
+          {
+            "docId": "280599",
+            "title": "Mr. Food Chicken Breast Scampi",
+            "score": 10.7647
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.238
+      }
+    },
+    {
+      "qid": "q13",
+      "query": "traditional mexican tacos",
+      "notes": "Cuisine + dish type (Google comparison)",
+      "simple_bm25": {
+        "time_ms": 0.97,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "234912",
+            "title": "Tacos De Pollo",
+            "score": 42.8058
+          },
+          {
+            "docId": "107343",
+            "title": "Easy Tacos",
+            "score": 37.1775
+          },
+          {
+            "docId": "475385",
+            "title": "Quinoa Bean Tacos",
+            "score": 31.0653
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.51,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "234912",
+            "title": "Tacos De Pollo",
+            "score": 66.5634
+          },
+          {
+            "docId": "107343",
+            "title": "Easy Tacos",
+            "score": 41.6347
+          },
+          {
+            "docId": "225907",
+            "title": "Amy's Favorite Indian Fry Bread Tacos",
+            "score": 39.2479
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 0.571
+      },
+      "lucene_bm25": {
+        "time_ms": 13.14,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "234912",
+            "title": "Tacos De Pollo",
+            "score": 22.7244
+          },
+          {
+            "docId": "107343",
+            "title": "Easy Tacos",
+            "score": 19.2766
+          },
+          {
+            "docId": "279142",
+            "title": "Crock Pot Salsa/Mexican Chicken",
+            "score": 15.2832
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 19.85,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "107343",
+            "title": "Easy Tacos",
+            "score": 12.5914
+          },
+          {
+            "docId": "234912",
+            "title": "Tacos De Pollo",
+            "score": 12.0461
+          },
+          {
+            "docId": "475385",
+            "title": "Quinoa Bean Tacos",
+            "score": 9.6615
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.9,
+        "kendall_tau": 0.889
+      }
+    },
+    {
+      "qid": "q14",
+      "query": "how to make pizza dough",
+      "notes": "Instructional query",
+      "simple_bm25": {
+        "time_ms": 4.46,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "231370",
+            "title": "Buffalo Wing Pizza",
+            "score": 43.9496
+          },
+          {
+            "docId": "296250",
+            "title": "Quick Pizza Melts",
+            "score": 42.5397
+          },
+          {
+            "docId": "248653",
+            "title": "New Haven-Style Garlic and Cheese Pizza Bianca",
+            "score": 41.138
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 2.37,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "498847",
+            "title": "The Greek Pizza (California Pizza Kitchen)",
+            "score": 68.9223
+          },
+          {
+            "docId": "248653",
+            "title": "New Haven-Style Garlic and Cheese Pizza Bianca",
+            "score": 62.2749
+          },
+          {
+            "docId": "231370",
+            "title": "Buffalo Wing Pizza",
+            "score": 55.9657
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.5,
+        "kendall_tau": 0.4
+      },
+      "lucene_bm25": {
+        "time_ms": 23.97,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "248653",
+            "title": "New Haven-Style Garlic and Cheese Pizza Bianca",
+            "score": 24.3056
+          },
+          {
+            "docId": "20310",
+            "title": "Potato and Arugula Pizza",
+            "score": 22.9907
+          },
+          {
+            "docId": "231370",
+            "title": "Buffalo Wing Pizza",
+            "score": 22.5129
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 15.16,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "136847",
+            "title": "How to Make French Fries",
+            "score": 21.8574
+          },
+          {
+            "docId": "366813",
+            "title": "How to Grill Oysters",
+            "score": 15.5382
+          },
+          {
+            "docId": "254063",
+            "title": "Easy No Yeast Pizza Dough",
+            "score": 14.1677
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.5,
+        "kendall_tau": 0.0
+      }
+    },
+    {
+      "qid": "q15",
+      "query": "best chocolate chip cookies",
+      "notes": "Quality/ranking query",
+      "simple_bm25": {
+        "time_ms": 2.62,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "280825",
+            "title": "Chocolate Chip Cookie Cheesecake",
+            "score": 37.1053
+          },
+          {
+            "docId": "236369",
+            "title": "Chocolate Chip &amp; Walnut Cookies (Splenda)",
+            "score": 36.8312
+          },
+          {
+            "docId": "17760",
+            "title": "Chocolate Chip Crumb Cake",
+            "score": 35.0028
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 1.33,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "236369",
+            "title": "Chocolate Chip &amp; Walnut Cookies (Splenda)",
+            "score": 42.3436
+          },
+          {
+            "docId": "17760",
+            "title": "Chocolate Chip Crumb Cake",
+            "score": 40.3038
+          },
+          {
+            "docId": "273178",
+            "title": "Andes Double Chocolate Chip Mint  Cookies",
+            "score": 39.2358
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 0.429
+      },
+      "lucene_bm25": {
+        "time_ms": 11.94,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "236369",
+            "title": "Chocolate Chip &amp; Walnut Cookies (Splenda)",
+            "score": 21.0338
+          },
+          {
+            "docId": "280825",
+            "title": "Chocolate Chip Cookie Cheesecake",
+            "score": 19.6731
+          },
+          {
+            "docId": "273178",
+            "title": "Andes Double Chocolate Chip Mint  Cookies",
+            "score": 18.3976
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 10.35,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "331287",
+            "title": "Chocolate Chip Cookies",
+            "score": 17.5189
+          },
+          {
+            "docId": "346500",
+            "title": "Easy Chocolate Chip Cookies",
+            "score": 16.6559
+          },
+          {
+            "docId": "386439",
+            "title": "Chocolate Chip Cowboy Cookies",
+            "score": 16.5185
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.619
+      }
+    },
+    {
+      "qid": "q16",
+      "query": "garlic bread recipe",
+      "notes": "Simple dish query",
+      "simple_bm25": {
+        "time_ms": 6.03,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "87584",
+            "title": "Potato Gnocchi in Burnt Butter Sauce",
+            "score": 13.6926
+          },
+          {
+            "docId": "369352",
+            "title": "Gilroy Garlic Bread",
+            "score": 13.6526
+          },
+          {
+            "docId": "281850",
+            "title": "Creamy Wild Rice Soup",
+            "score": 12.0052
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 3.37,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "498847",
+            "title": "The Greek Pizza (California Pizza Kitchen)",
+            "score": 22.5803
+          },
+          {
+            "docId": "87584",
+            "title": "Potato Gnocchi in Burnt Butter Sauce",
+            "score": 21.9444
+          },
+          {
+            "docId": "155194",
+            "title": "Chicken Divan Tonight, Chicken Tetrazzini Next Week",
+            "score": 16.7135
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.2,
+        "kendall_tau": 1.0
+      },
+      "lucene_bm25": {
+        "time_ms": 10.71,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "369352",
+            "title": "Gilroy Garlic Bread",
+            "score": 15.9946
+          },
+          {
+            "docId": "462165",
+            "title": "Oh My Garlic! Bread (Abm)",
+            "score": 11.7913
+          },
+          {
+            "docId": "172498",
+            "title": "Armenian Bread Rounds - Bread Machine",
+            "score": 11.2229
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 9.23,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "369352",
+            "title": "Gilroy Garlic Bread",
+            "score": 13.8524
+          },
+          {
+            "docId": "462165",
+            "title": "Oh My Garlic! Bread (Abm)",
+            "score": 10.4839
+          },
+          {
+            "docId": "373001",
+            "title": "Garlic Herbed Mashed Potatoes (Bahama Breeze's Recipe)",
+            "score": 9.0844
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.3,
+        "kendall_tau": 1.0
+      }
+    },
+    {
+      "qid": "q17",
+      "query": "slow cooker beef stew",
+      "notes": "Cooking method + dish",
+      "simple_bm25": {
+        "time_ms": 1.89,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "447221",
+            "title": "Slow Cooker Fajita Stew",
+            "score": 66.3445
+          },
+          {
+            "docId": "278740",
+            "title": "Slow Cooker Mexican Beef Stew",
+            "score": 61.9924
+          },
+          {
+            "docId": "280332",
+            "title": "Slow Cooker/Crock Pot Hearty Beef Stew",
+            "score": 57.8288
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.89,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "447221",
+            "title": "Slow Cooker Fajita Stew",
+            "score": 76.7275
+          },
+          {
+            "docId": "280332",
+            "title": "Slow Cooker/Crock Pot Hearty Beef Stew",
+            "score": 68.7366
+          },
+          {
+            "docId": "263890",
+            "title": "Slow Cooker Chicken Brunswick Stew",
+            "score": 68.2219
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.81
+      },
+      "lucene_bm25": {
+        "time_ms": 12.12,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "447221",
+            "title": "Slow Cooker Fajita Stew",
+            "score": 33.9831
+          },
+          {
+            "docId": "278740",
+            "title": "Slow Cooker Mexican Beef Stew",
+            "score": 31.9546
+          },
+          {
+            "docId": "280332",
+            "title": "Slow Cooker/Crock Pot Hearty Beef Stew",
+            "score": 29.3288
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 12.71,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "278740",
+            "title": "Slow Cooker Mexican Beef Stew",
+            "score": 23.057
+          },
+          {
+            "docId": "447221",
+            "title": "Slow Cooker Fajita Stew",
+            "score": 21.5764
+          },
+          {
+            "docId": "280332",
+            "title": "Slow Cooker/Crock Pot Hearty Beef Stew",
+            "score": 20.0445
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 1.0
+      }
+    },
+    {
+      "qid": "q18",
+      "query": "vegan banana bread",
+      "notes": "Dietary restriction + specific dish",
+      "simple_bm25": {
+        "time_ms": 2.6,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "277612",
+            "title": "Vegan Vanilla - Banana  Custard",
+            "score": 51.8211
+          },
+          {
+            "docId": "344272",
+            "title": "Vegan Banana Crumble",
+            "score": 46.3542
+          },
+          {
+            "docId": "280310",
+            "title": "Banana Fondue",
+            "score": 35.8167
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 1.48,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "344272",
+            "title": "Vegan Banana Crumble",
+            "score": 52.2451
+          },
+          {
+            "docId": "277612",
+            "title": "Vegan Vanilla - Banana  Custard",
+            "score": 51.3616
+          },
+          {
+            "docId": "107917",
+            "title": "Cajun Banana Smoothie",
+            "score": 39.4018
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.6,
+        "kendall_tau": 0.6
+      },
+      "lucene_bm25": {
+        "time_ms": 8.91,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "277612",
+            "title": "Vegan Vanilla - Banana  Custard",
+            "score": 21.1035
+          },
+          {
+            "docId": "86484",
+            "title": "Banana Nut Yeast Bread (Bread Machine)",
+            "score": 19.8588
+          },
+          {
+            "docId": "344272",
+            "title": "Vegan Banana Crumble",
+            "score": 18.8375
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 23.1,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "256090",
+            "title": "Banana Bread",
+            "score": 14.9893
+          },
+          {
+            "docId": "277612",
+            "title": "Vegan Vanilla - Banana  Custard",
+            "score": 14.9746
+          },
+          {
+            "docId": "344272",
+            "title": "Vegan Banana Crumble",
+            "score": 14.9122
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.5,
+        "kendall_tau": 0.2
+      }
+    },
+    {
+      "qid": "q19",
+      "query": "spicy thai curry",
+      "notes": "Cuisine + flavor profile",
+      "simple_bm25": {
+        "time_ms": 0.55,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "278702",
+            "title": "Tofu Yam Curry",
+            "score": 35.689
+          },
+          {
+            "docId": "291770",
+            "title": "Mustard Curry Sauce",
+            "score": 35.2963
+          },
+          {
+            "docId": "119423",
+            "title": "Thai-curried Game Hens",
+            "score": 34.7858
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.3,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "278702",
+            "title": "Tofu Yam Curry",
+            "score": 47.5993
+          },
+          {
+            "docId": "28548",
+            "title": "Gulai Labu - Spicy Shrimp and Cucumber Curry",
+            "score": 41.218
+          },
+          {
+            "docId": "119423",
+            "title": "Thai-curried Game Hens",
+            "score": 40.2794
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.5,
+        "kendall_tau": 0.8
+      },
+      "lucene_bm25": {
+        "time_ms": 12.33,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "278702",
+            "title": "Tofu Yam Curry",
+            "score": 15.7282
+          },
+          {
+            "docId": "291770",
+            "title": "Mustard Curry Sauce",
+            "score": 15.3962
+          },
+          {
+            "docId": "93530",
+            "title": "Mince Beef Curry",
+            "score": 14.5129
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 7.09,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "119515",
+            "title": "Spicy Mutton Curry",
+            "score": 13.4107
+          },
+          {
+            "docId": "281989",
+            "title": "Curry Frittata",
+            "score": 10.3284
+          },
+          {
+            "docId": "280100",
+            "title": "Curry Gravy",
+            "score": 10.2227
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 0.857
+      }
+    },
+    {
+      "qid": "q20",
+      "query": "homemade tomato soup",
+      "notes": "Preparation style + dish",
+      "simple_bm25": {
+        "time_ms": 1.87,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "304236",
+            "title": "Macaroni &amp; Tomato Soup",
+            "score": 29.6532
+          },
+          {
+            "docId": "279170",
+            "title": "Italian Tomato-Corn Soup",
+            "score": 26.4204
+          },
+          {
+            "docId": "347645",
+            "title": "Tomato Bisque",
+            "score": 26.1618
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.94,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "97904",
+            "title": "Almost Homemade Chicken Pot Pie",
+            "score": 29.6898
+          },
+          {
+            "docId": "304236",
+            "title": "Macaroni &amp; Tomato Soup",
+            "score": 28.611
+          },
+          {
+            "docId": "279170",
+            "title": "Italian Tomato-Corn Soup",
+            "score": 28.4218
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.333
+      },
+      "lucene_bm25": {
+        "time_ms": 11.12,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "304236",
+            "title": "Macaroni &amp; Tomato Soup",
+            "score": 15.5447
+          },
+          {
+            "docId": "279170",
+            "title": "Italian Tomato-Corn Soup",
+            "score": 14.5274
+          },
+          {
+            "docId": "347645",
+            "title": "Tomato Bisque",
+            "score": 14.4819
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 5.95,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "333005",
+            "title": "Tomato Soup",
+            "score": 14.6749
+          },
+          {
+            "docId": "265063",
+            "title": "Homemade Tomato Ketchup",
+            "score": 13.0439
+          },
+          {
+            "docId": "304236",
+            "title": "Macaroni &amp; Tomato Soup",
+            "score": 12.7752
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 0.857
+      }
+    },
+    {
+      "qid": "q21",
+      "query": "gluten free pasta",
+      "notes": "Dietary restriction query",
+      "simple_bm25": {
+        "time_ms": 1.32,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "144607",
+            "title": "Mexican Pasta (Sopa?)",
+            "score": 30.9708
+          },
+          {
+            "docId": "278436",
+            "title": "Healthier Pasta Quiche Crust",
+            "score": 30.7044
+          },
+          {
+            "docId": "160246",
+            "title": "Popeye Pasta",
+            "score": 30.6999
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.65,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "165960",
+            "title": "Pasta Fonzanoon – Pasta Primavera With Chicken, if You Prefer",
+            "score": 52.1653
+          },
+          {
+            "docId": "74188",
+            "title": "Pasta with Roasted Butternut Squash and Sage",
+            "score": 45.1632
+          },
+          {
+            "docId": "144607",
+            "title": "Mexican Pasta (Sopa?)",
+            "score": 45.1529
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.3,
+        "kendall_tau": -0.333
+      },
+      "lucene_bm25": {
+        "time_ms": 7.94,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "279601",
+            "title": "Gluten Free Brown Gravy",
+            "score": 18.8233
+          },
+          {
+            "docId": "439212",
+            "title": "Sweet Shortcrust Pastry - Gluten-Free",
+            "score": 18.4989
+          },
+          {
+            "docId": "144607",
+            "title": "Mexican Pasta (Sopa?)",
+            "score": 17.3316
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 6.54,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "279601",
+            "title": "Gluten Free Brown Gravy",
+            "score": 15.6118
+          },
+          {
+            "docId": "439212",
+            "title": "Sweet Shortcrust Pastry - Gluten-Free",
+            "score": 15.5641
+          },
+          {
+            "docId": "253039",
+            "title": "Gluten Free Corn Dogs",
+            "score": 13.9448
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 0.071
+      }
+    },
+    {
+      "qid": "q22",
+      "query": "quick 30 minute meals",
+      "notes": "Time constraint query",
+      "simple_bm25": {
+        "time_ms": 1.09,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "5276",
+            "title": "15 Minute Red Beans & Rice",
+            "score": 18.0036
+          },
+          {
+            "docId": "83058",
+            "title": "Minute Steak Gyros",
+            "score": 14.3229
+          },
+          {
+            "docId": "280830",
+            "title": "BBQ Porcupine Meatballs",
+            "score": 13.9646
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.41,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "5276",
+            "title": "15 Minute Red Beans & Rice",
+            "score": 17.7199
+          },
+          {
+            "docId": "94601",
+            "title": "Slow Cooker Gumbo",
+            "score": 16.0169
+          },
+          {
+            "docId": "280238",
+            "title": "Ricki Carroll’s 30-Minute Mozzarella - Homemade",
+            "score": 13.6996
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.5,
+        "kendall_tau": 0.4
+      },
+      "lucene_bm25": {
+        "time_ms": 11.38,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "5276",
+            "title": "15 Minute Red Beans & Rice",
+            "score": 12.2419
+          },
+          {
+            "docId": "280238",
+            "title": "Ricki Carroll’s 30-Minute Mozzarella - Homemade",
+            "score": 11.9928
+          },
+          {
+            "docId": "236944",
+            "title": "Hamburger Rice Hotdish",
+            "score": 11.6499
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 10.09,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "111257",
+            "title": "30 Minute Chicken and Dumplings",
+            "score": 13.4426
+          },
+          {
+            "docId": "280238",
+            "title": "Ricki Carroll’s 30-Minute Mozzarella - Homemade",
+            "score": 12.8324
+          },
+          {
+            "docId": "290371",
+            "title": "30 Minute Fresh Mozzarella Cheese Homemade",
+            "score": 12.4553
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.238
+      }
+    },
+    {
+      "qid": "q23",
+      "query": "christmas dinner ideas",
+      "notes": "Seasonal/occasion query",
+      "simple_bm25": {
+        "time_ms": 0.19,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "281913",
+            "title": "Finger Painting Ideas",
+            "score": 24.3912
+          },
+          {
+            "docId": "442883",
+            "title": "Christmastini (Christmas Martini)",
+            "score": 22.6829
+          },
+          {
+            "docId": "14129",
+            "title": "Danish Christmas Rice Porridge",
+            "score": 19.9338
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.07,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "281913",
+            "title": "Finger Painting Ideas",
+            "score": 22.1584
+          },
+          {
+            "docId": "442883",
+            "title": "Christmastini (Christmas Martini)",
+            "score": 20.1663
+          },
+          {
+            "docId": "14129",
+            "title": "Danish Christmas Rice Porridge",
+            "score": 20.1663
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.81
+      },
+      "lucene_bm25": {
+        "time_ms": 4.65,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "442883",
+            "title": "Christmastini (Christmas Martini)",
+            "score": 10.3907
+          },
+          {
+            "docId": "281913",
+            "title": "Finger Painting Ideas",
+            "score": 8.5383
+          },
+          {
+            "docId": "14129",
+            "title": "Danish Christmas Rice Porridge",
+            "score": 8.215
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 7.21,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "281913",
+            "title": "Finger Painting Ideas",
+            "score": 10.3296
+          },
+          {
+            "docId": "277799",
+            "title": "Boiled Dinner",
+            "score": 10.1172
+          },
+          {
+            "docId": "442883",
+            "title": "Christmastini (Christmas Martini)",
+            "score": 9.1855
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.8,
+        "kendall_tau": 0.643
+      }
+    },
+    {
+      "qid": "q24",
+      "query": "authentic indian butter chicken",
+      "notes": "Authenticity + cuisine + dish",
+      "simple_bm25": {
+        "time_ms": 5.54,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "279973",
+            "title": "Authentic Margarita Mix",
+            "score": 25.0051
+          },
+          {
+            "docId": "394252",
+            "title": "Authentic Karahi Curry (With Base Sauce)",
+            "score": 24.8026
+          },
+          {
+            "docId": "211475",
+            "title": "Indian Chicken Curry Pilaf",
+            "score": 24.4831
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 3.08,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "454787",
+            "title": "Best Authentic Mexican Tamales Ever!",
+            "score": 35.7545
+          },
+          {
+            "docId": "211475",
+            "title": "Indian Chicken Curry Pilaf",
+            "score": 33.9118
+          },
+          {
+            "docId": "394252",
+            "title": "Authentic Karahi Curry (With Base Sauce)",
+            "score": 33.7506
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.238
+      },
+      "lucene_bm25": {
+        "time_ms": 9.91,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "211475",
+            "title": "Indian Chicken Curry Pilaf",
+            "score": 15.3328
+          },
+          {
+            "docId": "126584",
+            "title": "Chicken in Coconut Milk (Indian)",
+            "score": 10.8981
+          },
+          {
+            "docId": "202634",
+            "title": "Chinese Chicken Salad With Peanut Butter Dressing",
+            "score": 10.4934
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 5.33,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "211475",
+            "title": "Indian Chicken Curry Pilaf",
+            "score": 12.3834
+          },
+          {
+            "docId": "126584",
+            "title": "Chicken in Coconut Milk (Indian)",
+            "score": 10.4092
+          },
+          {
+            "docId": "279973",
+            "title": "Authentic Margarita Mix",
+            "score": 9.1166
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.5,
+        "kendall_tau": 0.8
+      }
+    },
+    {
+      "qid": "q25",
+      "query": "simple weeknight dinner",
+      "notes": "Difficulty + occasion",
+      "simple_bm25": {
+        "time_ms": 0.71,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "224364",
+            "title": "Weeknight Manicotti",
+            "score": 29.8829
+          },
+          {
+            "docId": "352925",
+            "title": "Easy Weeknight Beef Stroganoff",
+            "score": 24.3844
+          },
+          {
+            "docId": "487949",
+            "title": "Slow-Cooker Weeknight Chili(Cook's Country)",
+            "score": 18.0737
+          }
+        ]
+      },
+      "simple_tfidf": {
+        "time_ms": 0.35,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "224364",
+            "title": "Weeknight Manicotti",
+            "score": 25.2612
+          },
+          {
+            "docId": "352925",
+            "title": "Easy Weeknight Beef Stroganoff",
+            "score": 25.2612
+          },
+          {
+            "docId": "487949",
+            "title": "Slow-Cooker Weeknight Chili(Cook's Country)",
+            "score": 22.1584
+          }
+        ]
+      },
+      "simple_bm25_vs_tfidf": {
+        "overlap_ratio": 0.7,
+        "kendall_tau": 0.81
+      },
+      "lucene_bm25": {
+        "time_ms": 5.23,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "282557",
+            "title": "Lemon Meringue Martini",
+            "score": 12.6591
+          },
+          {
+            "docId": "224364",
+            "title": "Weeknight Manicotti",
+            "score": 9.6786
+          },
+          {
+            "docId": "279973",
+            "title": "Authentic Margarita Mix",
+            "score": 9.115
+          }
+        ]
+      },
+      "lucene_tfidf": {
+        "time_ms": 3.53,
+        "num_results": 10,
+        "top3": [
+          {
+            "docId": "224364",
+            "title": "Weeknight Manicotti",
+            "score": 11.7631
+          },
+          {
+            "docId": "277799",
+            "title": "Boiled Dinner",
+            "score": 10.1172
+          },
+          {
+            "docId": "38257",
+            "title": "Simple Shortbread",
+            "score": 8.8214
+          }
+        ]
+      },
+      "simple_vs_lucene_bm25": {
+        "overlap_ratio": 0.5,
+        "kendall_tau": 0.2
+      }
+    }
+  ],
+  "summary": {
+    "simple_avg_bm25_time_ms": 2.36,
+    "simple_avg_tfidf_time_ms": 1.96,
+    "lucene_avg_bm25_time_ms": 19.61,
+    "lucene_avg_tfidf_time_ms": 13.53,
+    "avg_overlap_simple_vs_lucene": 0.67,
+    "lucene_speedup": 0.12
+  }
+}

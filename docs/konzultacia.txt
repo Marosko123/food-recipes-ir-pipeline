@@ -1,0 +1,115 @@
+====== Konzultácia 3: Spracovanie veľkých dát ======
+
+===== 1) Rozšírenie kódu z prvej fázy =====
+
+V prvej fáze som mal jednoduchý parser s ''lxml'', ktorý spracovával HTML súbory sekvenčne. Teraz som to prepísal na PySpark:
+  * Nový súbor ''spark_jobs/enwiki_spark_parser.py'' spracuje 25 miliónov wiki stránok za 44 minút
+  * Namiesto for-cyklu nad súbormi používam SparkSession a distribuované spracovanie
+  * Výsledok: 8 459 kulinárskych článkov rozdelených do 6 typov (jedlá, ingrediencie, kuchyne, techniky, nástroje, korenie)
+
+===== 2) Extrakcia Wikipedia dumpu =====
+
+Stiahol som celý anglický Wikipedia dump ''enwiki-latest-pages-articles.xml.bz2'' (20GB komprimovaný).
+
+Spark ho spracováva takto:
+  * Čítam súbor po riadkoch (streaming), dekomprimujem bz2 za behu
+  * Parsujem XML ''<nowiki><page></nowiki>'' bloky pomocou regulárnych výrazov
+  * Filtrujem len kulinárske články podľa kľúčových slov v abstrakte a kategóriách
+  * Z 25 113 876 stránok som našiel 8 459 relevantných článkov (0,034%)
+
+Výstup sú dva súbory:
+  * ''data/normalized/wiki_culinary_v2.jsonl'' — 8 459 článkov v JSON formáte
+  * ''entities/wiki_gazetteer_v2.tsv'' — 8 459 záznamov pre vyhľadávanie entít
+
+===== 3) REGEX príklady =====
+
+Z wiki článkov vyťahujem štrukturované dáta pomocou regulárnych výrazov:
+
+<code python>
+# Infobox obsahuje údaje ako krajina pôvodu, ingrediencie, čas prípravy
+_INFOBOX_PATTERN = re.compile(r'\{\{Infobox[^}]*?\n(.*?)\n\}\}', re.DOTALL | re.IGNORECASE)
+
+# History sekcia — ako jedlo vzniklo, jeho história
+_HISTORY_PATTERN = re.compile(r'==+\s*History\s*==+(.*?)(?:==+|\Z)', re.DOTALL | re.IGNORECASE)
+
+# Kategórie z wiki (napr. "Italian cuisine", "Vegetables")
+_CATEGORY_PATTERN = re.compile(r'\[\[Category:([^\]]+)\]\]', re.IGNORECASE)
+
+# Krajina pôvodu priamo z Infoboxu
+_ORIGIN_PATTERN = re.compile(r'\|\s*origin[^=]*=\s*([^\n\|]+)', re.IGNORECASE)
+</code>
+
+Čo sa mi podarilo vytiahnuť:
+  * 2 973 článkov (35%) má History sekciu s popisom pôvodu
+  * Z Infoboxov mám krajinu pôvodu, zoznam ingrediencií a varianty receptov
+
+===== 4) JOIN implementácia =====
+
+**Prečo JOIN potrebujem:**
+  * Mám 5 647 receptov z Food.com, ale chýbajú im štruktúrované informácie
+  * Wikipedia má bohaté dáta o ingredienciách (cesnak = Allium sativum), kuchyniach (mexická, talianska) a technikách (restovanie, pečenie)
+  * Potrebujem ich spojiť — recepty obohátiť o wiki znalosti
+
+**Ako to funguje:**
+  - Načítam ''wiki_gazetteer_v2.tsv'' (8 459 entít) a postavím Aho-Corasick automat
+  - Pre každý z 5 647 receptov hľadám zhody v ingredienciách, inštrukciách a názve
+  - Keď nájdem zhodu (napr. "garlic"), pridám link na wiki článok "Garlic" typu "ingredient"
+  - Ak recept nemá uvedenú kuchyňu, inferujem ju zo zhodných entít (napr. "chipotle" - mexická)
+
+**Výstup:** ''recipes_enriched.jsonl'' — recepty s poľom ''wiki_links'' obsahujúcim nájdené entity
+
+**Technická poznámka:** Aho-Corasick má zložitosť O(n+m), čo znamená že prejdem text raz a nájdem všetky zhody naraz, nie postupne pre každý výraz. Pri 8 459 entitách je to oveľa rýchlejšie ako 8 459 samostatných vyhľadávaní.
+
+===== 5) Unikátne wiki stránky =====
+
+Celkovo som pripojil **8 459 unikátnych kulinárskych článkov** z Wikipédie.
+
+Rozdelenie podľa typu:
+
+^ Typ ^ Počet ^ Podiel ^
+| Jedlá (dish) | 5 285 | 62,5% |
+| Ingrediencie | 2 606 | 30,8% |
+| Techniky | 172 | 2,0% |
+| Korenie/omáčky | 170 | 2,0% |
+| Kuchyne | 151 | 1,8% |
+| Nástroje | 75 | 0,9% |
+
+Najviac je jedál (pizza, sushi, guláš...) a ingrediencií (cesnak, paradajky, bazalka...), čo dáva zmysel.
+
+===== 6) Zaujímavé atribúty z wiki =====
+
+Z každého wiki článku vyťahujem 11 polí. Najdôležitejšie sú:
+
+**1) Redirects (presmerovania):**
+  * Obsahujú všetky alternatívne názvy ingrediencie
+  * Napr. "Allium sativum", "garlic clove" - "Garlic"
+  * Vďaka tomu viem normalizovať — v recepte môže byť "cesnak", "garlic", "Allium sativum" a ja to spojím pod jeden článok
+
+**2) History sekcia:**
+  * 35% článkov má históriu (2 973 z 8 459)
+  * Opisuje odkiaľ jedlo pochádza, ako sa vyvíjalo
+  * Napr. pizza vznikla v Neapole, sushi má korene v Japonsku
+  * Užitočné pre kontextové zobrazenie receptov
+
+**3) Infobox (štruktúrované dáta):**
+  * Obsahuje krajinu pôvodu, zoznam ingrediencií, alternatívne názvy, čas prípravy
+  * Napr. pre "Guacamole": origin=Mexico, main_ingredient=Avocado
+  * Tieto dáta použijem na automatické určenie kuchyne
+
+**4) Origin country:**
+  * Vyextrahované priamo z Infoboxu
+  * Pomáha inferencii kuchyne — ak recept obsahuje "chipotle" (origin=Mexico), pravdepodobne je mexický
+
+**5) Type (typ entity):**
+  * Automaticky roztriedené podľa kľúčových slov a kategórií
+  * Vďaka tomu viem rozlíšiť ingredienciu (cesnak) od techniky (restovanie) od jedla (guláš)
+
+**Prečo je to užitočné:**
+  * Normalizácia názvov — "tomato", "Solanum lycopersicum", "tomatoes" je jedno a to isté
+  * Automatická inferencia kuchyne — ak recept má "soy sauce" + "ginger" + "sesame oil", je pravdepodobne ázijský
+  * Kontextové info — pri zobrazení receptu viem ukázať históriu ingrediencie
+  * Lepšie vyhľadávanie — viem hľadať podľa typu (len ingrediencie, len techniky)
+
+
+===== 3. konzultácia =====
+3. konzultacia uzavrete:**1b**

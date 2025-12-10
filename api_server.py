@@ -38,7 +38,7 @@ def initialize_searcher():
     global searcher
     
     # 1. Try PyLucene Index (v2)
-    lucene_index_path = 'index/lucene/v2'
+    lucene_index_path = 'index/v2'
     if LUPYNE_AVAILABLE and Path(lucene_index_path).exists():
         try:
             logger.info(f"Attempting to load PyLucene index from {lucene_index_path}...")

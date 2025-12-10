@@ -1,0 +1,3620 @@
+{
+  "queries": {
+    "1": "italian sausage soup",
+    "6": "mexican beef tacos",
+    "7": "thai peanut noodles",
+    "14": "keto friendly meatballs",
+    "3": "creamy garlic shrimp pasta",
+    "11": "low carb cheesecake",
+    "19": "pan fried pork chops",
+    "13": "vegan chocolate mousse",
+    "12": "gluten free brownies",
+    "17": "grilled vegetables marinade"
+  },
+  "criteria": {
+    "1": [
+      "sausage"
+    ],
+    "6": [
+      "taco",
+      "fajita",
+      "burrito",
+      "enchilada",
+      "mexican.*beef",
+      "beef.*mexican"
+    ],
+    "7": [
+      "thai",
+      "peanut.*noodle",
+      "noodle.*peanut",
+      "pad\\s*thai"
+    ],
+    "14": [
+      "meatball"
+    ],
+    "3": [
+      "shrimp",
+      "garlic.*shrimp",
+      "shrimp.*garlic",
+      "scampi"
+    ],
+    "11": [
+      "cheesecake",
+      "cheese\\s*cake"
+    ],
+    "19": [
+      "pork.*chop",
+      "chop.*pork"
+    ],
+    "13": [
+      "mousse",
+      "chocolate.*mousse",
+      "vegan.*chocolate"
+    ],
+    "12": [
+      "brownie"
+    ],
+    "17": [
+      "marinade",
+      "grill.*vegetable",
+      "vegetable.*grill"
+    ]
+  },
+  "annotations": {
+    "1": {
+      "278861": {
+        "title": "Lentil Soup With Italian Sausage, Copycat , Cucina Cucina",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "42028": {
+        "title": "Italian Sausage Soup",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "265640": {
+        "title": "Italian (Turkey) Sausage Soup",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "147757": {
+        "title": "Italian Sausage and Vegetable Saute",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "120094": {
+        "title": "Italian Stuffed Beef &amp; Sausage Bell Peppers",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "152433": {
+        "title": "Spaghetti Bolognese Sauce (Beef and Italian Sausage)",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "104562": {
+        "title": "Italian Sausage With Fusilli",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "279298": {
+        "title": "Baked Rice With Sausage",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "392859": {
+        "title": "Italian Sausage and Beef Stew",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "354710": {
+        "title": "Italian Style Chicken, Sausage &amp; Potato Bake",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "323469": {
+        "title": "Baked Italian Heros",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "257821": {
+        "title": "Meaty Mostaccioli",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "328717": {
+        "title": "Orecchiette With Broccoli Rabe and Sausage",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "261432": {
+        "title": "Polpette Alla Casalinga",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "247644": {
+        "title": "Italian Ziti Medley",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "72237": {
+        "title": "Mostaccioli (Baked Pasta With Creamy Sauce &amp; Italian Sausag",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "510760": {
+        "title": "My Famous 'Baked' Mostaccioli",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "359112": {
+        "title": "Sausage Pizza Soup",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Simple_TFIDF",
+          "Lucene_TFIDF"
+        ]
+      },
+      "278862": {
+        "title": "Mediterranean Lasagna",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "28116": {
+        "title": "Sausage Scaloppine",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "66499": {
+        "title": "Italian Sausage & Potatoes",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "280772": {
+        "title": "Sausage and Broccoli Soup",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "222131": {
+        "title": "Crock Pot Tuscany Peasant Soup",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "162804": {
+        "title": "Crouton Sausage Breakfast Bake",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "190872": {
+        "title": "Italian Sausage Meatballs",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "358004": {
+        "title": "Sausage Pasta Soup",
+        "relevant": true,
+        "reason": "match: sausage",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "279170": {
+        "title": "Italian Tomato-Corn Soup",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      }
+    },
+    "6": {
+      "349371": {
+        "title": "Taco Casserole",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "279306": {
+        "title": "Cornbread Taco Bake",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "85532": {
+        "title": "taco surprise casserole",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "282554": {
+        "title": "Taco Taters",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "234912": {
+        "title": "Tacos De Pollo",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "138306": {
+        "title": "Foil Pack Taco Chicken Dinner",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "107343": {
+        "title": "Easy Tacos",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "277874": {
+        "title": "Low Cal  Beef Taco Soup",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25"
+        ]
+      },
+      "78535": {
+        "title": "Taco Salad Supreme",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "209642": {
+        "title": "Taco Salad",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "260263": {
+        "title": "Taco Soup With Venison",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "278740": {
+        "title": "Slow Cooker Mexican Beef Stew",
+        "relevant": true,
+        "reason": "match: mexican.*beef",
+        "found_by": [
+          "Simple_TFIDF",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "153150": {
+        "title": "Taco Chicken   Wings",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "289642": {
+        "title": "Quick and Easy Taco Salad",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "224280": {
+        "title": "Easy Taco Casserole",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "441951": {
+        "title": "Layered Taco Casserole",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "282458": {
+        "title": "Tijuana Torte",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "213336": {
+        "title": "Mexican Macaroni Salad",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "114558": {
+        "title": "Addictive Mexican Stew",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "280610": {
+        "title": "Mexican Steak Casserole",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "13651": {
+        "title": "Mexican Manicotti",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "225907": {
+        "title": "Amy's Favorite Indian Fry Bread Tacos",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "120062": {
+        "title": "Machaca (Authentic Mexican Shredded Beef)",
+        "relevant": true,
+        "reason": "match: mexican.*beef",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "282542": {
+        "title": "Mexican Beef Skillet",
+        "relevant": true,
+        "reason": "match: mexican.*beef",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "475385": {
+        "title": "Quinoa Bean Tacos",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "277728": {
+        "title": "Pinto Bean Tacos :)",
+        "relevant": true,
+        "reason": "match: taco",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "27836": {
+        "title": "Mexican Chilaquillas",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      }
+    },
+    "7": {
+      "504643": {
+        "title": "Thai Chicken Noodle Salad (Gluten Free)",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "279848": {
+        "title": "King Du Noodles",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "277007": {
+        "title": "Thai Salad Rolls",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "280697": {
+        "title": "Tom Yum Goong (Spicy Thai Shrimp Soup)",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "280224": {
+        "title": "Robin Miller's Thai Salad",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "349679": {
+        "title": "Super Yummy Vegetarian Pad Thai",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "370344": {
+        "title": "Stir-Fry Noodles With Chicken and Macadamias (Australian)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "204483": {
+        "title": "Thai Mango Salad",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "28097": {
+        "title": "Broccoli &amp; Ramen Noodles",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "440703": {
+        "title": "Sweet Chilli Prawn/Shrimp and Basil Noodles",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "119423": {
+        "title": "Thai-curried Game Hens",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "113873": {
+        "title": "Basic Thai Sweet Chili Sauce",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "340794": {
+        "title": "Thai Red Rice Pudding",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "33910": {
+        "title": "Thai Iced Tea",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "81949": {
+        "title": "Thai Sweet Chilli Sauce",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "115072": {
+        "title": "Thai Chicken - Crock Pot",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "282404": {
+        "title": "Thai Masaman Chicken, &quot;gaeng Masaman Gai&quot;",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "279591": {
+        "title": "Chile Coconut Cream Sauce",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "280580": {
+        "title": "Oodle Noodles",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "80076": {
+        "title": "Butterscotch Haystacks",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "62320": {
+        "title": "Fast Pork and Peanut Stir-Fry",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "167899": {
+        "title": "Sesame Noodles",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "257826": {
+        "title": "Thai Peanut Sauce",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "536476": {
+        "title": "Thai Peanut Coconut Chicken",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "330590": {
+        "title": "Parmesan Noodles",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "279974": {
+        "title": "Thai Napa Cabbage and Peanut Soup",
+        "relevant": true,
+        "reason": "match: thai",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      }
+    },
+    "14": {
+      "279679": {
+        "title": "Easy &amp; Kid Friendly Sweet Green Beans",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "279514": {
+        "title": "Macaroni and Cheese- Freezer Friendly",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "327355": {
+        "title": "The Best Friends Granola Bars",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "293368": {
+        "title": "Kittencal's Honey-Garlic Glazed Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "403545": {
+        "title": "Tailgate Grape Jelly Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "280753": {
+        "title": "Bavarian Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "274910": {
+        "title": "Ravioli and Meatball Bake",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "279650": {
+        "title": "Fast and Easy Meatball Calzones",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "110680": {
+        "title": "Chile Verde Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "162807": {
+        "title": "Creamy Meatball Casserole",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "173374": {
+        "title": "Beef Stewed in Red Pepper Paste",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "208538": {
+        "title": "Burrito Filling",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "39318": {
+        "title": "Ketjap Manis",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "71026": {
+        "title": "Pesto",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "43194": {
+        "title": "Lightning Cake (Also Called Blitz Kuchen)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "203502": {
+        "title": "No-Knead Bread (Refrigerated Dough/Hybrid Method)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "96980": {
+        "title": "Authentic Injera (aka Ethiopian Flat Bread)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "206081": {
+        "title": "Grandma Geldner's Apfel Kuchen (Apple Kuchen)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "281184": {
+        "title": "Kaesekuchen",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "431259": {
+        "title": "Easy Crockpot Meatballs and Gravy (Slow Cooker)",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "26986": {
+        "title": "Waikiki Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "28210": {
+        "title": "Frito Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "199815": {
+        "title": "Chicago Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "281904": {
+        "title": "Czechoslovakian Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "87735": {
+        "title": "Creole Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "217981": {
+        "title": "Reuben Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "120268": {
+        "title": "Baked Meatballs",
+        "relevant": true,
+        "reason": "match: meatball",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      }
+    },
+    "3": {
+      "301002": {
+        "title": "Shrimp and Angel Hair Pasta",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "278241": {
+        "title": "Shrimp and Pasta in a Tomato-Chile Cream Sauce",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "520728": {
+        "title": "Orange Shrimp Scampi",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "281372": {
+        "title": "Pasta With Spinach, Nutmeg, and Shrimp",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "354241": {
+        "title": "Walley's Shrimp Scampi",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25"
+        ]
+      },
+      "212117": {
+        "title": "Thai Shrimp-And-Pasta Salad",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "450756": {
+        "title": "Buddy Valastro's Shrimp Scampi",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25"
+        ]
+      },
+      "100485": {
+        "title": "Spicy Shrimp and Pasta",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "281012": {
+        "title": "Garlic Shrimp and Grits",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "287767": {
+        "title": "Shrimp Oreganato",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "280697": {
+        "title": "Tom Yum Goong (Spicy Thai Shrimp Soup)",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "280939": {
+        "title": "Parmesan Shrimp  Au Gratin With Sherry",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "420691": {
+        "title": "Tilapia With a Creamy Shrimp &amp; Crab White Wine Sauce",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "18691": {
+        "title": "Shrimp Scampi with Spaghetti and Zucchini",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "239052": {
+        "title": "Shrimp &amp; Asparagus Risotto - (The Olive Garden) -  Official",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "296028": {
+        "title": "Portuguese (Acorean) Shrimp",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "280080": {
+        "title": "Spicy Beef With Shrimp and Bok Choy",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "175377": {
+        "title": "Mexican Shrimp Cocktail, a Nice Twist!",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "15222": {
+        "title": "Mushroom Pasta Scampi",
+        "relevant": true,
+        "reason": "match: scampi",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "75527": {
+        "title": "Shrimp alla Aglio",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "116796": {
+        "title": "Garlic Chicken Pasta Primavera",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "494206": {
+        "title": "The Best Garlic Shrimp Ever",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "154384": {
+        "title": "Pasta With Garlic and Oil (Pasta Aglio E Olio)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "280826": {
+        "title": "Creamy Shrimp &amp; Vegetable Casserole",
+        "relevant": true,
+        "reason": "match: shrimp",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      }
+    },
+    "11": {
+      "281820": {
+        "title": "Guilt and Fat Free Low Calorie Pumpkin Cheesecake Pudding",
+        "relevant": true,
+        "reason": "match: cheesecake",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25"
+        ]
+      },
+      "398742": {
+        "title": "Low Carb-One Minute Chocolate Mini-Cake for One!",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25"
+        ]
+      },
+      "280277": {
+        "title": "Pond Scum Soup(Low Carb)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "485923": {
+        "title": "Cheesecake Factory's Oreo Dream Extreme Cheesecake",
+        "relevant": true,
+        "reason": "match: cheesecake",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "187107": {
+        "title": "Ww  Fast Strawberry Cheesecake Pie",
+        "relevant": true,
+        "reason": "match: cheesecake",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25"
+        ]
+      },
+      "67654": {
+        "title": "Low Carb Chili",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "281077": {
+        "title": "Low Carb Peanut Dipping Sauce",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "27832": {
+        "title": "Triple Chocolate Cheesecake",
+        "relevant": true,
+        "reason": "match: cheesecake",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "12021": {
+        "title": "Swirled Cranberry Cheesecake",
+        "relevant": true,
+        "reason": "match: cheesecake",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "373536": {
+        "title": "Low Carb Chicken Casserole",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "329760": {
+        "title": "B-52 Cheesecake",
+        "relevant": true,
+        "reason": "match: cheesecake",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "72927": {
+        "title": "Pumpkin Cheesecake",
+        "relevant": true,
+        "reason": "match: cheesecake",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "449515": {
+        "title": "Low Carb Hungarian Goulash",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "280897": {
+        "title": "Low-Carb Spaghetti Squash",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "30226": {
+        "title": "Low Carb Pasta",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "182348": {
+        "title": "Low-Carb Pork Stew",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "499609": {
+        "title": "Amazing Low Carb Waffles",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "278496": {
+        "title": "Cheesy Eggs, Low Carb",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "177845": {
+        "title": "Easy Low Carb Bread",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      }
+    },
+    "19": {
+      "243416": {
+        "title": "Pork Chops With Goat Cheese and Caramelized Onion",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "61738": {
+        "title": "Pork chops and peppers",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "279979": {
+        "title": "Pork Chops With Apples and Raisins",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "207794": {
+        "title": "Easy, Crunchy Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "317041": {
+        "title": "Pork Chops With Apples and Onion",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "280534": {
+        "title": "Smothered Pork Chops (Crock Pot)",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "355762": {
+        "title": "Sweet Russian Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "79562": {
+        "title": "Pork Chops with Curried Caramelized Onions and Apples",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "281329": {
+        "title": "Peach-Chili Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "241689": {
+        "title": "Pork Chops in Onion Gravy",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "278625": {
+        "title": "Baked Ranch Chops With Sour Cream Ranch Sauce",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "252649": {
+        "title": "Hoisin Pork Chops With Pineapple Green Onion Relish",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "466900": {
+        "title": "Loaded Baked Potato Soup for Crockpot",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "41744": {
+        "title": "Spinach and Feta Stuffed Chicken Breasts",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "366302": {
+        "title": "Spinach- Poblano Enchiladas",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "213339": {
+        "title": "Spicy Pork Patties",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "260907": {
+        "title": "Moroccan Beef &amp; Cauliflower",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "280953": {
+        "title": "Tangerine Persimmon Sauce",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "306133": {
+        "title": "Greek Honey-Lemon Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "269825": {
+        "title": "Tyler Florence's Ultimate Spaghetti and Meatballs",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "265174": {
+        "title": "Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "11901": {
+        "title": "Stuffed Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "118759": {
+        "title": "Tasty Brown Sugar Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "108251": {
+        "title": "Smoked Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "312443": {
+        "title": "Pineapple Garlic Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "238539": {
+        "title": "Tex-Mex Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "182422": {
+        "title": "Oven-Baked Pineapple Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "76925": {
+        "title": "Glazed Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "282707": {
+        "title": "Pork Chops Primavera",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "301448": {
+        "title": "Pork Chops Marsala",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "282713": {
+        "title": "Sylvia's Sassy Pork Chops",
+        "relevant": true,
+        "reason": "match: pork.*chop",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      }
+    },
+    "13": {
+      "8678": {
+        "title": "Vegan Heart Attack Chocolate Doughnuts",
+        "relevant": true,
+        "reason": "match: vegan.*chocolate",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "279786": {
+        "title": "Gordon Ramsay Chocolate Mousse",
+        "relevant": true,
+        "reason": "match: mousse",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "177428": {
+        "title": "Easy Vegan Ravioli",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "459280": {
+        "title": "Vegan Cowboy Cookies",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "277722": {
+        "title": "Oreo Chocolate Mousse (Heaven)",
+        "relevant": true,
+        "reason": "match: mousse",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "277871": {
+        "title": "Pistachio Mousse Brownie Torte",
+        "relevant": true,
+        "reason": "match: mousse",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "278401": {
+        "title": "Chocolate Banana and Strawberry Mousse",
+        "relevant": true,
+        "reason": "match: mousse",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "282490": {
+        "title": "Chocolate Peanut Butter Mousse",
+        "relevant": true,
+        "reason": "match: mousse",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "20661": {
+        "title": "Chocolate Raspberry Cake",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "59876": {
+        "title": "Blender Chocolate Mousse",
+        "relevant": true,
+        "reason": "match: mousse",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "236968": {
+        "title": "Favorite Vegan Chili",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "344272": {
+        "title": "Vegan Banana Crumble",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "336777": {
+        "title": "Vegan Shepherd's Pie",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "281817": {
+        "title": "Vegan Chicken-Less Pot Pie",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "277715": {
+        "title": "Vegan Alfredo Sauce",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "277612": {
+        "title": "Vegan Vanilla - Banana  Custard",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "271033": {
+        "title": "Amazing Vegan Cinnamon Buns",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "279540": {
+        "title": "Vegan Pecan Pie Cupcakes",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "105457": {
+        "title": "Squidgy Chocolate Log",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "288322": {
+        "title": "Bailey's Chocolate Mousse (Perfect for St. Patrick's Day)",
+        "relevant": true,
+        "reason": "match: mousse",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "282414": {
+        "title": "Vegan Liquid-Chocolate Mocha",
+        "relevant": true,
+        "reason": "match: vegan.*chocolate",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "443974": {
+        "title": "Mexican Hot Chocolate Snickerdoodles (Vegan)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      }
+    },
+    "12": {
+      "500622": {
+        "title": "Adzuki Bean Brownies (Gluten-Free, Vegan, Macrobiotic)",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "459888": {
+        "title": "Fudgy Salty Peanut Butter Brownies",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "376177": {
+        "title": "Chocolate Walnut Brownies",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "355944": {
+        "title": "King Arthur Flour's Best Fudge Brownies",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "280666": {
+        "title": "Peppermint Brownies",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "279836": {
+        "title": "Rehab Brownies",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "145900": {
+        "title": "Quadruple Chocolate Brownies",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "401542": {
+        "title": "Super Easy Three Ingredient Brownies from Scratch!",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25"
+        ]
+      },
+      "134907": {
+        "title": "Irish Cream Brownies",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "382974": {
+        "title": "Peanut Butter Crispy Brownies",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "272011": {
+        "title": "Wicked Easy Fudge Brownies",
+        "relevant": true,
+        "reason": "match: brownie",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "279601": {
+        "title": "Gluten Free Brown Gravy",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "439212": {
+        "title": "Sweet Shortcrust Pastry - Gluten-Free",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "309848": {
+        "title": "Vanilla Sponge Cake- Gluten, Dairy, Nut and Egg Free",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "504643": {
+        "title": "Thai Chicken Noodle Salad (Gluten Free)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "253039": {
+        "title": "Gluten Free Corn Dogs",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "257429": {
+        "title": "Potet Klub (Norwegian Potatoes) (Could Be Gluten-Free)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "148380": {
+        "title": "Gluten Free Oatmeal Raisin Cookies",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "281068": {
+        "title": "Gluten Free Oatmeal Peanut Butter Cookies",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "357117": {
+        "title": "Lemon Scones - Gluten Free",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "294999": {
+        "title": "Gluten Free Alfredo Sauce",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "377273": {
+        "title": "Gluten Free Chocolate Cupcakes",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      }
+    },
+    "17": {
+      "379740": {
+        "title": "Grilled Portabella Mushrooms With Balsamic Marinade",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "245404": {
+        "title": "Grilled Shoulder Lamb Chops With Garlic-Rosemary Marinade",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "397769": {
+        "title": "Chipotle Marinade for Grilled Chicken",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Simple_BM25",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "345130": {
+        "title": "Sirloin Steak Tips With Garlic, Ginger and Soy Marinade",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "204191": {
+        "title": "Flank Steak With Lemon Shallot Marinade",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Simple_BM25",
+          "Simple_TFIDF"
+        ]
+      },
+      "217910": {
+        "title": "Marinade for Chicken Kabobs",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "65774": {
+        "title": "Like American Grill's Smoked Lemon Honey Marinated Mahi Mahi",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "281268": {
+        "title": "Grilled Swordfish a L'orange",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "21099": {
+        "title": "Simple Grilled Lamb Chops",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "305694": {
+        "title": "So Much More Than Garlic Butter Grilled Shrimp",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_BM25"
+        ]
+      },
+      "229727": {
+        "title": "Anticuchos (Peruvian Beef Kebabs)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "447754": {
+        "title": "Vietnamese Rice Noodle Salad With Grilled Tofu",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "27802": {
+        "title": "Lower-carb Teriyaki Marinade",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Simple_TFIDF",
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "123177": {
+        "title": "Polynesian Marinade",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Simple_TFIDF",
+          "Lucene_TFIDF"
+        ]
+      },
+      "278976": {
+        "title": "Kiss Burgers (Keep It Simple Stupid!)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "108444": {
+        "title": "Grilled Mahi Mahi With Garlic Sesame Sauce",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "93961": {
+        "title": "Grilled Chicken and Veggie Kabobs Atop Sage Rice",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "109728": {
+        "title": "Balsamic Rib-Eye Steak With Bleu Cheese Sauce",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Simple_TFIDF"
+        ]
+      },
+      "48239": {
+        "title": "Teriyaki Chicken",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "381935": {
+        "title": "Cajun Grilled Shrimp",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "70299": {
+        "title": "Salmon (Microwave-Cooked)",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "13958": {
+        "title": "Grilled Tuna & Vegetables W/yellow Pepper Sauce",
+        "relevant": true,
+        "reason": "match: grill.*vegetable",
+        "found_by": [
+          "Lucene_BM25",
+          "Lucene_TFIDF"
+        ]
+      },
+      "280470": {
+        "title": "Italian Chicken Wraps",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "278705": {
+        "title": "Brown Rice and Grilled Vegetable Salad",
+        "relevant": true,
+        "reason": "match: grill.*vegetable",
+        "found_by": [
+          "Lucene_BM25"
+        ]
+      },
+      "278343": {
+        "title": "Vegetables Supreme",
+        "relevant": false,
+        "reason": "no match",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "138814": {
+        "title": "Shrimp Marinade",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "386678": {
+        "title": "Garlic Sesame Marinade",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      },
+      "93411": {
+        "title": "Outback Steakhouse Marinade",
+        "relevant": true,
+        "reason": "match: marinade",
+        "found_by": [
+          "Lucene_TFIDF"
+        ]
+      }
+    }
+  },
+  "metrics": {
+    "1": {
+      "query": "italian sausage soup",
+      "total_relevant_in_pool": 18,
+      "systems": {
+        "Simple_BM25": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.2777777777777778,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Lentil Soup With Italian Sausage, Copycat , Cucina Cucina",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Italian Sausage Soup",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Italian (Turkey) Sausage Soup",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Italian Sausage and Vegetable Saute",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Italian Stuffed Beef &amp; Sausage Bell Peppers",
+              "relevant": true
+            }
+          ]
+        },
+        "Simple_TFIDF": {
+          "precision_at_k": 0.2,
+          "recall_at_k": 0.05555555555555555,
+          "relevant_in_top_k": 1,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Baked Italian Heros",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Meaty Mostaccioli",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Orecchiette With Broccoli Rabe and Sausage",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Polpette Alla Casalinga",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Italian Ziti Medley",
+              "relevant": false
+            }
+          ]
+        },
+        "Lucene_BM25": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.2777777777777778,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Italian Sausage Soup",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Lentil Soup With Italian Sausage, Copycat , Cucina Cucina",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Sausage Scaloppine",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Italian (Turkey) Sausage Soup",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Italian Style Chicken, Sausage &amp; Potato Bake",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_TFIDF": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.2777777777777778,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Italian Sausage Soup",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Italian (Turkey) Sausage Soup",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Italian Sausage & Potatoes",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Italian Sausage Meatballs",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Lentil Soup With Italian Sausage, Copycat , Cucina Cucina",
+              "relevant": true
+            }
+          ]
+        }
+      }
+    },
+    "6": {
+      "query": "mexican beef tacos",
+      "total_relevant_in_pool": 21,
+      "systems": {
+        "Simple_BM25": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.23809523809523808,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Taco Casserole",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Cornbread Taco Bake",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "taco surprise casserole",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Taco Taters",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Tacos De Pollo",
+              "relevant": true
+            }
+          ]
+        },
+        "Simple_TFIDF": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.23809523809523808,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Taco Soup With Venison",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Slow Cooker Mexican Beef Stew",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Taco Chicken   Wings",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Quick and Easy Taco Salad",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Easy Taco Casserole",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_BM25": {
+          "precision_at_k": 0.6,
+          "recall_at_k": 0.14285714285714285,
+          "relevant_in_top_k": 3,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Tacos De Pollo",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Easy Tacos",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Mexican Steak Casserole",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Mexican Manicotti",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Low Cal  Beef Taco Soup",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_TFIDF": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.23809523809523808,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Easy Tacos",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Mexican Beef Skillet",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Tacos De Pollo",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Slow Cooker Mexican Beef Stew",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Machaca (Authentic Mexican Shredded Beef)",
+              "relevant": true
+            }
+          ]
+        }
+      }
+    },
+    "7": {
+      "query": "thai peanut noodles",
+      "total_relevant_in_pool": 16,
+      "systems": {
+        "Simple_BM25": {
+          "precision_at_k": 0.8,
+          "recall_at_k": 0.25,
+          "relevant_in_top_k": 4,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Thai Chicken Noodle Salad (Gluten Free)",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "King Du Noodles",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Thai Salad Rolls",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Tom Yum Goong (Spicy Thai Shrimp Soup)",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Robin Miller's Thai Salad",
+              "relevant": true
+            }
+          ]
+        },
+        "Simple_TFIDF": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.3125,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Tom Yum Goong (Spicy Thai Shrimp Soup)",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Thai Mango Salad",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Thai-curried Game Hens",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Basic Thai Sweet Chili Sauce",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Thai Red Rice Pudding",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_BM25": {
+          "precision_at_k": 0.6,
+          "recall_at_k": 0.1875,
+          "relevant_in_top_k": 3,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Robin Miller's Thai Salad",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Oodle Noodles",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Thai Mango Salad",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Thai Salad Rolls",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Butterscotch Haystacks",
+              "relevant": false
+            }
+          ]
+        },
+        "Lucene_TFIDF": {
+          "precision_at_k": 0.4,
+          "recall_at_k": 0.125,
+          "relevant_in_top_k": 2,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Thai Peanut Sauce",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Thai Peanut Coconut Chicken",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Parmesan Noodles",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Oodle Noodles",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Sesame Noodles",
+              "relevant": false
+            }
+          ]
+        }
+      }
+    },
+    "14": {
+      "query": "keto friendly meatballs",
+      "total_relevant_in_pool": 15,
+      "systems": {
+        "Simple_BM25": {
+          "precision_at_k": 0.4,
+          "recall_at_k": 0.13333333333333333,
+          "relevant_in_top_k": 2,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Easy &amp; Kid Friendly Sweet Green Beans",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Macaroni and Cheese- Freezer Friendly",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "The Best Friends Granola Bars",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Kittencal's Honey-Garlic Glazed Meatballs",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Tailgate Grape Jelly Meatballs",
+              "relevant": true
+            }
+          ]
+        },
+        "Simple_TFIDF": {
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "relevant_in_top_k": 0,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Beef Stewed in Red Pepper Paste",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Burrito Filling",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Ketjap Manis",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Easy &amp; Kid Friendly Sweet Green Beans",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Pesto",
+              "relevant": false
+            }
+          ]
+        },
+        "Lucene_BM25": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.3333333333333333,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Tailgate Grape Jelly Meatballs",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Bavarian Meatballs",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Kittencal's Honey-Garlic Glazed Meatballs",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Chile Verde Meatballs",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Easy Crockpot Meatballs and Gravy (Slow Cooker)",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_TFIDF": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.3333333333333333,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Bavarian Meatballs",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Tailgate Grape Jelly Meatballs",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Chicago Meatballs",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Frito Meatballs",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Waikiki Meatballs",
+              "relevant": true
+            }
+          ]
+        }
+      }
+    },
+    "3": {
+      "query": "creamy garlic shrimp pasta",
+      "total_relevant_in_pool": 22,
+      "systems": {
+        "Simple_BM25": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.22727272727272727,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Shrimp and Angel Hair Pasta",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Shrimp and Pasta in a Tomato-Chile Cream Sauce",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Orange Shrimp Scampi",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Pasta With Spinach, Nutmeg, and Shrimp",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Walley's Shrimp Scampi",
+              "relevant": true
+            }
+          ]
+        },
+        "Simple_TFIDF": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.22727272727272727,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Tom Yum Goong (Spicy Thai Shrimp Soup)",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Walley's Shrimp Scampi",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Parmesan Shrimp  Au Gratin With Sherry",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Tilapia With a Creamy Shrimp &amp; Crab White Wine Sauce",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Shrimp Scampi with Spaghetti and Zucchini",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_BM25": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.22727272727272727,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Mushroom Pasta Scampi",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Shrimp and Angel Hair Pasta",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Garlic Shrimp and Grits",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Shrimp Oreganato",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Walley's Shrimp Scampi",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_TFIDF": {
+          "precision_at_k": 0.8,
+          "recall_at_k": 0.18181818181818182,
+          "relevant_in_top_k": 4,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Garlic Shrimp and Grits",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Shrimp and Angel Hair Pasta",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Spicy Shrimp and Pasta",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Garlic Chicken Pasta Primavera",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Shrimp Oreganato",
+              "relevant": true
+            }
+          ]
+        }
+      }
+    },
+    "11": {
+      "query": "low carb cheesecake",
+      "total_relevant_in_pool": 7,
+      "systems": {
+        "Simple_BM25": {
+          "precision_at_k": 0.6,
+          "recall_at_k": 0.42857142857142855,
+          "relevant_in_top_k": 3,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Guilt and Fat Free Low Calorie Pumpkin Cheesecake Pudding",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Low Carb-One Minute Chocolate Mini-Cake for One!",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Pond Scum Soup(Low Carb)",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Cheesecake Factory's Oreo Dream Extreme Cheesecake",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Ww  Fast Strawberry Cheesecake Pie",
+              "relevant": true
+            }
+          ]
+        },
+        "Simple_TFIDF": {
+          "precision_at_k": 0.4,
+          "recall_at_k": 0.2857142857142857,
+          "relevant_in_top_k": 2,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Low Carb-One Minute Chocolate Mini-Cake for One!",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Swirled Cranberry Cheesecake",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Low Carb Chili",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Low Carb Peanut Dipping Sauce",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Triple Chocolate Cheesecake",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_BM25": {
+          "precision_at_k": 0.2,
+          "recall_at_k": 0.14285714285714285,
+          "relevant_in_top_k": 1,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Low Carb Peanut Dipping Sauce",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Low Carb Chicken Casserole",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Guilt and Fat Free Low Calorie Pumpkin Cheesecake Pudding",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Low Carb Hungarian Goulash",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Low-Carb Spaghetti Squash",
+              "relevant": false
+            }
+          ]
+        },
+        "Lucene_TFIDF": {
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "relevant_in_top_k": 0,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Low Carb Chili",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Low Carb Pasta",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Low Carb Chicken Casserole",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Low Carb Peanut Dipping Sauce",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Low Carb Hungarian Goulash",
+              "relevant": false
+            }
+          ]
+        }
+      }
+    },
+    "19": {
+      "query": "pan fried pork chops",
+      "total_relevant_in_pool": 23,
+      "systems": {
+        "Simple_BM25": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.21739130434782608,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Pork Chops With Goat Cheese and Caramelized Onion",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Pork chops and peppers",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Pork Chops With Apples and Raisins",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Easy, Crunchy Pork Chops",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Pork Chops With Apples and Onion",
+              "relevant": true
+            }
+          ]
+        },
+        "Simple_TFIDF": {
+          "precision_at_k": 0.2,
+          "recall_at_k": 0.043478260869565216,
+          "relevant_in_top_k": 1,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Baked Ranch Chops With Sour Cream Ranch Sauce",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Hoisin Pork Chops With Pineapple Green Onion Relish",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Loaded Baked Potato Soup for Crockpot",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Spinach and Feta Stuffed Chicken Breasts",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Spinach- Poblano Enchiladas",
+              "relevant": false
+            }
+          ]
+        },
+        "Lucene_BM25": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.21739130434782608,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Pork Chops",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Stuffed Pork Chops",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Tasty Brown Sugar Pork Chops",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Smoked Pork Chops",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Pineapple Garlic Pork Chops",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_TFIDF": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.21739130434782608,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Pork Chops",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Stuffed Pork Chops",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Smoked Pork Chops",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Glazed Pork Chops",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Tasty Brown Sugar Pork Chops",
+              "relevant": true
+            }
+          ]
+        }
+      }
+    },
+    "13": {
+      "query": "vegan chocolate mousse",
+      "total_relevant_in_pool": 9,
+      "systems": {
+        "Simple_BM25": {
+          "precision_at_k": 0.6,
+          "recall_at_k": 0.3333333333333333,
+          "relevant_in_top_k": 3,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Vegan Heart Attack Chocolate Doughnuts",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Gordon Ramsay Chocolate Mousse",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Easy Vegan Ravioli",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Vegan Cowboy Cookies",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Oreo Chocolate Mousse (Heaven)",
+              "relevant": true
+            }
+          ]
+        },
+        "Simple_TFIDF": {
+          "precision_at_k": 0.2,
+          "recall_at_k": 0.1111111111111111,
+          "relevant_in_top_k": 1,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Easy Vegan Ravioli",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Favorite Vegan Chili",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Vegan Heart Attack Chocolate Doughnuts",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Vegan Banana Crumble",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Vegan Shepherd's Pie",
+              "relevant": false
+            }
+          ]
+        },
+        "Lucene_BM25": {
+          "precision_at_k": 0.8,
+          "recall_at_k": 0.4444444444444444,
+          "relevant_in_top_k": 4,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Gordon Ramsay Chocolate Mousse",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Chocolate Raspberry Cake",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Blender Chocolate Mousse",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Oreo Chocolate Mousse (Heaven)",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Chocolate Banana and Strawberry Mousse",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_TFIDF": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.5555555555555556,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Blender Chocolate Mousse",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Gordon Ramsay Chocolate Mousse",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Oreo Chocolate Mousse (Heaven)",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Chocolate Peanut Butter Mousse",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Chocolate Banana and Strawberry Mousse",
+              "relevant": true
+            }
+          ]
+        }
+      }
+    },
+    "12": {
+      "query": "gluten free brownies",
+      "total_relevant_in_pool": 11,
+      "systems": {
+        "Simple_BM25": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.45454545454545453,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Adzuki Bean Brownies (Gluten-Free, Vegan, Macrobiotic)",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Fudgy Salty Peanut Butter Brownies",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Chocolate Walnut Brownies",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "King Arthur Flour's Best Fudge Brownies",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Peppermint Brownies",
+              "relevant": true
+            }
+          ]
+        },
+        "Simple_TFIDF": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.45454545454545453,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Rehab Brownies",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "King Arthur Flour's Best Fudge Brownies",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Chocolate Walnut Brownies",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Quadruple Chocolate Brownies",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Peppermint Brownies",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_BM25": {
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "relevant_in_top_k": 0,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Gluten Free Brown Gravy",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Sweet Shortcrust Pastry - Gluten-Free",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Vanilla Sponge Cake- Gluten, Dairy, Nut and Egg Free",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Thai Chicken Noodle Salad (Gluten Free)",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Gluten Free Corn Dogs",
+              "relevant": false
+            }
+          ]
+        },
+        "Lucene_TFIDF": {
+          "precision_at_k": 0.2,
+          "recall_at_k": 0.09090909090909091,
+          "relevant_in_top_k": 1,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Gluten Free Brown Gravy",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Sweet Shortcrust Pastry - Gluten-Free",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Gluten Free Corn Dogs",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Adzuki Bean Brownies (Gluten-Free, Vegan, Macrobiotic)",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Gluten Free Oatmeal Raisin Cookies",
+              "relevant": false
+            }
+          ]
+        }
+      }
+    },
+    "17": {
+      "query": "grilled vegetables marinade",
+      "total_relevant_in_pool": 13,
+      "systems": {
+        "Simple_BM25": {
+          "precision_at_k": 1.0,
+          "recall_at_k": 0.38461538461538464,
+          "relevant_in_top_k": 5,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Grilled Portabella Mushrooms With Balsamic Marinade",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Grilled Shoulder Lamb Chops With Garlic-Rosemary Marinade",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Chipotle Marinade for Grilled Chicken",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Sirloin Steak Tips With Garlic, Ginger and Soy Marinade",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Flank Steak With Lemon Shallot Marinade",
+              "relevant": true
+            }
+          ]
+        },
+        "Simple_TFIDF": {
+          "precision_at_k": 0.6,
+          "recall_at_k": 0.23076923076923078,
+          "relevant_in_top_k": 3,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Anticuchos (Peruvian Beef Kebabs)",
+              "relevant": false
+            },
+            {
+              "rank": 2,
+              "title": "Vietnamese Rice Noodle Salad With Grilled Tofu",
+              "relevant": false
+            },
+            {
+              "rank": 3,
+              "title": "Sirloin Steak Tips With Garlic, Ginger and Soy Marinade",
+              "relevant": true
+            },
+            {
+              "rank": 4,
+              "title": "Lower-carb Teriyaki Marinade",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Polynesian Marinade",
+              "relevant": true
+            }
+          ]
+        },
+        "Lucene_BM25": {
+          "precision_at_k": 0.4,
+          "recall_at_k": 0.15384615384615385,
+          "relevant_in_top_k": 2,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Grilled Portabella Mushrooms With Balsamic Marinade",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Chipotle Marinade for Grilled Chicken",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Teriyaki Chicken",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Cajun Grilled Shrimp",
+              "relevant": false
+            },
+            {
+              "rank": 5,
+              "title": "Salmon (Microwave-Cooked)",
+              "relevant": false
+            }
+          ]
+        },
+        "Lucene_TFIDF": {
+          "precision_at_k": 0.8,
+          "recall_at_k": 0.3076923076923077,
+          "relevant_in_top_k": 4,
+          "top_k_docs": [
+            {
+              "rank": 1,
+              "title": "Chipotle Marinade for Grilled Chicken",
+              "relevant": true
+            },
+            {
+              "rank": 2,
+              "title": "Grilled Portabella Mushrooms With Balsamic Marinade",
+              "relevant": true
+            },
+            {
+              "rank": 3,
+              "title": "Vegetables Supreme",
+              "relevant": false
+            },
+            {
+              "rank": 4,
+              "title": "Grilled Tuna & Vegetables W/yellow Pepper Sauce",
+              "relevant": true
+            },
+            {
+              "rank": 5,
+              "title": "Shrimp Marinade",
+              "relevant": true
+            }
+          ]
+        }
+      }
+    }
+  },
+  "summary": {
+    "S1": {
+      "mean_precision": 0.8400000000000001,
+      "mean_recall": 0.29449359818925036,
+      "f1": 0.4360969914220786
+    },
+    "S2": {
+      "mean_precision": 0.5599999999999999,
+      "mean_recall": 0.1959041863933168,
+      "f1": 0.2902652117954386
+    },
+    "L1": {
+      "mean_precision": 0.6599999999999999,
+      "mean_recall": 0.21272800267365483,
+      "f1": 0.3217508349325032
+    },
+    "L2": {
+      "mean_precision": 0.72,
+      "mean_recall": 0.23275727895293113,
+      "f1": 0.3517899984564476
+    }
+  }
+}

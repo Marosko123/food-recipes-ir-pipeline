@@ -89,7 +89,6 @@ data/*.log
 !package.json
 !eval/queries.tsv
 !eval/qrels.tsv
-!data/index/v1/*.tsv
 
 # Data directories and files (as per project rules)
 data/raw/
@@ -141,5 +140,7 @@ htmlcov/
 .dmypy.json
 dmypy.json
 
-# Lucene Index (Generated)
-index/lucene/
+# Indexes (Generated)
+index/v1/
+index/v2/
+index/v2_tfidf/

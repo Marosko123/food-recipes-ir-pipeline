@@ -14,6 +14,83 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Tuple, Any, Optional
 
+
+# ============================================================================
+# PORTER STEMMER (must match indexer/simple_indexer.py)
+# ============================================================================
+
+def porter_stem(word: str) -> str:
+    """
+    Simple Porter Stemmer implementation.
+    
+    Applies common English suffix stripping rules:
+    - ING endings (running -> runn -> run)
+    - ED endings (cooked -> cook)
+    - TION endings (creation -> creat)
+    - NESS endings (happiness -> happi)
+    - LY endings (quickly -> quick)
+    - S/ES endings (cooks -> cook)
+    """
+    if len(word) <= 2:
+        return word
+    
+    # Step 1: Plural/Verb endings
+    if word.endswith('sses'):
+        word = word[:-2]
+    elif word.endswith('ies'):
+        word = word[:-2]
+    elif word.endswith('ss'):
+        pass  # keep as is (boss, mass)
+    elif word.endswith('s') and len(word) > 3:
+        word = word[:-1]
+    
+    # Step 2: Past tense and gerund (-ed, -ing)
+    if word.endswith('eed'):
+        if len(word) > 4:
+            word = word[:-1]  # agreed -> agree
+    elif word.endswith('ed'):
+        if len(word) > 4:
+            word = word[:-2]  # cooked -> cook
+            # Handle doubling (stopped -> stop)
+            if word.endswith('pp') or word.endswith('dd') or word.endswith('tt'):
+                word = word[:-1]
+    elif word.endswith('ing'):
+        if len(word) > 5:
+            word = word[:-3]  # cooking -> cook
+            # Handle doubling
+            if word.endswith('pp') or word.endswith('dd') or word.endswith('tt'):
+                word = word[:-1]
+    
+    # Step 3: -tion, -sion endings
+    if word.endswith('tion') and len(word) > 5:
+        word = word[:-3] + 'e'  # creation -> create
+    elif word.endswith('sion') and len(word) > 5:
+        word = word[:-3] + 'e'  # revision -> revise
+    
+    # Step 4: -ness, -ment, -ful endings
+    if word.endswith('ness') and len(word) > 5:
+        word = word[:-4]  # happiness -> happi
+    elif word.endswith('ment') and len(word) > 5:
+        word = word[:-4]  # government -> govern
+    elif word.endswith('ful') and len(word) > 4:
+        word = word[:-3]  # beautiful -> beauti
+    
+    # Step 5: -ly ending
+    if word.endswith('ly') and len(word) > 3:
+        word = word[:-2]  # quickly -> quick
+    
+    # Step 6: -er, -est comparative/superlative
+    if word.endswith('er') and len(word) > 4:
+        word = word[:-2]  # bigger -> bigg -> big
+        if word.endswith(('gg', 'tt', 'pp', 'dd')):
+            word = word[:-1]
+    elif word.endswith('est') and len(word) > 5:
+        word = word[:-3]
+        if word.endswith(('gg', 'tt', 'pp', 'dd')):
+            word = word[:-1]
+    
+    return word
+
 # Try to import Lupyne Searcher
 try:
     from search_cli.lupyne_searcher import LupyneRecipeSearcher, LUPYNE_AVAILABLE as LUPYNE_LIB_AVAILABLE
@@ -79,7 +156,8 @@ class RobustRecipeSearcher:
         self.field_weights = {
             'title': 3.0,
             'ingredients': 2.0,
-            'instructions': 1.0
+            'instructions': 1.0,
+            'wiki': 1.5  # Wikipedia entities field
         }
         
         # BM25 parameters
@@ -162,8 +240,9 @@ class RobustRecipeSearcher:
             
             with open(docmeta_file, 'r', encoding='utf-8') as f:
                 header = next(f).strip()
-                if header != "docId\turl\ttitle\tlen_title\tlen_ing\tlen_instr":
-                    logger.warning(f"Unexpected docmeta header: {header}")
+                header_parts = header.split('\t')
+                # Support both old format (len_title, len_ing, len_instr) and new format (total_minutes, cuisine)
+                use_new_format = 'total_minutes' in header or len(header_parts) == 5
                 
                 for line_num, line in enumerate(f, 2):
                     line = line.strip()
@@ -171,19 +250,38 @@ class RobustRecipeSearcher:
                         continue
                     
                     parts = line.split('\t')
-                    if len(parts) < 6:
+                    if len(parts) < 3:
                         logger.warning(f"Invalid docmeta line {line_num}: {line}")
                         continue
                     
                     try:
-                        doc_id, url, title, len_title, len_ing, len_instr = parts[:6]
-                        self.doc_metadata[doc_id] = {
-                            'url': url,
-                            'title': title,
-                            'len_title': int(len_title),
-                            'len_ing': int(len_ing),
-                            'len_instr': int(len_instr)
-                        }
+                        if use_new_format:
+                            # New format: docId, url, title, total_minutes, cuisine
+                            doc_id, url, title = parts[:3]
+                            total_minutes = int(parts[3]) if len(parts) > 3 and parts[3] else 0
+                            cuisine = parts[4] if len(parts) > 4 else ''
+                            self.doc_metadata[doc_id] = {
+                                'url': url,
+                                'title': title,
+                                'total_minutes': total_minutes,
+                                'cuisine': cuisine,
+                                'len_title': len(title.split()),
+                                'len_ing': 50,  # Default estimate
+                                'len_instr': 100  # Default estimate
+                            }
+                        else:
+                            # Old format: docId, url, title, len_title, len_ing, len_instr
+                            if len(parts) < 6:
+                                logger.warning(f"Invalid docmeta line {line_num}: {line}")
+                                continue
+                            doc_id, url, title, len_title, len_ing, len_instr = parts[:6]
+                            self.doc_metadata[doc_id] = {
+                                'url': url,
+                                'title': title,
+                                'len_title': int(len_title),
+                                'len_ing': int(len_ing),
+                                'len_instr': int(len_instr)
+                            }
                     except ValueError as e:
                         logger.warning(f"Invalid docmeta data at line {line_num}: {e}")
                         continue
@@ -264,7 +362,10 @@ class RobustRecipeSearcher:
         # Filter out stopwords and short words
         filtered_words = [word for word in words if word not in stopwords and len(word) > 1]
         
-        return filtered_words
+        # Apply Porter Stemmer (must match indexer)
+        stemmed_words = [porter_stem(w) for w in filtered_words]
+        
+        return stemmed_words
     
     def search_tfidf(self, query: str, k: int = 10, filters: Optional[Dict] = None, offset: int = 0) -> List[Tuple[str, float, str]]:
         """Search using TF-IDF cosine similarity with comprehensive error handling."""
@@ -413,8 +514,10 @@ class RobustRecipeSearcher:
                             doc_length = meta['len_title']
                         elif field == 'ingredients':
                             doc_length = meta['len_ing']
+                        elif field == 'wiki':
+                            doc_length = 50  # Default estimate for wiki field
                         else:  # instructions
-                            doc_length = meta['len_instr']
+                            doc_length = meta.get('len_instr', 100)
                         
                         # Calculate BM25 score for this term in this field
                         bm25_score = (tf * (self.k1 + 1)) / (tf + self.k1 * (1 - self.b + self.b * (doc_length / avg_doc_length)))
@@ -547,6 +650,49 @@ class RobustRecipeSearcher:
                         continue
         except FileNotFoundError:
             logger.error("Recipes file not found")
+        
+        return recipes
+    
+    def get_full_recipe_data(self, doc_ids: List[str]) -> Dict[str, Dict]:
+        """
+        Load full recipe data from JSONL file for given doc_ids.
+        Used to enrich search results with all metadata.
+        """
+        recipes = {}
+        doc_ids_set = set(str(d) for d in doc_ids)  # Convert to set for O(1) lookup
+        
+        # Try multiple possible JSONL file locations
+        jsonl_paths = [
+            Path('data/normalized/recipes_enriched.jsonl'),
+            Path('data/normalized/recipes_foodcom.jsonl'),
+            Path('data/normalized/recipes.jsonl'),
+        ]
+        
+        jsonl_file = None
+        for path in jsonl_paths:
+            if path.exists():
+                jsonl_file = path
+                break
+        
+        if not jsonl_file:
+            logger.warning("No recipes JSONL file found for metadata enrichment")
+            return recipes
+        
+        try:
+            with open(jsonl_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    try:
+                        recipe = json.loads(line.strip())
+                        recipe_id = str(recipe.get('id', ''))
+                        if recipe_id in doc_ids_set:
+                            recipes[recipe_id] = recipe
+                            # Early termination when we have all requested recipes
+                            if len(recipes) == len(doc_ids_set):
+                                break
+                    except json.JSONDecodeError:
+                        continue
+        except Exception as e:
+            logger.warning(f"Error loading recipe data: {e}")
         
         return recipes
     
@@ -944,13 +1090,13 @@ def main():
         epilog="""
 Examples:
   # Search TSV index (baseline)
-  python3 search_cli/run.py --index data/index/v1 --metric bm25 --q "chicken pasta" --k 10
+  python3 search_cli/run.py --index index/v1 --metric bm25 --q "chicken pasta" --k 10
   
   # Search PyLucene index
-  python3 search_cli/run.py --index index/lucene/v2 --metric bm25 --q "mexican chicken" --k 10
+  python3 search_cli/run.py --index index/v2 --metric bm25 --q "mexican chicken" --k 10
   
   # With filters (JSON)
-  python3 search_cli/run.py --index index/lucene/v2 --metric bm25 --q "pasta" \\
+  python3 search_cli/run.py --index index/v2 --metric bm25 --q "pasta" \\
       --filter '{"max_total_minutes": 30, "cuisine": "Italian"}'
         """
     )
@@ -960,6 +1106,8 @@ Examples:
     parser.add_argument('--k', type=int, default=10, help='Number of results to return')
     parser.add_argument('--filter', help='JSON string with filters')
     parser.add_argument('--quiet', action='store_true', help='Minimal output (for programmatic use)')
+    parser.add_argument('--json', action='store_true', help='Output results as JSON')
+    parser.add_argument('--detail', action='store_true', help='Show detailed recipe info (loads from JSONL)')
     parser.add_argument('--index-type', choices=['auto', 'tsv', 'lucene'], default='auto',
                        help='Force index type (default: auto-detect)')
     
@@ -1010,7 +1158,7 @@ Examples:
                     print("ERROR: Lupyne is not installed!")
                     print("To install: pip install 'lupyne[graphql,rest]'")
                     print("See LUPYNE_INSTALL.md for PyLucene installation first.")
-                    print("Alternatively, use TSV index: --index data/index/v1")
+                    print("Alternatively, use TSV index: --index index/v1")
                 return 1
             
             searcher = LupyneRecipeSearcher(args.index)
@@ -1048,6 +1196,108 @@ Examples:
             searcher.close()
     
     # Display results (unified format for both index types)
+    if args.json:
+        json_results = []
+        
+        # For TSV index, load full recipe data from JSONL
+        full_recipe_data = {}
+        if index_type == 'tsv' and hasattr(searcher, 'get_full_recipe_data'):
+            doc_ids = []
+            for result in results:
+                if isinstance(result, tuple):
+                    doc_ids.append(result[0])
+                elif isinstance(result, dict):
+                    doc_ids.append(result.get('docId', result.get('doc_id', '')))
+            if doc_ids:
+                full_recipe_data = searcher.get_full_recipe_data(doc_ids)
+        
+        for i, result in enumerate(results):
+            if isinstance(result, dict):
+                # Normalize to standard JSON format (same for TSV and Lucene)
+                doc_id = result.get('docId', result.get('doc_id', ''))
+                
+                # Standard fields for unified output
+                normalized = {
+                    'rank': i + 1,
+                    'doc_id': doc_id,
+                    'score': result.get('score', 0.0),
+                    'title': result.get('title', result.get('title_text', '')),
+                    'url': result.get('url', ''),
+                    'total_minutes': result.get('total_minutes'),
+                    'cuisine': result.get('cuisine', ''),
+                    'description': result.get('description', ''),
+                    'ingredients': result.get('ingredients', result.get('ingredients_text', '')),
+                    'category': result.get('category', ''),
+                    'difficulty': result.get('difficulty', ''),
+                    'author': result.get('author', ''),
+                    'ratings': result.get('ratings', ''),
+                    'nutrition': result.get('nutrition', ''),
+                }
+                json_results.append(normalized)
+            else:
+                # Convert tuple to dict for JSON output
+                # TSV format (tuple: doc_id, score, snippet)
+                doc_id, score, snippet = result
+                
+                # Try to get full recipe data from JSONL
+                recipe = full_recipe_data.get(str(doc_id), {})
+                
+                # Format ingredients as string
+                ingredients = recipe.get('ingredients', [])
+                if isinstance(ingredients, list):
+                    ingredients_str = ', '.join(ingredients[:10])  # First 10 ingredients
+                    if len(ingredients) > 10:
+                        ingredients_str += f'... (+{len(ingredients)-10} more)'
+                else:
+                    ingredients_str = str(ingredients)
+                
+                # Format ratings
+                ratings = recipe.get('ratings', {})
+                if isinstance(ratings, dict):
+                    ratings_str = json.dumps(ratings)
+                else:
+                    ratings_str = str(ratings) if ratings else ''
+                
+                # Format nutrition
+                nutrition = recipe.get('nutrition', {})
+                if isinstance(nutrition, dict):
+                    nutrition_str = json.dumps(nutrition)
+                else:
+                    nutrition_str = str(nutrition) if nutrition else ''
+                
+                # Get times
+                times = recipe.get('times', {})
+                total_minutes = times.get('total') if isinstance(times, dict) else recipe.get('total_minutes')
+                
+                result_data = {
+                    'rank': i + 1,
+                    'doc_id': doc_id,
+                    'score': score,
+                    'title': recipe.get('title', snippet),
+                    'url': recipe.get('url', ''),
+                    'total_minutes': total_minutes,
+                    'cuisine': recipe.get('cuisine', ''),
+                    'description': recipe.get('description', ''),
+                    'ingredients': ingredients_str,
+                    'category': recipe.get('category', ''),
+                    'difficulty': recipe.get('difficulty', ''),
+                    'author': recipe.get('author', ''),
+                    'ratings': ratings_str,
+                    'nutrition': nutrition_str,
+                }
+                
+                # Fallback to basic metadata if no JSONL data
+                if not recipe and hasattr(searcher, 'doc_metadata'):
+                    meta = searcher.doc_metadata.get(doc_id, {})
+                    result_data['title'] = meta.get('title', snippet)
+                    result_data['url'] = meta.get('url', '')
+                    result_data['total_minutes'] = meta.get('total_minutes')
+                    result_data['cuisine'] = meta.get('cuisine', '')
+                
+                json_results.append(result_data)
+        print(json.dumps(json_results, indent=2))
+        return 0
+
     if not args.quiet:
         print(f"\n{'='*80}")
         print(f"Search Results: '{args.q}' ({args.metric.upper()}, {index_type.upper()} index)")
@@ -1057,6 +1307,12 @@ Examples:
         if not args.quiet:
             print("No results found.")
         return 0
+    
+    # For TSV index, pre-load full recipe data if --detail is specified
+    full_recipe_data = {}
+    if index_type == 'tsv' and getattr(args, 'detail', False) and hasattr(searcher, 'get_full_recipe_data'):
+        doc_ids = [result[0] if isinstance(result, tuple) else result.get('docId', result.get('doc_id', '')) for result in results]
+        full_recipe_data = searcher.get_full_recipe_data(doc_ids)
     
     # Handle different result formats
     for i, result in enumerate(results, 1):
@@ -1079,6 +1335,31 @@ Examples:
             # TSV format (tuple: doc_id, score, snippet)
             if args.quiet:
                 formatters.print_quiet(result)
+            elif getattr(args, 'detail', False) and full_recipe_data:
+                # Convert TSV tuple to dict format with full recipe data
+                doc_id, score, snippet = result
+                recipe = full_recipe_data.get(str(doc_id), {})
+                
+                # Build dict in Lucene format for unified display
+                result_dict = {
+                    'docId': doc_id,
+                    'score': score,
+                    'title': recipe.get('title', snippet),
+                    'url': recipe.get('url', ''),
+                    'description': recipe.get('description', ''),
+                    'total_minutes': recipe.get('times', {}).get('total') if isinstance(recipe.get('times'), dict) else None,
+                    'prep_minutes': recipe.get('times', {}).get('prep') if isinstance(recipe.get('times'), dict) else None,
+                    'cook_minutes': recipe.get('times', {}).get('cook') if isinstance(recipe.get('times'), dict) else None,
+                    'cuisine': ', '.join(recipe.get('cuisine', [])) if isinstance(recipe.get('cuisine'), list) else recipe.get('cuisine', ''),
+                    'category': ', '.join(recipe.get('category', [])) if isinstance(recipe.get('category'), list) else recipe.get('category', ''),
+                    'ingredients': ', '.join(recipe.get('ingredients', [])) if isinstance(recipe.get('ingredients'), list) else recipe.get('ingredients', ''),
+                    'instructions': ' '.join(recipe.get('instructions', [])) if isinstance(recipe.get('instructions'), list) else recipe.get('instructions', ''),
+                    'author': recipe.get('author', ''),
+                    'ratings': json.dumps(recipe.get('ratings', {})) if isinstance(recipe.get('ratings'), dict) else str(recipe.get('ratings', '')),
+                    'nutrition': json.dumps(recipe.get('nutrition', {})) if isinstance(recipe.get('nutrition'), dict) else str(recipe.get('nutrition', '')),
+                    'wiki_links': recipe.get('wiki_links', []),
+                }
+                formatters.print_result_dict(result_dict, i)
             else:
                 formatters.print_result_tuple(result, i)
     

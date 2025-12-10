@@ -1,132 +1,260 @@
-# 🍳 Food Recipes IR Pipeline
+# 🍳 Food Recipes Information Retrieval System
 
-**Author:** Maroš Bednár  
-**Project:** Advanced Recipe Search Engine with Wikipedia Knowledge Graph  
-**Course:** VINF (Information Retrieval)
+A comprehensive End-to-End Information Retrieval system for cooking recipes, enriched with culinary knowledge from Wikipedia. This project demonstrates a full data pipeline from crawling to search, utilizing advanced IR techniques, Apache Spark, and PyLucene.
 
----
+## 1. System Overview
 
-## 📖 Overview
+### 1.1 Architecture
 
-This project is a complete **End-to-End Information Retrieval System** for culinary recipes. It goes beyond simple text search by understanding culinary context through **Entity Linking** with Wikipedia.
+The system consists of 6 main components:
 
-The pipeline crawls recipes from Food.com, parses them into structured data, enriches them with knowledge from Wikipedia (processed via **Apache Spark**), and indexes them using **PyLucene** (BM25) for high-performance search with semantic filtering.
+*   **Crawler**: Downloads HTML pages from Food.com respecting `robots.txt`.
+*   **Parser**: Extracts structured data using a dual-layer approach (JSON-LD + Regex).
+*   **Spark Wikipedia Parser**: Processes Wikipedia XML dumps using Apache Spark.
+*   **Enricher**: Links recipes to Wikipedia entities using the **Aho-Corasick** algorithm.
+*   **Indexer**: Builds an inverted index using **PyLucene** (BM25 ranking model).
+*   **Searcher**: Provides millisecond-latency search with advanced filtering capabilities.
 
-### 🚀 Key Features
+### 1.2 Data Sources
 
-*   **🕷️ Smart Crawler:** Politeness-aware crawler for Food.com (robots.txt compliant).
-*   **🧠 Knowledge Graph:** Extracts culinary entities (ingredients, techniques, tools) from **Wikipedia** using **Apache Spark**.
-*   **🔗 Entity Linking:** Uses **Aho-Corasick** algorithm to link recipes to Wikipedia entities in linear time.
-*   **🔍 Advanced Search:** **PyLucene** index with **BM25** ranking, supporting complex filters (cuisine, time, ingredients).
-*   **⚡ High Performance:** Inverted index structure allows millisecond-level query responses.
-
----
-
-## 🏗️ Architecture
-
-The system follows a modular pipeline architecture:
-
-```mermaid
-graph LR
-    A[Crawler] -->|HTML| B[Parser]
-    B -->|JSONL| D[Enricher]
-    C[Wikipedia Dump] -->|Spark| E[Gazetteer]
-    E --> D
-    D -->|Enriched JSONL| F[PyLucene Indexer]
-    F --> G[Search CLI]
-```
-
-1.  **Crawler:** Downloads raw HTML.
-2.  **Parser:** Extracts metadata (JSON-LD/Regex).
-3.  **Spark Job:** Filters Wikipedia for culinary concepts.
-4.  **Enricher:** Links recipes to Wikipedia concepts.
-5.  **Indexer:** Builds an inverted index.
-6.  **Search:** Provides a CLI for querying.
+| Source | Description | Count |
+| :--- | :--- | :--- |
+| **Food.com** | Recipes with ingredients, instructions, and metadata | **5,646** recipes |
+| **Wikipedia** | Culinary articles (enwiki dump) | **9,693** articles |
+| **Gazetteer** | Entities for linking (including redirects) | **42,837** entities |
 
 ---
 
-## ⚡ Quick Start
+## 2. Crawler
 
-### Prerequisites
-*   Python 3.8+
-*   Java 11+ (for PyLucene)
-*   PyLucene (properly installed and bound)
+### 2.1 Implementation
 
-### Installation
+The crawler (`crawler/run.py`) is designed to be polite and robust:
+*   **Robots.txt compliance**: Automatically parses and respects `Disallow` rules.
+*   **Politeness**: Enforces a 1-second delay between requests.
+*   **Storage**: Saves raw HTML files to `data/raw/www.food.com/`.
+
+### 2.2 Statistics
+
+*   **Downloaded Files**: 5,646 HTML files
+*   **Target Domain**: www.food.com
+*   **Content Type**: Recipes with images and metadata
+
+---
+
+## 3. Parser
+
+### 3.1 Dual-Layer Parsing
+
+To ensure maximum data quality, the parser uses a fallback strategy:
+1.  **JSON-LD**: Extracts structured Schema.org data (primary source).
+2.  **HTML Regex**: Fallback extraction from HTML structure if JSON-LD is missing.
+
+### 3.2 Extracted Fields
+
+| Field | Type | Example |
+| :--- | :--- | :--- |
+| `id` | string | "59018" |
+| `title` | string | "Macaroon Pie Crust" |
+| `ingredients` | list | ["1 1/3 cups macaroons", "1/2 cup margarine"] |
+| `instructions` | list | ["Preheat oven to 375°F", ...] |
+| `times` | dict | `{"prep": 5, "cook": 7, "total": 12}` |
+| `cuisine` | list | ["French", "Kosher"] |
+| `nutrition` | dict | `{"calories": "601.4", "fat": "45.5"}` |
+
+### 3.3 Statistics
+
+*   **Processed Files**: 5,646
+*   **Success Rate**: 100%
+*   **Processing Speed**: 200.9 recipes/sec
+*   **Avg Ingredients**: 9.4 per recipe
+*   **Avg Steps**: 7.0 per recipe
+
+---
+
+## 4. Wikipedia Spark Parser
+
+### 4.1 Distributed Processing
+
+We use **Apache Spark** to efficiently process the massive Wikipedia XML dump. The process runs in two phases:
+1.  **Redirect Collection**: Maps all aliases/redirects to their canonical titles.
+2.  **Article Extraction**: Filters and extracts culinary articles using the redirect map.
+
+### 4.2 Filtering Logic
+
+Articles are identified as "culinary" based on:
+*   **Infoboxes**: `Infobox food`, `Infobox ingredient`, `Infobox prepared food`.
+*   **Categories**: Foods, Dishes, Ingredients, Cuisines.
+*   **Keywords**: Presence of multiple signals like "cooking", "recipe", "edible".
+
+### 4.3 Statistics
+
+*   **Total Culinary Articles**: **9,693**
+    *   Dishes: 5,855 (60.4%)
+    *   Ingredients: 3,441 (35.5%)
+    *   Condiments: 169 (1.7%)
+    *   Cuisines: 122 (1.3%)
+*   **Enrichment Data**:
+    *   With Origin Country: 5,372 (55.4%)
+    *   With History Section: 3,569 (36.8%)
+    *   Redirects Mapped: 30,321
+
+---
+
+## 5. Recipe Enricher (Entity Linking)
+
+### 5.1 Algorithm
+
+We use the **Aho-Corasick** algorithm for efficient multi-pattern string matching. This allows us to search for **42,837** entities simultaneously in recipe texts with linear time complexity $O(n + m + z)$.
+
+### 5.2 Enrichment Process
+
+For each recipe:
+1.  Combine text fields (title + ingredients + instructions).
+2.  Find all entity occurrences using the Aho-Corasick automaton.
+3.  Link to Wikipedia metadata (abstract, origin, history).
+4.  **Infer Cuisine**: Based on the origin of identified ingredients (e.g., Soy Sauce -> Asian).
+
+### 5.3 Statistics
+
+*   **Enriched Recipes**: 5,645 (99.98%)
+*   **Total Wiki Links**: 139,717
+*   **Unique Wiki Pages Linked**: **1,067**
+*   **Avg Links per Recipe**: 24.75
+
+---
+
+## 6. Indexer (PyLucene)
+
+### 6.1 Index Schema
+
+The system uses **PyLucene** (via Lupyne) with a BM25 similarity model.
+
+**Text Fields (Tokenized & Boosted):**
+*   `title_text` (Boost: **2.0**)
+*   `ingredients_text` (Boost: **1.5**)
+*   `instructions_text` (Boost: **1.0**)
+*   `wiki_abstracts` (Boost: **1.0**) - *Enriched content*
+
+**Keyword Fields (Exact Match):**
+*   `ingredients_kw`
+*   `cuisine_kw`
+*   `origin_country_kw`
+
+**Numeric Fields:**
+*   `total_minutes` (for range queries)
+
+### 6.2 Performance
+
+*   **Index Size**: ~52 MB
+*   **Indexing Time**: ~15 seconds
+*   **Documents**: 5,646
+
+---
+
+## 7. Searcher
+
+### 7.1 Query Capabilities
+
+| Query Type | Syntax | Example | Implementation |
+| :--- | :--- | :--- | :--- |
+| **Full-text** | plain text | `chocolate cake` | BM25Similarity |
+| **Exact Phrase** | quotes | `"chocolate cake"` | PhraseQuery |
+| **Fuzzy** | automatic | `chickn` → `chicken` | FuzzyQuery (edit dist 2) |
+| **Boolean** | `+` / `-` | `chicken +garlic -onion` | BooleanQuery |
+| **Filtering** | flags | `--cuisine italian` | TermQuery |
+| **Range** | flags | `--max-time 30` | PointRangeQuery |
+
+### 7.2 Benchmark
+
+Average query times (over 25 test queries):
+*   **BM25**: ~20 ms
+*   **TF-IDF**: ~14 ms
+
+---
+
+## 8. Evaluation
+
+### 8.1 Comparison vs Food.com
+We compared our Top-1 results with Food.com's native search for 35 queries.
+*   **Match Rate**: **~60%**
+*   **100% Match** for specific dish names (e.g., "Beef Stew", "Tomato Soup").
+
+### 8.2 Comparison vs Google Baseline
+We manually evaluated relevance against Google's top results for 10 queries.
+*   **Average Relevance Score**: **0.80 / 1.0**
+*   **Precision@10**: High relevance for queries like "Pasta Carbonara" (0.90) and "Chocolate Cake" (0.85).
+
+---
+
+## 9. Usage Examples
+
+### CLI Search
+
 ```bash
-# Install Python dependencies
-pip install -r packaging/requirements.txt
+# Basic search
+python -m search_cli.run --query "chocolate cake" --k 5
+
+# Fuzzy search (typo tolerance)
+python -m search_cli.run --query "chickn" --fuzzy
+
+# Filter by ingredients (must have chicken & garlic, no beef)
+python -m search_cli.run --query "dinner" --include "chicken,garlic" --exclude "beef"
+
+# Filter by cuisine
+python -m search_cli.run --query "pasta" --cuisine "italian"
+
+# Filter by preparation time
+python -m search_cli.run --query "quick dinner" --max-time 30
 ```
 
-### Running the Pipeline
-The entire pipeline is controlled via `packaging/run.sh`.
+### Example Output
 
-```bash
-# 1. Parse downloaded recipes
-./packaging/run.sh parse
+```text
+Query: "chocolate cake"
+Results (Top 3):
 
-# 2. Process Wikipedia dump (requires Spark)
-./packaging/run.sh wiki_parse
-
-# 3. Enrich recipes with Wikipedia entities
-./packaging/run.sh enrich
-
-# 4. Build PyLucene Index
-./packaging/run.sh index_lucene
-
-# 5. Search!
-./packaging/run.sh search_lucene "mexican chicken" 5
+1. Devilishly Good Chocolate Cake (score: 23.44)
+   URL: https://www.food.com/recipe/devilishly-good-chocolate-cake-279326
+   Time: 65 min | Rating: 4.5★
+   Cuisine: European
+   
+2. German Chocolate Cake (score: 23.30)
+   URL: https://www.food.com/recipe/german-chocolate-cake-140464
+   Time: 45 min | Rating: 5.0★
+   Cuisine: German, European
+   Wikipedia: "German chocolate cake, originally German's chocolate cake, is a layered 
+              chocolate cake from the United States..."
 ```
 
 ---
 
-## 🎮 Usage Examples
+## 10. Summary Statistics
 
-### Basic Search
-Search for "pasta" and get top 10 results:
-```bash
-./packaging/run.sh search_lucene "pasta" 10
-```
-
-### Advanced Filtering
-Search for **Italian** cuisine, ready in **under 30 minutes**, containing **chicken**:
-```bash
-./packaging/run.sh search_lucene "chicken" 10 --filter '{"cuisine": "Italian", "max_total_minutes": 30}'
-```
-
-### Evaluation
-Run TREC-style evaluation (Precision@k, MAP) against the test set:
-```bash
-./packaging/run.sh eval
-```
-
----
+| Component | Metric | Value |
+| :--- | :--- | :--- |
+| **Crawler** | Downloaded HTML | **5,646** |
+| **Parser** | Parsing Success | **100%** |
+| **Wikipedia** | Culinary Articles | **9,693** |
+| **Enricher** | Unique Wiki Pages Linked | **1,067** |
+| **Enricher** | Total Wiki Links | **139,717** |
+| **Index** | Total Documents | **5,646** |
+| **Search** | Avg Response Time | **~20 ms** |
 
 ## 📂 Project Structure
 
 ```
-.
-├── crawler/            # Web crawler (Food.com)
-├── parser/             # HTML/JSON-LD parser
-├── spark_jobs/         # PySpark jobs for Wikipedia processing
-├── entities/           # Aho-Corasick entity linker
-├── indexer/            # PyLucene indexer
-├── search_cli/         # Search interface & highlighting
-├── data/               # Data storage (Raw, Normalized, Index)
-├── docs/               # Documentation & Defense materials
-└── packaging/          # Helper scripts (run.sh)
+food-recipes-ir-pipeline/
+├── crawler/              # Web crawler
+├── parser/               # HTML parser
+├── spark_jobs/           # Wikipedia Spark parser
+├── entities/             # Recipe enricher
+├── indexer/              # Simple + PyLucene indexer
+├── search_cli/           # CLI search tool
+├── eval/                 # Benchmarks and evaluation
+├── frontend/             # Next.js web UI
+├── data/
+│   ├── raw/              # Raw HTML files
+│   └── normalized/       # Processed JSONL files
+└── index/                # Lucene index files
 ```
-
----
-
-## 🎓 Defense Materials
-
-For the project defense, refer to:
-*   **[docs/DEFENSE_PREPARATION.md](docs/DEFENSE_PREPARATION.md)** - Q&A, stats, and technical deep-dive.
-*   **[docs/DEFENSE_WALKTHROUGH.md](docs/DEFENSE_WALKTHROUGH.md)** - Step-by-step presentation script.
-*   **[docs/wiki_3pages.md](docs/wiki_3pages.md)** - Detailed academic report.
-
----
-
-**License:** MIT  
-**Status:** Final (Defense Ready)

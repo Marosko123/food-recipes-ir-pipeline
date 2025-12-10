@@ -5,9 +5,10 @@ Lupyne Indexer for Food Recipes IR Pipeline
 Creates a Lucene index using Lupyne (Pythonic PyLucene wrapper) from recipes_enriched.jsonl with:
 - Multi-field indexing (title, ingredients, instructions, wiki_abstracts)
 - Field-specific boosts
-- Keyword fields for exact filtering (ingredients_kw, cuisine_kw)
+- Keyword fields for exact filtering (ingredients_kw, cuisine_kw, origin_country_kw, origin_region_kw)
 - Time range filtering (total_minutes)
 - BM25 / TF-IDF similarity support
+- Origin country/region extraction from wiki_links and ingredient_origins
 """
 
 import argparse
@@ -16,7 +17,7 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 
 # Lupyne imports (Pythonic wrapper for PyLucene)
 try:
@@ -58,7 +59,7 @@ class LupyneRecipeIndexer:
         
         Args:
             input_file: Path to recipes_enriched.jsonl
-            output_dir: Path to index directory (e.g., index/lucene/v2)
+            output_dir: Path to index directory (e.g., index/v2)
             similarity: 'bm25' or 'tfidf' (ClassicSimilarity)
         """
         self.input_file = Path(input_file)
@@ -256,9 +257,16 @@ class LupyneRecipeIndexer:
             fields['ingredients_kw'] = normalized_ingredients
         
         cuisines = recipe.get('cuisine', [])
-        cuisine_list = [str(c).strip() for c in cuisines if c]
+        cuisine_list = [str(c).strip().lower() for c in cuisines if c]
         if cuisine_list:
             fields['cuisine_kw'] = cuisine_list
+        
+        # Extract origin countries and regions from wiki_links and ingredient_origins
+        origin_countries, origin_regions = self._extract_origins(recipe)
+        if origin_countries:
+            fields['origin_country_kw'] = origin_countries
+        if origin_regions:
+            fields['origin_region_kw'] = origin_regions
         
         # Total time (numeric field) - reuse times already extracted above
         total_minutes = times.get('total', 0)
@@ -270,6 +278,72 @@ class LupyneRecipeIndexer:
         fields['total_minutes'] = total_minutes
         
         return fields
+    
+    def _extract_origins(self, recipe: Dict[str, Any]) -> Tuple[List[str], List[str]]:
+        """Extract origin countries and regions from wiki_links and ingredient_origins.
+        
+        Args:
+            recipe: Recipe dictionary
+            
+        Returns:
+            Tuple of (countries list, regions list) - lowercase and deduplicated
+        """
+        countries = set()
+        regions = set()
+        
+        # Extract from wiki_links
+        wiki_links = recipe.get('wiki_links', [])
+        for link in wiki_links:
+            # Origin country
+            country = link.get('origin_country')
+            if country and isinstance(country, str):
+                # Clean up country names (remove refs, etc.)
+                country_clean = country.split('<')[0].strip()
+                if country_clean and len(country_clean) < 100:
+                    countries.add(country_clean.lower())
+            
+            # Origin region
+            region = link.get('origin_region')
+            if region and isinstance(region, str):
+                # Clean up region names
+                region_clean = region.split('<')[0].strip()
+                if region_clean and len(region_clean) < 100:
+                    regions.add(region_clean.lower())
+        
+        # Extract from ingredient_origins
+        ingredient_origins = recipe.get('ingredient_origins', {})
+        for ing_name, origin_data in ingredient_origins.items():
+            if isinstance(origin_data, dict):
+                country = origin_data.get('country')
+                if country and isinstance(country, str):
+                    country_clean = country.split('<')[0].strip()
+                    if country_clean and len(country_clean) < 100:
+                        countries.add(country_clean.lower())
+                
+                region = origin_data.get('region')
+                if region and isinstance(region, str):
+                    region_clean = region.split('<')[0].strip()
+                    if region_clean and len(region_clean) < 100:
+                        regions.add(region_clean.lower())
+        
+        # Extract from dish_info
+        dish_info = recipe.get('dish_info', {})
+        if dish_info:
+            dish_country = dish_info.get('country')
+            if dish_country and isinstance(dish_country, str):
+                for c in dish_country.split(','):
+                    c_clean = c.strip().lower()
+                    if c_clean and len(c_clean) < 100:
+                        countries.add(c_clean)
+            
+            dish_region = dish_info.get('region')
+            if dish_region and isinstance(dish_region, str):
+                for r in dish_region.split(','):
+                    r_clean = r.strip().lower()
+                    if r_clean and len(r_clean) < 100:
+                        regions.add(r_clean)
+        
+        return list(countries), list(regions)
     
     def build_index(self):
         """Build Lucene index from recipes_enriched.jsonl using Lupyne."""
@@ -290,6 +364,9 @@ class LupyneRecipeIndexer:
             # Keyword fields (StringField equivalent: indexed but not tokenized)
             self.indexer.set('ingredients_kw', stored=True, tokenized=False, indexOptions='DOCS')
             self.indexer.set('cuisine_kw', stored=True, tokenized=False, indexOptions='DOCS')
+            # Origin keyword fields for country/region filtering
+            self.indexer.set('origin_country_kw', stored=True, tokenized=False, indexOptions='DOCS')
+            self.indexer.set('origin_region_kw', stored=True, tokenized=False, indexOptions='DOCS')
             
             # Numeric field (stored + indexed for range queries)
             self.indexer.set('total_minutes', stored=True, dimensions=1)
@@ -408,12 +485,12 @@ Examples:
   # Build BM25 index (default)
   python3 indexer/lucene_indexer.py \\
     --input data/normalized/recipes_enriched.jsonl \\
-    --output index/lucene/v2
+    --output index/v2
   
   # Build TF-IDF index
   python3 indexer/lucene_indexer.py \\
     --input data/normalized/recipes_enriched.jsonl \\
-    --output index/lucene/v2_tfidf \\
+    --output index/v2_tfidf \\
     --similarity tfidf
         """
     )

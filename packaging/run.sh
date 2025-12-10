@@ -456,9 +456,9 @@ run_index_lucene() {
     local similarity=${1:-bm25}
     
     # Set output directory based on similarity
-    local output_dir="index/lucene/v2"
+    local output_dir="index/v2"
     if [ "$similarity" = "tfidf" ]; then
-        output_dir="index/lucene/v2_tfidf"
+        output_dir="index/v2_tfidf"
     fi
     
     print_status "Similarity: $similarity"
@@ -500,7 +500,7 @@ run_search_lucene() {
     # Default parameters
     local query=${1:-"mexican chicken"}
     local k=${2:-10}
-    local index=${3:-"index/lucene/v2"}
+    local index=${3:-"index/v2"}
     
     # Check if specified index exists, fallback to TSV
     if [ ! -d "$index" ]; then
@@ -535,7 +535,7 @@ run_search_lucene() {
     echo "💡 Advanced usage:"
     echo "   # With filters (PyLucene index)"
     echo "   python3 search_cli/run.py \\"
-    echo "       --index index/lucene/v2 \\"
+    echo "       --index index/v2 \\"
     echo "       --q \"chicken pasta\" \\"
     echo "       --k 10 \\"
     echo "       --filter '{\"max_total_minutes\": 30, \"cuisine\": \"Mexican\"}'"
@@ -563,8 +563,8 @@ run_search() {
     
     # Try PyLucene index first, fallback to TSV
     local index="data/index/v1"
-    if [ -d "index/lucene/v2" ]; then
-        index="index/lucene/v2"
+    if [ -d "index/v2" ]; then
+        index="index/v2"
         print_status "Using PyLucene index: $index"
     elif [ -d "data/index/v1" ]; then
         print_status "Using TSV index: $index"
@@ -590,7 +590,7 @@ run_search() {
     echo ""
     echo "📖 For advanced usage:"
     echo "   # PyLucene with filters"
-    echo "   python3 search_cli/run.py --index index/lucene/v2 --metric bm25 \\"
+    echo "   python3 search_cli/run.py --index index/v2 --metric bm25 \\"
     echo "       --q \"pasta\" --k 10 \\"
     echo "       --filter '{\"max_total_minutes\": 30, \"cuisine\": \"Italian\"}'"
     echo ""

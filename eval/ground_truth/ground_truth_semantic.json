@@ -1,0 +1,2254 @@
+{
+  "1": {
+    "278861": {
+      "title": "Lentil Soup With Italian Sausage, Copycat , Cucina Cucina",
+      "relevant": true,
+      "score": 7.0,
+      "reason": "score=7.0, matches=[title:soup.*sausage, title:italian.*sausage, title:sausage]",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "42028": {
+      "title": "Italian Sausage Soup",
+      "relevant": true,
+      "score": 7.0,
+      "reason": "score=7.0, matches=[title:sausage.*soup, title:italian.*sausage, title:sausage]",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "265640": {
+      "title": "Italian (Turkey) Sausage Soup",
+      "relevant": true,
+      "score": 7.0,
+      "reason": "score=7.0, matches=[title:sausage.*soup, title:italian.*sausage, title:sausage]",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "147757": {
+      "title": "Italian Sausage and Vegetable Saute",
+      "relevant": true,
+      "score": 4.5,
+      "reason": "score=4.5, matches=[title:italian.*sausage, title:sausage, desc:italian]",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "120094": {
+      "title": "Italian Stuffed Beef &amp; Sausage Bell Peppers",
+      "relevant": true,
+      "score": 4.5,
+      "reason": "score=4.5, matches=[title:italian.*sausage, title:sausage, desc:italian]",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "152433": {
+      "title": "Spaghetti Bolognese Sauce (Beef and Italian Sausage)",
+      "relevant": true,
+      "score": 4.5,
+      "reason": "score=4.5, matches=[title:italian.*sausage, title:sausage, desc:italian]",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF"
+      ]
+    },
+    "104562": {
+      "title": "Italian Sausage With Fusilli",
+      "relevant": true,
+      "score": 4.5,
+      "reason": "score=4.5, matches=[title:italian.*sausage, title:sausage, desc:italian]",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "279298": {
+      "title": "Baked Rice With Sausage",
+      "relevant": true,
+      "score": 3.0,
+      "reason": "score=3.0, matches=[title:sausage, desc:soup, desc:italian]",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "392859": {
+      "title": "Italian Sausage and Beef Stew",
+      "relevant": true,
+      "score": 4.5,
+      "reason": "score=4.5, matches=[title:italian.*sausage, title:sausage, desc:italian]",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "354710": {
+      "title": "Italian Style Chicken, Sausage &amp; Potato Bake",
+      "relevant": true,
+      "score": 4.5,
+      "reason": "score=4.5, matches=[title:italian.*sausage, title:sausage, desc:italian]",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "323469": {
+      "title": "Baked Italian Heros",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:italian]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "257821": {
+      "title": "Meaty Mostaccioli",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:italian]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "328717": {
+      "title": "Orecchiette With Broccoli Rabe and Sausage",
+      "relevant": true,
+      "score": 2.5,
+      "reason": "score=2.5, matches=[title:sausage, desc:italian]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "261432": {
+      "title": "Polpette Alla Casalinga",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:italian]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "247644": {
+      "title": "Italian Ziti Medley",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:italian]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "72237": {
+      "title": "Mostaccioli (Baked Pasta With Creamy Sauce &amp; Italian Sausag",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:italian]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "510760": {
+      "title": "My Famous 'Baked' Mostaccioli",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:italian]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "359112": {
+      "title": "Sausage Pizza Soup",
+      "relevant": true,
+      "score": 5.0,
+      "reason": "score=5.0, matches=[title:sausage.*soup, title:sausage, desc:soup]",
+      "found_by": [
+        "Simple_TFIDF",
+        "Lucene_TFIDF"
+      ]
+    },
+    "278862": {
+      "title": "Mediterranean Lasagna",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:italian]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "28116": {
+      "title": "Sausage Scaloppine",
+      "relevant": true,
+      "score": 2.5,
+      "reason": "score=2.5, matches=[title:sausage, desc:italian]",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "66499": {
+      "title": "Italian Sausage & Potatoes",
+      "relevant": true,
+      "score": 4.5,
+      "reason": "score=4.5, matches=[title:italian.*sausage, title:sausage, desc:italian]",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "280772": {
+      "title": "Sausage and Broccoli Soup",
+      "relevant": true,
+      "score": 5.0,
+      "reason": "score=5.0, matches=[title:sausage.*soup, title:sausage, desc:soup]",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "222131": {
+      "title": "Crock Pot Tuscany Peasant Soup",
+      "relevant": true,
+      "score": 1.0,
+      "reason": "score=1.0, matches=[desc:soup, desc:italian]",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "162804": {
+      "title": "Crouton Sausage Breakfast Bake",
+      "relevant": true,
+      "score": 3.0,
+      "reason": "score=3.0, matches=[title:sausage, desc:soup, desc:italian]",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "190872": {
+      "title": "Italian Sausage Meatballs",
+      "relevant": true,
+      "score": 4.5,
+      "reason": "score=4.5, matches=[title:italian.*sausage, title:sausage, desc:italian]",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "358004": {
+      "title": "Sausage Pasta Soup",
+      "relevant": true,
+      "score": 4.5,
+      "reason": "score=4.5, matches=[title:sausage.*soup, title:sausage, desc:soup]",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "279170": {
+      "title": "Italian Tomato-Corn Soup",
+      "relevant": true,
+      "score": 1.0,
+      "reason": "score=1.0, matches=[desc:soup, desc:italian]",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    }
+  },
+  "2": {
+    "359112": {
+      "title": "Sausage Pizza Soup",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:beef]",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "231370": {
+      "title": "Buffalo Wing Pizza",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "296250": {
+      "title": "Quick Pizza Melts",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "274851": {
+      "title": "Quick Pizza Casserole",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:beef]",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25"
+      ]
+    },
+    "277652": {
+      "title": "Fajita Flatbread Personal Pizzas",
+      "relevant": true,
+      "score": 2.5,
+      "reason": "score=2.5, matches=[title:fajita, desc:beef]",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF"
+      ]
+    },
+    "498847": {
+      "title": "The Greek Pizza (California Pizza Kitchen)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "91827": {
+      "title": "Pizza Hut Original Pan Pizza",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "92054": {
+      "title": "Diabetic Pizza Pockets",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25"
+      ]
+    },
+    "281563": {
+      "title": "A Very Different White Pizza",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "248653": {
+      "title": "New Haven-Style Garlic and Cheese Pizza Bianca",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "280190": {
+      "title": "Caramelized Onion &amp; Artichoke Pizza",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "282488": {
+      "title": "Beef Fajita Pizza",
+      "relevant": true,
+      "score": 3.0,
+      "reason": "score=3.0, matches=[title:fajita, desc:beef, desc:mexican]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "213346": {
+      "title": "Rachael Ray's Vegeterranean Pizza",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "20310": {
+      "title": "Potato and Arugula Pizza",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "4960": {
+      "title": "Smoked Salmon and Brie Pizza",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "301883": {
+      "title": "Mediterranean Pizza",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF",
+        "Lucene_TFIDF"
+      ]
+    },
+    "280890": {
+      "title": "Greek Pesto Ricotta Pizza",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "170365": {
+      "title": "Hot Sausage and Mozzarella Roll",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "148524": {
+      "title": "Pizza Lasagna",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "2816": {
+      "title": "Pizza Pockets",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "410167": {
+      "title": "Cheese Only Crust Pizza (Low Carb)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "281973": {
+      "title": "Hoppin' John With Sausage",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "277584": {
+      "title": "Fried Spaghetti With Sausage",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "28116": {
+      "title": "Sausage Scaloppine",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "279298": {
+      "title": "Baked Rice With Sausage",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    }
+  },
+  "3": {
+    "301002": {
+      "title": "Shrimp and Angel Hair Pasta",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "278241": {
+      "title": "Shrimp and Pasta in a Tomato-Chile Cream Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "520728": {
+      "title": "Orange Shrimp Scampi",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "281372": {
+      "title": "Pasta With Spinach, Nutmeg, and Shrimp",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "354241": {
+      "title": "Walley's Shrimp Scampi",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25"
+      ]
+    },
+    "212117": {
+      "title": "Thai Shrimp-And-Pasta Salad",
+      "relevant": true,
+      "score": 3.0,
+      "reason": "score=3.0, matches=[title:thai.*salad, desc:thai, desc:peanut]",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "450756": {
+      "title": "Buddy Valastro's Shrimp Scampi",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25"
+      ]
+    },
+    "100485": {
+      "title": "Spicy Shrimp and Pasta",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "281012": {
+      "title": "Garlic Shrimp and Grits",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "287767": {
+      "title": "Shrimp Oreganato",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "280697": {
+      "title": "Tom Yum Goong (Spicy Thai Shrimp Soup)",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:thai]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "280939": {
+      "title": "Parmesan Shrimp  Au Gratin With Sherry",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "420691": {
+      "title": "Tilapia With a Creamy Shrimp &amp; Crab White Wine Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "18691": {
+      "title": "Shrimp Scampi with Spaghetti and Zucchini",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "239052": {
+      "title": "Shrimp &amp; Asparagus Risotto - (The Olive Garden) -  Official",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "296028": {
+      "title": "Portuguese (Acorean) Shrimp",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "280080": {
+      "title": "Spicy Beef With Shrimp and Bok Choy",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:noodle]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "175377": {
+      "title": "Mexican Shrimp Cocktail, a Nice Twist!",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "15222": {
+      "title": "Mushroom Pasta Scampi",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "75527": {
+      "title": "Shrimp alla Aglio",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "116796": {
+      "title": "Garlic Chicken Pasta Primavera",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "494206": {
+      "title": "The Best Garlic Shrimp Ever",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "154384": {
+      "title": "Pasta With Garlic and Oil (Pasta Aglio E Olio)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "280826": {
+      "title": "Creamy Shrimp &amp; Vegetable Casserole",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    }
+  },
+  "4": {
+    "282366": {
+      "title": "Honey Mustard Salmon",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "281863": {
+      "title": "Honey Dijon Salmon",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "94056": {
+      "title": "Honey Mustard Grilled Salmon or Tuna Steaks",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "279899": {
+      "title": "Ancho Glazed Salmon",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "42260": {
+      "title": "Maple Glazed Salmon",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "162670": {
+      "title": "Grilled or Baked Salmon With Lavender",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "31837": {
+      "title": "Grilled Ginger Salmon",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "449461": {
+      "title": "Salmon and Asparagus Wraps",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "228276": {
+      "title": "Honey Lime Glazed Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_TFIDF"
+      ]
+    },
+    "46788": {
+      "title": "Endive with Goat Cheese, Fig and Honey-Glazed Pecans",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF"
+      ]
+    },
+    "445098": {
+      "title": "Sticky Glazed Carrots",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "436087": {
+      "title": "Hoisin-Glazed Chicken Thighs",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "62549": {
+      "title": "Honey-Glazed Pea Pods & Carrots",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF",
+        "Lucene_TFIDF"
+      ]
+    },
+    "251672": {
+      "title": "Apple and Honey Glazed Baby Carrots",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF",
+        "Lucene_TFIDF"
+      ]
+    },
+    "293368": {
+      "title": "Kittencal's Honey-Garlic Glazed Meatballs",
+      "relevant": true,
+      "score": 4,
+      "reason": "score=4.0, matches=[title:meatball, title:meat.*ball]",
+      "found_by": [
+        "Simple_TFIDF",
+        "Lucene_TFIDF"
+      ]
+    },
+    "193235": {
+      "title": "Honeyed Chicken Teriyaki",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "173873": {
+      "title": "Lemon Pepper &amp; Mustard Baked Ahi / Mahi Mahi / Salmon",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "478896": {
+      "title": "Hook &amp; Ladder Recipe",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "70299": {
+      "title": "Salmon (Microwave-Cooked)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "304464": {
+      "title": "Wasabi Salmon",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    }
+  },
+  "5": {
+    "60478": {
+      "title": "Asian Style Chicken Breasts and Bacon",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:garlic]",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "342478": {
+      "title": "Bacon-Wrapped Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "486854": {
+      "title": "BBQ Chicken With Bacon Sandwiches",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "277694": {
+      "title": "Spinach Feta Stuffed Chicken Breasts",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:garlic]",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "277731": {
+      "title": "Bacon Wrapped Venison Tenderloin With Portabella Mushrooms",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:garlic]",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "278865": {
+      "title": "Baked Chicken and Stuffing Casserole",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "281340": {
+      "title": "Outback Steakhouse Alice Springs Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "143770": {
+      "title": "Stuffing-Coated Baked Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "41744": {
+      "title": "Spinach and Feta Stuffed Chicken Breasts",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "202052": {
+      "title": "Coq Au Vin (Chicken With Wine)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF"
+      ]
+    },
+    "278625": {
+      "title": "Baked Ranch Chops With Sour Cream Ranch Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "70572": {
+      "title": "Chicken Stuffed With Potatoes and Olives",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:garlic]",
+      "found_by": [
+        "Simple_TFIDF",
+        "Lucene_TFIDF"
+      ]
+    },
+    "190721": {
+      "title": "Chicken Spaghetti Supreme",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "48836": {
+      "title": "mushroom bisque",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:garlic]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "106826": {
+      "title": "Breakfast in a Pan Frittata",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "53847": {
+      "title": "All Day Slow Cooker Chicken",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:garlic]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "279848": {
+      "title": "King Du Noodles",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:garlic]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "470576": {
+      "title": "Sweet Bacon Wrapped Hot Dogs",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "28200": {
+      "title": "Alice Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "110037": {
+      "title": "Bacon Smothered Green Beans",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:garlic]",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "277922": {
+      "title": "Southwest Stuffed Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "409711": {
+      "title": "Southwest Stuffed Chicken Breasts",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "282243": {
+      "title": "Asparagus Stuffed Chicken Breasts",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:garlic]",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    }
+  },
+  "6": {
+    "349371": {
+      "title": "Taco Casserole",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "279306": {
+      "title": "Cornbread Taco Bake",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "85532": {
+      "title": "taco surprise casserole",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "282554": {
+      "title": "Taco Taters",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "234912": {
+      "title": "Tacos De Pollo",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "138306": {
+      "title": "Foil Pack Taco Chicken Dinner",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "107343": {
+      "title": "Easy Tacos",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "277874": {
+      "title": "Low Cal  Beef Taco Soup",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25"
+      ]
+    },
+    "78535": {
+      "title": "Taco Salad Supreme",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "209642": {
+      "title": "Taco Salad",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "260263": {
+      "title": "Taco Soup With Venison",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "278740": {
+      "title": "Slow Cooker Mexican Beef Stew",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "153150": {
+      "title": "Taco Chicken   Wings",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "289642": {
+      "title": "Quick and Easy Taco Salad",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "224280": {
+      "title": "Easy Taco Casserole",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "441951": {
+      "title": "Layered Taco Casserole",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "282458": {
+      "title": "Tijuana Torte",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "213336": {
+      "title": "Mexican Macaroni Salad",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "114558": {
+      "title": "Addictive Mexican Stew",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "280610": {
+      "title": "Mexican Steak Casserole",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "13651": {
+      "title": "Mexican Manicotti",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "225907": {
+      "title": "Amy's Favorite Indian Fry Bread Tacos",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "120062": {
+      "title": "Machaca (Authentic Mexican Shredded Beef)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "282542": {
+      "title": "Mexican Beef Skillet",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "475385": {
+      "title": "Quinoa Bean Tacos",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "277728": {
+      "title": "Pinto Bean Tacos :)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "27836": {
+      "title": "Mexican Chilaquillas",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    }
+  },
+  "7": {
+    "504643": {
+      "title": "Thai Chicken Noodle Salad (Gluten Free)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "279848": {
+      "title": "King Du Noodles",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "277007": {
+      "title": "Thai Salad Rolls",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "280697": {
+      "title": "Tom Yum Goong (Spicy Thai Shrimp Soup)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF"
+      ]
+    },
+    "280224": {
+      "title": "Robin Miller's Thai Salad",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "349679": {
+      "title": "Super Yummy Vegetarian Pad Thai",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "370344": {
+      "title": "Stir-Fry Noodles With Chicken and Macadamias (Australian)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "204483": {
+      "title": "Thai Mango Salad",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "28097": {
+      "title": "Broccoli &amp; Ramen Noodles",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "440703": {
+      "title": "Sweet Chilli Prawn/Shrimp and Basil Noodles",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "119423": {
+      "title": "Thai-curried Game Hens",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "113873": {
+      "title": "Basic Thai Sweet Chili Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "340794": {
+      "title": "Thai Red Rice Pudding",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "33910": {
+      "title": "Thai Iced Tea",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "81949": {
+      "title": "Thai Sweet Chilli Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "115072": {
+      "title": "Thai Chicken - Crock Pot",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "282404": {
+      "title": "Thai Masaman Chicken, &quot;gaeng Masaman Gai&quot;",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "279591": {
+      "title": "Chile Coconut Cream Sauce",
+      "relevant": true,
+      "score": 1.0,
+      "reason": "score=1.0, matches=[desc:fried, desc:pan]",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "280580": {
+      "title": "Oodle Noodles",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "80076": {
+      "title": "Butterscotch Haystacks",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "62320": {
+      "title": "Fast Pork and Peanut Stir-Fry",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "167899": {
+      "title": "Sesame Noodles",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "257826": {
+      "title": "Thai Peanut Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "536476": {
+      "title": "Thai Peanut Coconut Chicken",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:pan]",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "330590": {
+      "title": "Parmesan Noodles",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "279974": {
+      "title": "Thai Napa Cabbage and Peanut Soup",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    }
+  },
+  "8": {
+    "211475": {
+      "title": "Indian Chicken Curry Pilaf",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "36362": {
+      "title": "Chicken Curry in a Hurry",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "66242": {
+      "title": "Vietnamese Chicken Curry",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "279080": {
+      "title": "Easy Peasy Chicken Curry",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "64266": {
+      "title": "Crab Stuffed Chicken Breasts with Curry Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "164785": {
+      "title": "Crock Pot Chicken Curry Soup",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "19410": {
+      "title": "Crock Pot Mango Chicken With Ginger Curry Topping",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "201347": {
+      "title": "Beginner's Curry",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "194444": {
+      "title": "Cauliflower Curry With Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "278864": {
+      "title": "Cold Chicken Curry Salad",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "159635": {
+      "title": "Cumin-Curry Pork Roast",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "211584": {
+      "title": "Hong Kong Fish in Curry Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "49516": {
+      "title": "Curried Peanut Rice",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF",
+        "Lucene_BM25"
+      ]
+    },
+    "453952": {
+      "title": "Prawn and Pumpkin Coconut Milk Curry - Konju Pulungari",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "291770": {
+      "title": "Mustard Curry Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "282300": {
+      "title": "Sweet Curry Marinade With Buttermilk",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "278702": {
+      "title": "Tofu Yam Curry",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "482986": {
+      "title": "Southern Indian Rice and Seafood Soup",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "281496": {
+      "title": "Tugboat Chicken and Rice",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    }
+  },
+  "9": {
+    "48239": {
+      "title": "Teriyaki Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "301894": {
+      "title": "Teriyaki Onion Burgers",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "281564": {
+      "title": "Teriyaki Pork Lettuce Wraps",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "31862": {
+      "title": "Salmon Teriyaki",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "16980": {
+      "title": "Teriyaki Glazed Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "193235": {
+      "title": "Honeyed Chicken Teriyaki",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_TFIDF"
+      ]
+    },
+    "27802": {
+      "title": "Lower-carb Teriyaki Marinade",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF"
+      ]
+    },
+    "495398": {
+      "title": "Slow Cooker Teriyaki Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25"
+      ]
+    },
+    "30734": {
+      "title": "Teriyaki Chicken & Rice Stir-Fry",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF"
+      ]
+    },
+    "279335": {
+      "title": "Beef and Veggie Shabu Shabu",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "291896": {
+      "title": "Arnies Chicken Dinner",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF",
+        "Lucene_BM25"
+      ]
+    },
+    "280183": {
+      "title": "Okayu Japanese Rice Porridge",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "278976": {
+      "title": "Kiss Burgers (Keep It Simple Stupid!)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25"
+      ]
+    },
+    "177552": {
+      "title": "Grilled Teriyaki Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "159764": {
+      "title": "Sauerbraten Beef",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "279898": {
+      "title": "Sherried Beef",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    }
+  },
+  "10": {
+    "277631": {
+      "title": "Greek Seasoned Chicken and Orzo",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "498847": {
+      "title": "The Greek Pizza (California Pizza Kitchen)",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:grill]",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25"
+      ]
+    },
+    "132483": {
+      "title": "Greek Honey Lemon Chicken",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:grill]",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "281554": {
+      "title": "Greek Grilled Chicken and Vegetable Salad With Warm Pita Bread F",
+      "relevant": true,
+      "score": 5.0,
+      "reason": "score=5.0, matches=[title:grill.*vegetable, title:grilled.*vegetable, desc:grill]",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF"
+      ]
+    },
+    "423606": {
+      "title": "Avgolemono: Chicken Soup With Egg-Lemon Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF",
+        "Lucene_BM25"
+      ]
+    },
+    "160278": {
+      "title": "Lemon Baked Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "319752": {
+      "title": "Chicken Gyros",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "534868": {
+      "title": "Instant Pot Lemon Chicken Orzo Soup",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Simple_TFIDF"
+      ]
+    },
+    "371266": {
+      "title": "Marinated Lemon Chicken Breasts",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25",
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "165383": {
+      "title": "Papa Bear's Baked Italian Lemon  Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_BM25"
+      ]
+    },
+    "257413": {
+      "title": "Greek Tzatziki Sauce",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "218280": {
+      "title": "Chicken and Broccoli Casserole",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "53847": {
+      "title": "All Day Slow Cooker Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "194444": {
+      "title": "Cauliflower Curry With Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "262851": {
+      "title": "Prawn &amp; Chicken Orzo Paella",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "277808": {
+      "title": "Lighter Chicken Pot Pie",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Simple_TFIDF"
+      ]
+    },
+    "28180": {
+      "title": "Mediterranean Lemon Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "21934": {
+      "title": "Lemon Yogurt Chicken",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:vegetable]",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "19687": {
+      "title": "Turmeric Lemon Chicken",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:marinade]",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "213493": {
+      "title": "Lemon Chicken (Oamc)",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_BM25",
+        "Lucene_TFIDF"
+      ]
+    },
+    "306133": {
+      "title": "Greek Honey-Lemon Pork Chops",
+      "relevant": false,
+      "score": 0.5,
+      "reason": "score=0.5, matches=[desc:marinade]",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    },
+    "298677": {
+      "title": "Chinese Takeout Lemon Chicken",
+      "relevant": false,
+      "score": 0,
+      "reason": "no matches",
+      "found_by": [
+        "Lucene_TFIDF"
+      ]
+    }
+  }
+}

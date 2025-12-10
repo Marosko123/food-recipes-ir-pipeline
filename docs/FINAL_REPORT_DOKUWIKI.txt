@@ -1,0 +1,598 @@
+====== Finálne Odovzdanie - Vyhľadávač jedla Food.com ======
+
+Komplexný IR systém pre vyhľadávanie receptov obohatených o kulinárne znalosti z Wikipédie.
+
+Jednoduchší PDF Dokument: {{ :user:maros.bednar:vinf:konzultacie:vinf_maros-bednar_food-recipes.pdf |}}
+Github: https://github.com/Marosko123/food-recipes-ir-pipeline
+
+
+===== Obsah =====
+  * [[#1. Prehľad systému]]
+  * [[#2. Crawler]]
+  * [[#3. Parser]]
+  * [[#4. Wikipedia Spark Parser]]
+  * [[#5. Recipe Enricher (Entity Linking)]]
+  * ⬇️ Nové/doplnené info
+  * [[#6. Indexer (PyLucene)]]
+  * [[#7. Searcher (Vyhľadávač)]]
+  * [[#8. Vyhodnotenie a porovnanie]]
+  * [[#9. Príklady použitia]]
+  * [[#10. Záver a štatistiky]]
+
+===== 1. Prehľad systému =====
+
+==== 1.1 Architektúra ====
+
+Systém pozostáva zo 6 hlavných komponentov:
+
+  - **Crawler** - sťahuje HTML stránky z Food.com
+  - **Parser** - extrahuje štruktúrované dáta z HTML
+  - **Spark Wikipedia Parser** - spracováva Wikipedia XML dump
+  - **Enricher** - prepája recepty s Wikipedia entitami
+  - **Indexer** - vytvára invertovaný index (PyLucene)
+  - **Searcher** - vyhľadáva v indexe s BM25/TF-IDF
+
+==== 1.2 Dátové zdroje ====
+
+^ Zdroj ^ Popis ^ Počet záznamov ^
+| Food.com | Recepty s ingredienciami a postupom | 5,646 receptov |
+| Wikipedia | Kulinárne články (enwiki dump) | 9,693 článkov |
+| Gazetteer | Entity pre linking (vrátane redirectov) | 42,837 entít |
+
+===== 2. Crawler =====
+
+==== 2.1 Implementácia ====
+
+Crawler je implementovaný v ''crawler/run.py'' a dodržiava tieto pravidlá:
+  * Rešpektuje ''robots.txt'' cieľovej domény
+  * Dodržiava politeness delay (1 sekunda medzi requestami)
+  * Ukladá HTML súbory do ''data/raw/www.food.com/''
+
+**Kľúčový kód - robots.txt parser:**
+<code python>
+class RobotsParser:
+    def __init__(self, domain: str):
+        self.rules = {}
+        robots_url = f"{domain}/robots.txt"
+        response = requests.get(robots_url)
+        self._parse_robots(response.text)
+    
+    def can_fetch(self, url: str, user_agent: str = '*') -> bool:
+        for pattern in self.rules.get('disallow', []):
+            if re.match(pattern, url):
+                return False
+        return True
+</code>
+
+==== 2.2 Štatistiky crawlera ====
+
+^ Metrika ^ Hodnota ^
+| Stiahnutých HTML súborov | **5,646** |
+| Cieľová doména | www.food.com |
+| Typ obsahu | Recepty s obrázkami |
+
+===== 3. Parser =====
+
+==== 3.1 Dual-layer parsing ====
+
+Parser používa dvojvrstvový prístup pre maximálnu extrakciu dát:
+
+  - **JSON-LD** - primárny zdroj štruktúrovaných dát (Schema.org Recipe)
+  - **HTML Regex fallback** - záložný parser pre chýbajúce polia
+
+**Kľúčový kód - JSON-LD extrakcia:**
+<code python>
+def extract_json_ld(html: str) -> Optional[Dict]:
+    soup = BeautifulSoup(html, 'html.parser')
+    for script in soup.find_all('script', type='application/ld+json'):
+        data = json.loads(script.string)
+        if data.get('@type') == 'Recipe':
+            return {
+                'title': data.get('name'),
+                'ingredients': data.get('recipeIngredient', []),
+                'instructions': [s.get('text') for s in data.get('recipeInstructions', [])],
+                'nutrition': data.get('nutrition'),
+                'times': {
+                    'prep': parse_duration(data.get('prepTime')),
+                    'cook': parse_duration(data.get('cookTime')),
+                    'total': parse_duration(data.get('totalTime'))
+                }
+            }
+    return None
+</code>
+
+==== 3.2 Extrahované polia receptu ====
+
+^ Pole ^ Typ ^ Príklad ^
+| id | string | "59018" |
+| title | string | "Macaroon Pie Crust" |
+| description | string | "Passover pie crust recipe..." |
+| ingredients | list[string] | ["1 1/3 cups macaroons", "1/2 cup margarine"...] |
+| instructions | list[string] | ["Preheat oven to 375°F", "Combine ingredients"...] |
+| times.prep | int (min) | 5 |
+| times.cook | int (min) | 7 |
+| times.total | int (min) | 12 |
+| cuisine | list[string] | ["French", "Kosher"] |
+| category | list[string] | ["Dessert", "Easy"] |
+| nutrition | dict | {"calories": "601.4", "fat": "45.5"...} |
+| ratings | dict | {"rating": "4.0", "review_count": "4"} |
+| difficulty | string | "easy" |
+
+==== 3.3 Štatistiky parsera ====
+
+^ Metrika ^ Hodnota ^
+| Spracovaných súborov | **5,646** |
+| Úspešne parsovaných | **5,646** (100%) |
+| Čas spracovania | **28.1 sekúnd** |
+| Rýchlosť | **200.9 receptov/s** |
+| Priemerný počet ingrediencií | **9.4** |
+| Priemerný počet krokov | **7.0** |
+
+===== 4. Wikipedia Spark Parser =====
+
+==== 4.1 Distribuované spracovanie ====
+
+Wikipedia dump sa spracováva pomocou Apache Spark pre efektívne spracovanie veľkých XML súborov.
+
+**Architektúra spracovania:**
+  - **Fáza 1:** Zber redirectov (mapovanie aliasov na hlavné články)
+  - **Fáza 2:** Extrakcia kulinárnych článkov s redirect informáciami
+
+**Kľúčový kód - Spark inicializácia:**
+<code python>
+spark = SparkSession.builder \
+    .appName("WikipediaCulinaryParser") \
+    .config("spark.driver.memory", "2g") \
+    .config("spark.executor.memory", "2g") \
+    .getOrCreate()
+
+# Streaming XML parser
+for page_xml in stream_pages(input_path):
+    page_data = WikiXMLParser.parse_page_xml(page_xml)
+    if WikiXMLParser.is_food_related(page_data):
+        result = WikiXMLParser.process_page(page_data, redirects_map)
+        results.append(result)
+</code>
+
+==== 4.2 Filtrovanie kulinárnych článkov ====
+
+Články sú filtrované podľa:
+  * **Infobox patterns:** Infobox food, Infobox prepared food, Infobox ingredient
+  * **Category patterns:** Foods, Dishes, Ingredients, Cuisine, Cooking techniques
+  * **Food signals:** food, cuisine, dish, ingredient, cooking, culinary, recipe
+
+**Kľúčový kód - detekcia food článkov:**
+<code python>
+INFOBOX_PATTERNS = [
+    re.compile(r'{{\s*Infobox\s+food', re.IGNORECASE),
+    re.compile(r'{{\s*Infobox\s+prepared\s+food', re.IGNORECASE),
+    re.compile(r'{{\s*Infobox\s+ingredient', re.IGNORECASE),
+]
+
+FOOD_SIGNALS = ['food', 'cuisine', 'dish', 'ingredient', 'edible', 
+                'cooking', 'culinary', 'recipe', 'meal', 'beverage']
+
+def is_food_related(title, text, categories):
+    # Check for food infobox
+    if any(pattern.search(text) for pattern in INFOBOX_PATTERNS):
+        return True
+    # Check categories for food signals
+    cat_words = set(word for cat in categories for word in cat.lower().split())
+    return len(set(FOOD_SIGNALS) & cat_words) >= 2
+</code>
+
+==== 4.3 Extrahované polia z Wikipédie ====
+
+^ Pole ^ Popis ^ Pokrytie ^
+| wiki_id | Unikátny Wikipedia ID | 100% |
+| wiki_title | Názov článku | 100% |
+| type | Typ entity (dish/ingredient/cuisine/technique/tool/condiment) | 100% |
+| abstract | Prvý odstavec článku | 100% |
+| history | Sekcia História/Origins | 36.8% |
+| origin_country | Krajina pôvodu z Infoboxu | 55.4% |
+| origin_region | Región pôvodu | variabilné |
+| categories | Wikipedia kategórie | 100% |
+| redirects | Zoznam aliasov (presmerovaní) | 65.3% |
+| alternate_names | Alternatívne názvy z Infoboxu | variabilné |
+| infobox | Kompletný Infobox ako dict | variabilné |
+
+==== 4.4 Štatistiky Wikipedia spracovania ====
+
+^ Metrika ^ Hodnota ^
+| Celkom kulinárnych článkov | **9,693** |
+| Typ: dish (jedlá) | **5,855** (60.4%) |
+| Typ: ingredient (ingrediencie) | **3,441** (35.5%) |
+| Typ: condiment (koreniny/omáčky) | **169** (1.7%) |
+| Typ: cuisine (kuchyne) | **122** (1.3%) |
+| Typ: technique (techniky) | **81** (0.8%) |
+| Typ: tool (nástroje) | **25** (0.3%) |
+| S krajinou pôvodu | **5,372** (55.4%) |
+| So sekciou história | **3,569** (36.8%) |
+| S redirectmi | **6,326** (65.3%) |
+| Celkom redirectov | **30,321** |
+| Entít v gazetteeri | **42,837** |
+
+===== 5. Recipe Enricher (Entity Linking) =====
+
+==== 5.1 Aho-Corasick algoritmus ====
+
+Na prepojenie receptov s Wikipedia entitami používame Aho-Corasick algoritmus, ktorý umožňuje efektívne multi-pattern vyhľadávanie.
+
+**Prečo Aho-Corasick:**
+  * Časová zložitosť O(n + m + z) - lineárna
+  * n = dĺžka textu, m = súčet dĺžok všetkých patterns, z = počet nájdených výskytov
+  * Vhodný pre 42,837 entít v gazetteeri
+
+**Kľúčový kód - budovanie automatu:**
+<code python>
+import ahocorasick
+
+class RecipeEnricher:
+    def __init__(self, gazetteer_path, wiki_jsonl_path):
+        self.automaton = ahocorasick.Automaton()
+        
+    def _build_automaton(self):
+        # Načítanie gazetteera (surface -> wiki_title mapping)
+        for surface, wiki_title in self.surface_to_title.items():
+            self.automaton.add_word(surface.lower(), (surface, wiki_title))
+        self.automaton.make_automaton()
+    
+    def find_entities(self, text: str) -> List[Dict]:
+        text_lower = text.lower()
+        matches = []
+        for end_pos, (surface, wiki_title) in self.automaton.iter(text_lower):
+            start_pos = end_pos - len(surface) + 1
+            matches.append({
+                'surface': surface,
+                'wiki_title': wiki_title,
+                'type': self.title_to_type.get(wiki_title),
+                'origin_country': self.wiki_articles[wiki_title].get('origin_country'),
+                'abstract': self.wiki_articles[wiki_title].get('abstract', '')[:500]
+            })
+        return matches
+</code>
+
+==== 5.2 Proces obohacovania ====
+
+Pre každý recept:
+  - Spojenie textových polí (title + ingredients + instructions + description)
+  - Vyhľadanie všetkých entít pomocou Aho-Corasick
+  - Pridanie ''wiki_links'' s abstraktami a metadátami
+  - Inferencia kuchyne podľa pôvodu ingrediencií
+  - Pridanie historického kontextu ak je k dispozícii
+
+**Príklad obohateného receptu:**
+<code javascript>
+{
+  "id": "279326",
+  "title": "Devilishly Good Chocolate Cake",
+  "ingredients": ["unsweetened chocolate", "devil's food cake mix", ...],
+  "wiki_links": [
+    {
+      "surface": "chocolate",
+      "wiki_title": "Chocolate",
+      "type": "ingredient",
+      "origin_country": "Mesoamerica",
+      "abstract": "Chocolate is a food made from roasted and ground cacao pods..."
+    },
+    {
+      "surface": "cake",
+      "wiki_title": "Cake",
+      "type": "dish",
+      "origin_country": null,
+      "abstract": "Cake is a flour confection made from flour, sugar, and other ingredients..."
+    }
+  ],
+  "cuisine": ["Chinese", "European"],
+  "ingredient_origins": {
+    "Chocolate": {"country": "Mesoamerica", "region": "Central America"}
+  }
+}
+</code>
+
+==== 5.3 Štatistiky enrichmentu ====
+
+^ Metrika ^ Hodnota ^
+| Celkom receptov | **5,646** |
+| Obohatených receptov | **5,645** (99.98%) |
+| Celkom wiki linkov | **139,717** |
+| **Unikátnych wiki stránok prepojených** | **1,067** |
+| Priemerný počet linkov na recept | **24.75** |
+| S nutričnými hodnotami | **5,646** (100%) |
+| S hodnoteniami | **4,885** (86.5%) |
+
+==== 5.4 Top 10 inferovaných kuchýň ====
+
+^ Kuchyňa ^ Počet receptov ^
+| Chinese | 4,188 |
+| Indian | 2,212 |
+| Asian | 2,087 |
+| Italian | 1,225 |
+| French | 956 |
+| European | 676 |
+| Mexican | 279 |
+| Japanese | 204 |
+| Canadian | 115 |
+| Kosher | 108 |
+
+===== 6. Indexer (PyLucene) =====
+
+==== 6.1 Schéma indexu ====
+
+Index používa PyLucene (cez Lupyne wrapper) s BM25 podobnosťou.
+
+**Textové polia (full-text search s tokenizáciou):**
+
+^ Pole ^ Boost ^ Popis ^
+| title_text | 2.0 | Názov receptu |
+| ingredients_text | 1.5 | Zoznam ingrediencií |
+| instructions_text | 1.0 | Postup prípravy |
+| wiki_abstracts | 1.0 | Spojené Wikipedia abstrakty |
+
+**Keyword polia (exact match, bez tokenizácie):**
+
+^ Pole ^ Popis ^
+| ingredients_kw | Presné vyhľadávanie ingrediencií |
+| cuisine_kw | Filtrovanie podľa kuchyne |
+| origin_country_kw | Filtrovanie podľa krajiny pôvodu |
+| origin_region_kw | Filtrovanie podľa regiónu |
+
+**Numerické polia:**
+
+^ Pole ^ Popis ^
+| total_minutes | IntPoint pre range queries (čas prípravy) |
+
+**Stored polia (neuložené v indexe, len pre zobrazenie):**
+
+^ Pole ^ Popis ^
+| docId | Unikátny ID receptu |
+| url | URL na Food.com |
+| description | Popis receptu |
+| nutrition | Nutričné hodnoty (JSON string) |
+| ratings | Hodnotenia (JSON string) |
+
+**Kľúčový kód - definícia polí:**
+<code python>
+class LupyneRecipeIndexer:
+    def build_index(self):
+        # Text fields - tokenized, indexed, stored
+        self.indexer.set('title_text', stored=True, 
+                         indexOptions='DOCS_AND_FREQS_AND_POSITIONS')
+        self.indexer.set('ingredients_text', stored=True, 
+                         indexOptions='DOCS_AND_FREQS_AND_POSITIONS')
+        self.indexer.set('wiki_abstracts', stored=True, 
+                         indexOptions='DOCS_AND_FREQS_AND_POSITIONS')
+        
+        # Keyword fields - not tokenized (exact match)
+        self.indexer.set('ingredients_kw', stored=True, tokenized=False)
+        self.indexer.set('cuisine_kw', stored=True, tokenized=False)
+        self.indexer.set('origin_country_kw', stored=True, tokenized=False)
+        
+        # Numeric field for range queries
+        self.indexer.set('total_minutes', stored=True, dimensions=1)
+</code>
+
+==== 6.2 Porovnanie indexov ====
+
+Systém obsahuje dva typy indexov:
+
+^ Vlastnosť ^ Index v1 (Simple Python) ^ Index v2 (PyLucene) ^
+| Implementácia | Pure Python | Lucene (Java) |
+| Veľkosť | ~52 MB | ~52 MB |
+| Čas indexovania | 12.6 s | ~15 s |
+| Počet dokumentov | 5,646 | 5,646 |
+| Počet termov | 11,841 | N/A (Lucene internal) |
+
+==== 6.3 Štatistiky indexu v1 (Simple) ====
+
+^ Metrika ^ Hodnota ^
+| Celkom dokumentov | **5,646** |
+| Unikátnych termov | **11,841** |
+| Celkom postings | **2,357,249** |
+| Priemerná dĺžka title | 3.86 termov |
+| Priemerná dĺžka ingredients | 32.62 termov |
+| Priemerná dĺžka instructions | 61.88 termov |
+| Priemerná dĺžka wiki | 1,143.70 termov |
+
+===== 7. Searcher (Vyhľadávač) =====
+
+==== 7.1 Podporované typy dopytov ====
+
+^ Typ dopytu ^ Syntax ^ Príklad ^ Implementácia ^
+| Full-text | prosté slová | chocolate cake | BM25Similarity |
+| Exact phrase | úvodzovky | "chocolate cake" | PhraseQuery |
+| Fuzzy | s preklepmi | chickn → chicken | FuzzyQuery (edit distance 2) |
+| Boolean AND | + | chicken +garlic | BooleanClause.MUST |
+| Boolean NOT | - | pasta -meat | BooleanClause.MUST_NOT |
+| Ingredient filter | include/exclude | include=["egg"], exclude=["milk"] | TermQuery kombinácia |
+| Cuisine filter | cuisine_kw | cuisine_kw:"mexican" | TermQuery |
+| Time range | max_minutes | total_minutes < 30 | LongPoint.newRangeQuery |
+
+**Kľúčový kód - multi-field search s boost:**
+<code python>
+def search_bm25(self, query: str, k: int = 10):
+    from org.apache.lucene.search.similarities import BM25Similarity
+    self.searcher.setSimilarity(BM25Similarity())
+    
+    # Build query across multiple fields with boosts
+    query_parts = []
+    for term in query.split():
+        query_parts.append(f"title_text:{term}^2.0")      # Title má najvyšší boost
+        query_parts.append(f"ingredients_text:{term}^1.5")
+        query_parts.append(f"instructions_text:{term}^1.0")
+        query_parts.append(f"wiki_abstracts:{term}^1.0")
+    
+    query_str = " OR ".join(query_parts)
+    hits = self.searcher.search(self.searcher.parse(query_str), count=k)
+    return self._format_results(hits)
+</code>
+
+**Kľúčový kód - ingredient filtering:**
+<code python>
+def search_by_ingredients(self, include: List[str], exclude: List[str], k: int = 10):
+    builder = BooleanQuery.Builder()
+    
+    # Ingrediencie ktoré MUSIA byť prítomné
+    for ing in include:
+        builder.add(TermQuery(Term("ingredients_kw", ing.lower())), 
+                   BooleanClause.Occur.MUST)
+    
+    # Ingrediencie ktoré NESMÚ byť prítomné
+    for ing in exclude:
+        builder.add(TermQuery(Term("ingredients_kw", ing.lower())), 
+                   BooleanClause.Occur.MUST_NOT)
+    
+    return self.searcher.search(builder.build(), count=k)
+</code>
+
+==== 7.2 Výkonnostné porovnanie ====
+
+**Priemerné časy vyhľadávania (25 testovacích dopytov):**
+
+^ Algoritmus ^ Index v1 (Simple) ^ Index v2 (PyLucene) ^
+| BM25 | **2.36 ms** | 19.61 ms |
+| TF-IDF | **1.96 ms** | 13.53 ms |
+
+**Poznámka:** Index v1 je rýchlejší pre malé datasety kvôli absencii JVM overhead. PyLucene škáluje lepšie pre väčšie datasety a ponúka pokročilé features (fuzzy, phrase queries).
+
+**Overlap výsledkov Simple vs Lucene BM25:** **66.8%**
+
+===== 8. Vyhodnotenie a porovnanie =====
+
+Detailné porovnanie všetkých testovaných systémov a metrík nájdete v samostatnom dokumente:
+
+  * **[[user:maros.bednar:vinf:konzultacie:2025-12-15:Detailne_Vyhodnotenie|Detailne Tabulkove Vyhodnotenie Queries]]**
+==== 8.1 Súhrnné výsledky (Precision@5) ====
+
+Porovnanie 4 konfigurácií nášho systému a produkčného Food.com vyhľadávania na sade 10 štandardných dopytov.
+
+^ Systém ^ Mean P@5 ^ Mean R@5 ^ F1-Score ^ ZRR (Zero Result Rate) ^
+| 🥇 **S1 (Simple BM25)** | **84%** | **29%** | **44%** | 0% |
+| 🥈 **L2 (Lucene TF-IDF)** | 72% | 23% | 35% | 0% |
+| 🥉 **L1 (Lucene BM25)** | 66% | 21% | 32% | 0% |
+| 4. **S2 (Simple TF-IDF)** | 56% | 20% | 29% | 0% |
+| 5. **Food.com** | Variable | Variable | Variable | **30%** |
+
+**Legenda:**
+  * **S1/S2**: Simple Python Indexer (BM25 / TF-IDF)
+  * **L1/L2**: PyLucene Indexer (BM25 / TF-IDF)
+  * **ZRR**: Zero Result Rate (percento dopytov bez výsledkov)
+
+==== 8.2 Rýchlosť vyhľadávania ====
+
+Priemerné časy odozvy na 25 testovacích dopytov:
+
+^ Systém ^ Priemerný čas ^ Throughput ^ Poznámka ^
+| **S2 (Simple TF-IDF)** | **1.96 ms** | **510 q/s** | Najrýchlejší celkovo |
+| **S1 (Simple BM25)** | **2.36 ms** | **424 q/s** | Najrýchlejší pre malé datasety |
+| **L2 (Lucene TF-IDF)** | 13.53 ms | 74 q/s | JVM overhead, škáluje lepšie |
+| **L1 (Lucene BM25)** | 19.61 ms | 51 q/s | JVM overhead, škáluje lepšie |
+
+==== 8.3 Detailné výsledky queries ====
+
+Súhrn výsledkov pre 5 príkladových queries:
+
+^ Query ^ Ground Truth ^ Najlepší systém ^ P@5 ^ R@5 ^
+| italian sausage soup | 18 docs | S1, L1, L2, FC | 100% | 28% |
+| thai peanut noodles | 16 docs | S2, FC | 100% | 31% |
+| low carb cheesecake | 7 docs | FC | 100% | 71% |
+| vegan chocolate mousse | 9 docs | L2, FC | 100% | 56% |
+| mexican beef tacos | 21 docs | S1, S2, L2 | 100% | 24% |
+
+**Poznámka:** Food.com vrátil 0 výsledkov pre query "mexican beef tacos"!
+
+Kompletné tabulky s jednotlivými dokumentmi a ich relevanciou pre každý systém nájdete v podstránke:
+  * **[[user:maros.bednar:vinf:konzultacie:2025-12-15:Detailne_Vyhodnotenie|Detailné Tabulkové Vyhodnotenie Queries]]**
+
+==== 8.4 Výkonnosť na pokročilých dopytoch ====
+
+Výsledky na rozšírenej sade 40 dopytov (vrátane filtrovania podľa ingrediencií a kuchyne).
+
+^ Kategória dopytu ^ Najlepší systém ^ P@5 ^ Poznámka ^
+| Presná fráza ("chocolate cake") | **S1 (Simple BM25)** | **85%** | Najlepšia relevancia pre bežné názvy |
+| Ingrediencie (chicken + garlic) | **S1 (Simple BM25)** | **100%** | Perfektné filtrovanie |
+| Kuchyňa (cuisine:italian) | **S1 (Simple BM25)** | **5%** | Vyžaduje vylepšenie (faceted search) |
+| Kombinované dopyty | **S1 = L2** | **75%** | Vyrovnaný výkon |
+| **Celkový priemer** | **S1 (Simple BM25)** | **63%** | **Víťaz benchmarku** |
+
+==== 8.5 Porovnanie s Food.com baseline ====
+
+Pre 10 vybraných dopytov sme porovnali naše výsledky s očakávanými výsledkami z Google:
+
+^ Query ^ Google očakávanie ^ Náš Top-3 ^ Relevance Score ^
+| chocolate cake | chocolate layer cake | Devilishly Good Chocolate Cake, German Chocolate Cake | **0.85** |
+| pasta carbonara | spaghetti carbonara | Pasta Carbonara, Spaghetti Carbonara | **0.90** |
+| mexican tacos | street tacos, carne asada | Mexican Tacos, Beef Tacos | **0.75** |
+| butter chicken | murgh makhani | Indian Butter Chicken, Curry Chicken | **0.80** |
+| thai curry | red/green curry | Thai Red Curry, Panang Curry | **0.70** |
+
+**Priemerné relevance score:** **0.80**
+
+===== 9. Príklady použitia =====
+
+==== 9.1 CLI vyhľadávanie ====
+
+<code bash>
+# Základné vyhľadávanie
+python -m search_cli.run --query "chocolate cake" --k 5
+
+# Fuzzy search (tolerancia preklepov)
+python -m search_cli.run --query "chickn" --fuzzy
+
+# Filtrovanie podľa ingrediencií
+python -m search_cli.run --query "dinner" --include "chicken,garlic" --exclude "beef"
+
+# Filtrovanie podľa kuchyne
+python -m search_cli.run --query "pasta" --cuisine "italian"
+
+# Filtrovanie podľa času prípravy
+python -m search_cli.run --query "quick dinner" --max-time 30
+</code>
+
+==== 9.2 Príklad výstupu ====
+
+<code>
+Query: "chocolate cake"
+Results (Top 3):
+
+1. Devilishly Good Chocolate Cake (score: 23.44)
+   URL: https://www.food.com/recipe/devilishly-good-chocolate-cake-279326
+   Time: 65 min | Rating: 4.5★
+   Cuisine: European
+   
+2. German Chocolate Cake (score: 23.30)
+   URL: https://www.food.com/recipe/german-chocolate-cake-140464
+   Time: 45 min | Rating: 5.0★
+   Cuisine: German, European
+   Wikipedia: "German chocolate cake, originally German's chocolate cake, is a layered 
+              chocolate cake from the United States..."
+
+3. Individual Chocolate Lava Cakes (score: 23.06)
+   URL: https://www.food.com/recipe/individual-chocolate-lava-cakes-279987
+   Time: 30 min | Rating: 4.0★
+   Cuisine: French
+</code>
+
+===== 10. Záver a štatistiky =====
+
+==== 10.1 Súhrnná tabuľka ====
+
+^ Komponent ^ Metrika ^ Hodnota ^
+| Crawler | Stiahnutých HTML | **5,646** |
+| Parser | Úspešnosť parsovania | **100%** |
+| Parser | Rýchlosť | **200.9 rec/s** |
+| Wikipedia | Kulinárnych článkov | **9,693** |
+| Wikipedia | Typ dish | **5,855** |
+| Wikipedia | Typ ingredient | **3,441** |
+| Gazetteer | Entít | **42,837** |
+| Enricher | Prepojených receptov | **5,645** (99.98%) |
+| Enricher | Wiki linkov celkom | **139,717** |
+| Enricher | **Unikátnych wiki stránok** | **1,067** |
+| Index | Dokumentov | **5,646** |
+| Index | Unikátnych termov | **11,841** |
+| Search | Priemerný čas (BM25) | **2-20 ms** |
+| Search | Match rate vs Food.com | **~60%** |
+
+==== 10.2 GitHub repozitár ====
+
+**URL:** https://github.com/Marosko123/food-recipes-ir-pipeline

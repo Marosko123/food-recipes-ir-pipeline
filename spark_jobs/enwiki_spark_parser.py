@@ -3,9 +3,15 @@
 PySpark Wikipedia Culinary Parser
 Extracts food-related articles from enwiki XML dumps using PySpark.
 
+FEATURES:
+- Two-phase processing: collect redirects first, then process articles
+- Extracts alternate_names and variations from Infobox
+- Improved food detection with word-boundary matching
+- Page boundary validation
+
 Outputs:
 1. wiki_culinary.jsonl - Extracted culinary articles with metadata
-2. wiki_gazetteer.tsv - Entity gazetteer for linking
+2. wiki_gazetteer.tsv - Entity gazetteer for linking (includes redirects)
 
 Usage:
     spark-submit spark_jobs/enwiki_spark_parser.py \
@@ -16,12 +22,16 @@ Usage:
 """
 
 import argparse
+import bz2
+import html
 import json
 import logging
 import re
 import sys
+import time
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
+from collections import defaultdict
 
 from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import udf, col, explode
@@ -36,6 +46,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Pre-compiled regex for word extraction
+RE_WORD = re.compile(r'\b[a-z]+\b')
+
 
 class WikiXMLParser:
     """Parser for Wikipedia XML page elements."""
@@ -46,6 +59,8 @@ class WikiXMLParser:
         re.compile(r'{{\s*Infobox\s+prepared\s+food', re.IGNORECASE),
         re.compile(r'{{\s*Infobox\s+ingredient', re.IGNORECASE),
         re.compile(r'{{\s*Infobox\s+cuisine', re.IGNORECASE),
+        re.compile(r'{{\s*Infobox\s+beverage', re.IGNORECASE),
+        re.compile(r'{{\s*Infobox\s+drink', re.IGNORECASE),
     ]
     
     # Blacklist (skip these)
@@ -112,23 +127,42 @@ class WikiXMLParser:
     # Pre-compiled regex patterns for performance
     _TITLE_PATTERN = re.compile(r'<title>(.+?)</title>', re.DOTALL)
     _ID_PATTERN = re.compile(r'<id>(\d+)</id>')
+    _NS_PATTERN = re.compile(r'<ns>(\d+)</ns>')  # Namespace pattern
     _REDIRECT_PATTERN = re.compile(r'<redirect title="(.+?)"')
     _TEXT_PATTERN = re.compile(r'<text[^>]*>(.+?)</text>', re.DOTALL)
     
     @staticmethod
-    def parse_page_xml(xml_text: str) -> Optional[Dict]:
+    def parse_page_xml(xml_text: str, require_namespace_0: bool = True) -> Optional[Dict]:
         """
         Parse a single Wikipedia page XML block.
         
         Optimized with pre-compiled regex patterns.
         
+        Args:
+            xml_text: Complete XML page block (<page>...</page>)
+            require_namespace_0: If True, skip non-article pages (namespace != 0)
+        
         Returns dict with:
-        - wiki_id, wiki_title, text, redirect
+        - wiki_id, wiki_title, text, redirect, namespace
         """
         if not xml_text or '<page>' not in xml_text:
             return None
         
+        # CRITICAL: Validate complete page block
+        if '</page>' not in xml_text:
+            # Incomplete page - was likely cut off during streaming
+            return None
+        
         try:
+            # Extract namespace FIRST (early exit for non-articles)
+            ns_match = WikiXMLParser._NS_PATTERN.search(xml_text)
+            namespace = int(ns_match.group(1)) if ns_match else -1
+            
+            # Filter: Only process namespace 0 (main articles)
+            # Namespace 0 = Articles, 1 = Talk, 10 = Template, 14 = Category, etc.
+            if require_namespace_0 and namespace != 0:
+                return None
+            
             # Extract title (using pre-compiled pattern)
             title_match = WikiXMLParser._TITLE_PATTERN.search(xml_text)
             if not title_match:
@@ -145,6 +179,7 @@ class WikiXMLParser:
                 return {
                     'wiki_id': page_id,
                     'wiki_title': title,
+                    'namespace': namespace,
                     'text': '',
                     'redirect': redirect_match.group(1),
                     'is_redirect': True
@@ -156,9 +191,15 @@ class WikiXMLParser:
                 return None
             text = text_match.group(1).strip()
             
+            # Validate text is not truncated (basic check)
+            if len(text) > 100 and not text.rstrip().endswith((']]', '}}', '.', '!', '?', '"', "'")):
+                # Text might be truncated, but we still process it
+                pass
+            
             return {
                 'wiki_id': page_id,
                 'wiki_title': title,
+                'namespace': namespace,
                 'text': text,
                 'redirect': None,
                 'is_redirect': False
@@ -263,37 +304,48 @@ class WikiXMLParser:
     @staticmethod
     def extract_complete_infobox(text: str) -> Dict[str, str]:
         """Extract ALL fields from Infobox as a dictionary."""
-        infobox_match = re.search(r'\{\{Infobox[^}]*?\n(.*?)\n\}\}', text, re.DOTALL | re.IGNORECASE)
-        if not infobox_match:
+        # Find infobox start
+        infobox_start = re.search(r'\{\{Infobox[^|\n]*', text, re.IGNORECASE)
+        if not infobox_start:
             return {}
         
-        infobox = infobox_match.group(1)
+        # Find matching closing braces by counting
+        start_pos = infobox_start.start()
+        depth = 0
+        end_pos = start_pos
+        
+        for i, char in enumerate(text[start_pos:], start_pos):
+            if text[i:i+2] == '{{':
+                depth += 1
+            elif text[i:i+2] == '}}':
+                depth -= 1
+                if depth == 0:
+                    end_pos = i + 2
+                    break
+        
+        if end_pos <= start_pos:
+            return {}
+        
+        infobox = text[start_pos:end_pos]
         fields = {}
         
-        # Extract all | field = value pairs
-        field_pattern = r'\|\s*([^=|]+?)\s*=\s*([^\n|]*(?:\n(?!\|)[^\n]*)*)'
-        for match in re.finditer(field_pattern, infobox):
-            field_name = match.group(1).strip()
-            value = match.group(2).strip()
-            
-            if value:
-                # Remove references first
-                value = re.sub(r'<ref[^>]*>.*?</ref>', '', value, flags=re.DOTALL)
-                value = re.sub(r'<ref[^>]*/?>', '', value)
-                
-                # Clean wiki markup
-                value = re.sub(r'\[\[([^\]|]+\|)?([^\]]+)\]\]', r'\2', value)
-                value = re.sub(r'\{\{[^}]+\}\}', '', value)
-                value = re.sub(r'<[^>]+>', '', value)
-                
-                # Decode HTML entities
-                import html
-                value = html.unescape(value)
-                
-                value = re.sub(r'\s+', ' ', value).strip()
-                
-                if value:
-                    fields[field_name] = value
+        # Extract all | field = value pairs (line by line for reliability)
+        for line in infobox.split('\n'):
+            line = line.strip()
+            if line.startswith('|') and '=' in line:
+                # Remove leading |
+                line = line[1:]
+                parts = line.split('=', 1)
+                if len(parts) == 2:
+                    field_name = parts[0].strip()
+                    value = parts[1].strip()
+                    
+                    if value and field_name:
+                        # Use the thorough cleaning method
+                        value = WikiXMLParser.clean_wiki_value(value)
+                        
+                        if value:
+                            fields[field_name] = value
         
         return fields
     
@@ -406,14 +458,99 @@ class WikiXMLParser:
             if not any(food in categories_text for food in ['foods', 'dishes', 'ingredients', 'cuisine']):
                 return False
         
-        # Require at least one food signal
-        combined_text = (title_lower + ' ' + ' '.join(categories[:10]).lower())
-        has_food_signal = any(signal in combined_text for signal in WikiXMLParser.FOOD_SIGNALS)
+        # Word-boundary matching to avoid false positives like "Swedish" → "dish"
+        cat_words = set()
+        for cat in categories:
+            words = RE_WORD.findall(cat.lower())
+            cat_words.update(words)
         
-        return has_food_signal
+        # Strong food categories that alone indicate food
+        strong_food = {'cuisine', 'cuisines', 'dishes', 'foods', 'recipes', 'beverages', 
+                       'desserts', 'breads', 'cakes', 'soups', 'salads', 'pastries'}
+        if cat_words & strong_food:
+            return True
+        
+        # Count food signals - need at least 2 for weaker signals
+        matched_signals = [s for s in WikiXMLParser.FOOD_SIGNALS if s in cat_words]
+        if len(matched_signals) >= 2:
+            return True
+        
+        # Check for food infobox
+        has_food_infobox = any(pattern.search(text) for pattern in WikiXMLParser.INFOBOX_PATTERNS)
+        if has_food_infobox:
+            return True
+        
+        return False
     
     @staticmethod
-    def process_page(page_data: Dict) -> Optional[Dict]:
+    def clean_wiki_value(value: str) -> str:
+        """Thoroughly clean wiki markup from a value."""
+        if not value:
+            return ''
+        
+        # Remove references first
+        value = re.sub(r'<ref[^>]*>.*?</ref>', '', value, flags=re.DOTALL)
+        value = re.sub(r'<ref[^>]*/?>', '', value)
+        
+        # Remove template calls like {{langx...}}, {{IPA...}}, etc.
+        # Handle nested templates iteratively
+        for _ in range(3):  # Up to 3 levels of nesting
+            prev = value
+            value = re.sub(r'\{\{[^{}]*\}\}', '', value)
+            if value == prev:
+                break
+        
+        # Remove wiki links, keep display text (the part after | if exists)
+        # [[Target]] -> Target
+        # [[Target|Display]] -> Display
+        # [[Anchovies as food|anchovies]] -> anchovies
+        def replace_wikilink(m):
+            content = m.group(1)
+            if '|' in content:
+                return content.split('|')[-1]  # Get last part after |
+            return content
+        
+        value = re.sub(r'\[\[([^\]]+)\]\]', replace_wikilink, value)
+        
+        # Remove any remaining [[ or ]]
+        value = re.sub(r'\[\[|\]\]', '', value)
+        
+        # Remove HTML tags
+        value = re.sub(r'<[^>]+>', '', value)
+        
+        # Decode HTML entities
+        value = html.unescape(value)
+        
+        # Clean whitespace
+        value = re.sub(r'\s+', ' ', value).strip()
+        
+        return value
+    
+    @staticmethod
+    def extract_alternate_names(infobox_data: Dict) -> List[str]:
+        """Extract alternate names from infobox."""
+        alt_names = []
+        for key in ['alternate_name', 'other_names', 'other_name', 'aliases', 'aka']:
+            if key in infobox_data:
+                value = infobox_data[key]
+                # Clean the value thoroughly first
+                value = WikiXMLParser.clean_wiki_value(value)
+                
+                # Split by comma/semicolon and clean
+                for name in re.split(r'[,;]', value):
+                    name = name.strip()
+                    # Skip invalid entries
+                    if not name or len(name) < 2:
+                        continue
+                    if name.startswith(('<', '{', '[')):
+                        continue
+                    if name.startswith('or '):
+                        name = name[3:].strip()
+                    alt_names.append(name)
+        return alt_names
+    
+    @staticmethod
+    def process_page(page_data: Dict, redirects_map: Dict = None) -> Optional[Dict]:
         """Process parsed page and extract culinary metadata."""
         if not page_data or page_data.get('is_redirect', False):
             return None
@@ -460,8 +597,95 @@ class WikiXMLParser:
             'origin_region': origin_region,
             'year_origin': year_origin,
             'categories': categories,
-            'ingredients_mentioned': ingredients_mentioned
+            'ingredients_mentioned': ingredients_mentioned,
+            # New fields
+            'redirects': redirects_map.get(title.lower(), []) if redirects_map else [],
+            'alternate_names': WikiXMLParser.extract_alternate_names(infobox_data),
+            'variations': infobox_data.get('variations', ''),
+            'main_ingredient': infobox_data.get('main_ingredient', ''),
         }
+
+
+def stream_pages(input_path: str, limit: int = None):
+    """
+    Stream Wikipedia XML pages one by one.
+    Correctly handles page boundaries - never cuts a page in half.
+    
+    Yields:
+        Complete page XML strings
+    """
+    page_count = 0
+    buffer = []
+    in_page = False
+    
+    logger.info(f"Opening: {input_path}")
+    
+    with bz2.open(input_path, 'rt', encoding='utf-8', errors='replace') as f:
+        for line in f:
+            if '<page>' in line:
+                in_page = True
+                idx = line.index('<page>')
+                buffer = [line[idx:]]
+                
+            elif in_page:
+                buffer.append(line)
+                
+                if '</page>' in line:
+                    page_xml = ''.join(buffer)
+                    
+                    if '<page>' in page_xml and '</page>' in page_xml:
+                        page_count += 1
+                        yield page_xml
+                        
+                        if limit and page_count >= limit:
+                            break
+                    
+                    in_page = False
+                    buffer = []
+    
+    logger.info(f"Streamed {page_count} complete pages")
+
+
+def collect_redirects(input_path: str, limit: int = None) -> Dict[str, List[str]]:
+    """
+    Phase 1: Collect all redirects from the dump.
+    Returns: {target_title_lower: [redirect_titles]}
+    """
+    logger.info("="*60)
+    logger.info("PHASE 1: Collecting redirects")
+    logger.info("="*60)
+    
+    redirects = {}  # from_title -> to_title
+    redirect_count = 0
+    page_count = 0
+    
+    # For redirect collection, read more pages
+    redirect_limit = limit * 5 if limit else None
+    
+    for page_xml in stream_pages(input_path, redirect_limit):
+        page_count += 1
+        
+        page = WikiXMLParser.parse_page_xml(page_xml)
+        if page and page.get('is_redirect'):
+            from_title = page['wiki_title']
+            to_title = page.get('redirect')
+            if to_title:
+                redirects[from_title] = to_title
+                redirect_count += 1
+        
+        if page_count % 50000 == 0:
+            logger.info(f"  Phase 1: {page_count:,} pages, {redirect_count:,} redirects")
+    
+    logger.info(f"Phase 1 complete: {redirect_count:,} redirects from {page_count:,} pages")
+    
+    # Build reverse map: target_lower -> [sources]
+    reverse_redirects = defaultdict(list)
+    for from_title, to_title in redirects.items():
+        reverse_redirects[to_title.lower()].append(from_title)
+    
+    logger.info(f"Built reverse redirect map: {len(reverse_redirects):,} targets")
+    
+    return dict(reverse_redirects)
 
 
 def split_xml_pages(text_line: str) -> List[str]:
@@ -526,121 +750,97 @@ def main():
     spark.sparkContext.setLogLevel("WARN")
     
     try:
-        # STREAMING APPROACH: Process file line-by-line to avoid OOM on 20GB file
-        logger.info("Reading XML dump (streaming mode to avoid OutOfMemoryError)...")
+        # =====================================================================
+        # PHASE 1: Collect redirects
+        # =====================================================================
+        redirects_map = collect_redirects(args.input, args.limit)
         
-        def stream_parse_xml():
-            """Stream parse bz2 file without loading entire file into memory.
+        # =====================================================================
+        # PHASE 2: Process articles with redirect information
+        # =====================================================================
+        logger.info("\n" + "="*60)
+        logger.info("PHASE 2: Processing articles")
+        logger.info("="*60)
+        
+        def stream_parse_xml(redirects_map):
+            """Stream parse bz2 file and extract culinary articles.
             
-            Optimizations:
-            - Streaming I/O (no full file load)
-            - Progress tracking every 100k pages
-            - Batch processing for Row creation
-            - Time estimation
+            Uses two-phase approach:
+            1. Redirects collected in Phase 1
+            2. Articles processed with redirect information
             """
-            import bz2
-            import time
             
             logger.info(f"Opening compressed file: {args.input}")
-            logger.info("Starting streaming parse (this will take 2-4 hours for full dump)...")
+            logger.info("Starting streaming parse...")
             
             start_time = time.time()
             results = []
-            page_buffer = []
-            in_page = False
             pages_processed = 0
             last_log_time = start_time
             last_log_pages = 0
             
-            # Progress logging intervals
-            LOG_INTERVAL = 100000  # Log every 100k pages
+            LOG_INTERVAL = 100000
             
-            # Open and decompress on the fly (line-by-line streaming)
-            with bz2.open(args.input, 'rt', encoding='utf-8', errors='ignore') as f:
-                for line in f:
-                    if '<page>' in line:
-                        in_page = True
-                        page_buffer = [line]
-                    elif in_page:
-                        page_buffer.append(line)
-                        if '</page>' in line:
-                            # Complete page found
-                            page_xml = ''.join(page_buffer)
-                            pages_processed += 1
-                            
-                            # Parse page (only if potentially culinary)
-                            page_data = WikiXMLParser.parse_page_xml(page_xml)
-                            if page_data:
-                                # Process page (filter culinary)
-                                result = WikiXMLParser.process_page(page_data)
-                                if result:
-                                    results.append(Row(**result))
-                            
-                            # Reset buffer
-                            in_page = False
-                            page_buffer = []
-                            
-                            # Progress logging every 100k pages
-                            if pages_processed % LOG_INTERVAL == 0:
-                                current_time = time.time()
-                                elapsed = current_time - start_time
-                                elapsed_since_log = current_time - last_log_time
-                                pages_since_log = pages_processed - last_log_pages
-                                
-                                # Calculate speed
-                                speed = pages_since_log / elapsed_since_log if elapsed_since_log > 0 else 0
-                                
-                                # Estimate total time (rough estimate based on 6M pages)
-                                if speed > 0:
-                                    estimated_total_pages = 6000000
-                                    remaining_pages = estimated_total_pages - pages_processed
-                                    eta_seconds = remaining_pages / speed
-                                    eta_hours = eta_seconds / 3600
-                                    
-                                    logger.info(f"Progress: {pages_processed:,} pages processed | "
-                                               f"{len(results):,} culinary articles found | "
-                                               f"Speed: {speed:.0f} pages/sec | "
-                                               f"Elapsed: {elapsed/60:.1f} min | "
-                                               f"ETA: {eta_hours:.1f} hours")
-                                else:
-                                    logger.info(f"Progress: {pages_processed:,} pages processed | "
-                                               f"{len(results):,} culinary articles found | "
-                                               f"Elapsed: {elapsed/60:.1f} min")
-                                
-                                last_log_time = current_time
-                                last_log_pages = pages_processed
-                            
-                            # Also log every 1000 culinary articles found
-                            if len(results) > 0 and len(results) % 1000 == 0:
-                                logger.info(f"✓ Found {len(results):,} culinary articles "
-                                           f"(from {pages_processed:,} total pages)")
-                            
-                            # Check limit
-                            if args.limit and pages_processed >= args.limit:
-                                logger.info(f"Reached limit of {args.limit} pages")
-                                break
+            stats = {
+                'total_pages': 0,
+                'namespace_0_pages': 0,
+                'redirects_skipped': 0,
+                'culinary_found': 0
+            }
+            
+            for page_xml in stream_pages(args.input, args.limit):
+                pages_processed += 1
+                stats['total_pages'] += 1
+                
+                page_data = WikiXMLParser.parse_page_xml(page_xml, require_namespace_0=True)
+                
+                if page_data is None:
+                    continue
+                
+                if page_data.get('is_redirect'):
+                    stats['redirects_skipped'] += 1
+                    continue
+                
+                stats['namespace_0_pages'] += 1
+                
+                # Process page with redirect map
+                result = WikiXMLParser.process_page(page_data, redirects_map)
+                if result:
+                    results.append(Row(**result))
+                    stats['culinary_found'] += 1
+                
+                # Progress logging
+                if pages_processed % LOG_INTERVAL == 0:
+                    current_time = time.time()
+                    elapsed = current_time - start_time
+                    speed = (pages_processed - last_log_pages) / (current_time - last_log_time) if current_time > last_log_time else 0
+                    
+                    logger.info(f"Progress: {pages_processed:,} pages | "
+                               f"{len(results):,} culinary | "
+                               f"Speed: {speed:.0f} pages/sec | "
+                               f"Elapsed: {elapsed/60:.1f} min")
+                    
+                    last_log_time = current_time
+                    last_log_pages = pages_processed
             
             total_time = time.time() - start_time
-            logger.info(f"")
-            logger.info(f"{'='*60}")
-            logger.info(f"Parsing completed!")
-            logger.info(f"Total time: {total_time/60:.1f} minutes ({total_time/3600:.2f} hours)")
-            logger.info(f"Total pages processed: {pages_processed:,}")
-            logger.info(f"Culinary articles found: {len(results):,}")
-            logger.info(f"Conversion rate: {100*len(results)/pages_processed:.3f}%")
-            logger.info(f"Average speed: {pages_processed/total_time:.0f} pages/sec")
+            logger.info(f"\n{'='*60}")
+            logger.info(f"Phase 2 completed!")
+            logger.info(f"Total time: {total_time/60:.1f} minutes")
+            logger.info(f"Total pages: {pages_processed:,}")
+            logger.info(f"Culinary articles: {len(results):,}")
             logger.info(f"{'='*60}")
             
             return results
         
-        # Process pages (stream in main Python process, not Spark to avoid OOM)
+        # Process pages
         logger.info("Parsing and filtering pages...")
-        culinary_articles = stream_parse_xml()
+        culinary_articles = stream_parse_xml(redirects_map)
         
         # Convert to RDD (small dataset now, only culinary articles)
         rdd_pages = spark.sparkContext.parallelize(culinary_articles)
         
-        # Convert to DataFrame
+        # Convert to DataFrame - updated schema with new fields
         schema = StructType([
             StructField("wiki_id", StringType(), True),
             StructField("wiki_title", StringType(), True),
@@ -653,6 +853,11 @@ def main():
             StructField("year_origin", StringType(), True),
             StructField("categories", ArrayType(StringType()), True),
             StructField("ingredients_mentioned", ArrayType(StringType()), True),
+            # New fields
+            StructField("redirects", ArrayType(StringType()), True),
+            StructField("alternate_names", ArrayType(StringType()), True),
+            StructField("variations", StringType(), True),
+            StructField("main_ingredient", StringType(), True),
         ])
         
         df_pages = spark.createDataFrame(rdd_pages, schema=schema)
@@ -680,16 +885,14 @@ def main():
         logger.info("="*60)
         df_pages.select("wiki_title", "type", "origin_country").show(10, truncate=False)
         
-        # Show articles with history
+        # Show coverage statistics
         logger.info("\n" + "="*60)
-        logger.info("ARTICLES WITH HISTORY SECTION:")
+        logger.info("COVERAGE STATISTICS:")
         logger.info("="*60)
+        
         articles_with_history = df_pages.filter(col("history").isNotNull())
         history_count = articles_with_history.count()
-        logger.info(f"Count: {history_count} ({100*history_count/total_count:.1f}%)")
-        if history_count > 0:
-            logger.info("\nSample:")
-            articles_with_history.select("wiki_title", "type").show(5, truncate=False)
+        logger.info(f"History: {history_count}/{total_count} ({100*history_count/total_count:.1f}%)")
         
         # Save JSONL
         logger.info(f"\nSaving JSONL to {args.output_jsonl}...")
@@ -706,37 +909,42 @@ def main():
         
         logger.info(f"Saved {len(json_lines)} articles to JSONL")
         
-        # Build gazetteer
+        # Build gazetteer (including redirects and alternate names as surface forms)
         logger.info(f"\nBuilding gazetteer...")
-        
-        def normalize_surface(text: str) -> str:
-            """Normalize surface form."""
-            text = text.lower()
-            text = re.sub(r'[^\w\s-]', '', text)
-            return text.strip()
         
         gazetteer_entries = []
         for row in df_pages.collect():
             title = row['wiki_title']
             entity_type = row['type']
-            surface = title
-            norm = normalize_surface(surface)
-            gazetteer_entries.append((surface, title, entity_type, norm))
+            
+            # Add main title
+            gazetteer_entries.append((title, title, entity_type))
+            
+            # Add redirects as surface forms
+            redirects = row['redirects'] or []
+            for redirect in redirects:
+                gazetteer_entries.append((redirect, title, entity_type))
+            
+            # Add alternate names as surface forms
+            alt_names = row['alternate_names'] or []
+            for alt_name in alt_names:
+                if alt_name and len(alt_name) > 1:
+                    gazetteer_entries.append((alt_name, title, entity_type))
         
         # Save gazetteer
         output_gaz_path = Path(args.output_gazetteer)
         output_gaz_path.parent.mkdir(parents=True, exist_ok=True)
         
         with open(args.output_gazetteer, 'w', encoding='utf-8') as f:
-            f.write("surface\twiki_title\ttype\tnorm\n")
-            for surface, wiki_title, entity_type, norm in sorted(gazetteer_entries):
-                f.write(f"{surface}\t{wiki_title}\t{entity_type}\t{norm}\n")
+            f.write("surface\twiki_title\ttype\n")
+            for surface, wiki_title, entity_type in sorted(set(gazetteer_entries)):
+                f.write(f"{surface}\t{wiki_title}\t{entity_type}\n")
         
-        logger.info(f"Saved {len(gazetteer_entries)} entries to gazetteer")
+        logger.info(f"Saved {len(set(gazetteer_entries))} entries to gazetteer")
         
         # Print statistics
         logger.info("\n" + "="*60)
-        logger.info("STATISTICS")
+        logger.info("FINAL STATISTICS")
         logger.info("="*60)
         logger.info(f"Total culinary articles: {total_count}")
         
@@ -745,8 +953,22 @@ def main():
         for row in sorted(type_counts, key=lambda x: x['count'], reverse=True):
             logger.info(f"  {row['type']:15s} {row['count']:,}")
         
+        # Coverage stats
+        rows = df_pages.collect()
+        with_redirects = sum(1 for r in rows if r['redirects'])
+        with_alt_names = sum(1 for r in rows if r['alternate_names'])
+        with_history = sum(1 for r in rows if r['history'])
+        with_origin = sum(1 for r in rows if r['origin_country'])
+        
+        logger.info(f"\nCoverage:")
+        logger.info(f"  Redirects:       {with_redirects}/{total_count} ({100*with_redirects/total_count:.1f}%)")
+        logger.info(f"  Alternate names: {with_alt_names}/{total_count} ({100*with_alt_names/total_count:.1f}%)")
+        logger.info(f"  History:         {with_history}/{total_count} ({100*with_history/total_count:.1f}%)")
+        logger.info(f"  Origin:          {with_origin}/{total_count} ({100*with_origin/total_count:.1f}%)")
+        
+        logger.info("\n" + "="*60)
+        logger.info("✅ Processing completed successfully!")
         logger.info("="*60)
-        logger.info("\n✅ Processing completed successfully!")
         
     finally:
         spark.stop()

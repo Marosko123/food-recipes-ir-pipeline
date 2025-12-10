@@ -11,3 +11,16 @@ q9	mexican rice	Cuisine-specific side dish
 q10	easy cookies	Difficulty + dessert type
 q11	italian pasta sauce	Cuisine + category
 q12	chicken breast recipes	Single ingredient focus
+q13	traditional mexican tacos	Cuisine + dish type (Google comparison)
+q14	how to make pizza dough	Instructional query
+q15	best chocolate chip cookies	Quality/ranking query
+q16	garlic bread recipe	Simple dish query
+q17	slow cooker beef stew	Cooking method + dish
+q18	vegan banana bread	Dietary restriction + specific dish
+q19	spicy thai curry	Cuisine + flavor profile
+q20	homemade tomato soup	Preparation style + dish
+q21	gluten free pasta	Dietary restriction query
+q22	quick 30 minute meals	Time constraint query
+q23	christmas dinner ideas	Seasonal/occasion query
+q24	authentic indian butter chicken	Authenticity + cuisine + dish
+q25	simple weeknight dinner	Difficulty + occasion

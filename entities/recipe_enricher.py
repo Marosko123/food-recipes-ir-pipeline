@@ -83,8 +83,8 @@ class RecipeEnricher:
             
             for line in f:
                 parts = line.strip().split('\t')
-                if len(parts) >= 4:
-                    surface, wiki_title, entity_type, norm = parts[:4]
+                if len(parts) >= 3:
+                    surface, wiki_title, entity_type = parts[:3]
                     self.surface_to_title[surface.lower()] = wiki_title
                     self.title_to_type[wiki_title] = entity_type
     

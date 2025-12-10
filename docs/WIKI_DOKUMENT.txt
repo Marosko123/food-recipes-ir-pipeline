@@ -1,0 +1,339 @@
+====== Food Recipes IR Pipeline - Vyhľadávanie receptov s Wikipedia obohatením ======
+
+**Autor:** Maroš Bednár \\
+**Predmet:** VINF - Vyhľadávanie Informácií \\
+**Dátum:** December 2025 \\
+**GitHub:** [[https://github.com/Marosko123/food-recipes-ir-pipeline|food-recipes-ir-pipeline]]
+
+----
+
+===== 1. Úvod a cieľ projektu =====
+
+Cieľom projektu je implementácia **kompletného Information Retrieval systému** pre vyhľadávanie kulinárskych receptov. Systém kombinuje dáta z dvoch zdrojov - webstránky food.com a anglickej Wikipédie - a umožňuje fulltextové vyhľadávanie s pokročilými filtrami.
+
+==== 1.1 Motivácia ====
+
+Existujúce receptové vyhľadávače (AllRecipes, Food Network) majú niekoľko limitácií:
+  * Nedostatok kontextu - chýbajú informácie o histórii a pôvode jedál
+  * Slabá filtrácia - naivné keyword matching bez sémantiky
+  * Žiadna normalizácia synonymí - "cilantro" nenájde "coriander"
+
+==== 1.2 Riešenie ====
+
+Náš systém rieši tieto problémy pomocou:
+  * **Wikipedia integrácie** - obohatenie receptov o kultúrny kontext (Linked Data)
+  * **Entity linking** - prepojenie ingrediencií s Wikipedia článkami pomocou Aho-Corasick
+  * **Dvojitého indexu** - Simple (Python) + Lucene pre porovnanie
+  * **Porter stemming** - normalizácia slov (cooking → cook)
+
+----
+
+===== 2. Architektúra systému =====
+
+<code>
+www.food.com HTML (5,646 súborov, 2.2 GB)
+       ↓ Crawler (BFS, robots.txt)
+data/raw/
+       ↓ Parser (JSON-LD + Regex)
+       ↓ Tokenizácia + Porter Stemming
+recipes_foodcom.jsonl (23 premenných)
+       ↓
+       ↓←← Wikipedia dump (20GB) → Spark → wiki_culinary.jsonl (9,693 článkov)
+       ↓ Aho-Corasick entity linking
+recipes_enriched.jsonl (78 MB)
+       ↓
+  ┌────┴────┐
+  ↓         ↓
+Simple    Lucene
+Index     Index
+(v1)      (v2)
+  ↓         ↓
+  └────┬────┘
+       ↓
+   Search CLI (BM25 / TF-IDF)
+</code>
+
+==== 2.1 Fázy spracovania ====
+
+^ Fáza ^ Vstup ^ Výstup ^ Technológia ^
+| Crawling | food.com sitemap | 5,646 HTML súborov | Python requests, BFS |
+| Parsing | HTML | recipes_foodcom.jsonl | JSON-LD, Regex |
+| Wiki processing | enwiki dump (20GB) | 9,693 článkov | PySpark |
+| Enrichment | recepty + wiki | recipes_enriched.jsonl | Aho-Corasick |
+| Indexing | enriched recipes | Simple TSV / Lucene | Python / PyLucene |
+| Search | query | top-k výsledky | BM25, TF-IDF |
+
+----
+
+===== 3. Extrakcia dát =====
+
+==== 3.1 Z food.com (23 premenných) ====
+
+Parser extrahuje štruktúrované dáta z JSON-LD blokov (Schema.org Recipe):
+
+<code python>
+# parser/html_parser.py
+def extract_recipe_data(html: str) -> Dict:
+    # Nájdi JSON-LD blok
+    pattern = r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>'
+    matches = re.findall(pattern, html, re.DOTALL | re.IGNORECASE)
+    
+    for match in matches:
+        data = json.loads(match)
+        if data.get('@type') == 'Recipe':
+            return {
+                'title': data.get('name', ''),
+                'ingredients': data.get('recipeIngredient', []),
+                'times': extract_times(data),  # PT1H30M → 90 min
+                'nutrition': data.get('nutrition', {}),
+                # ... ďalších 19 premenných
+            }
+</code>
+
+**Extrahované premenné:** id, url, title, description, ingredients (list), instructions (list), times (prep/cook/total), cuisine, category, difficulty, yield, serving_size, author, author_bio, author_location, nutrition (9 hodnôt), ratings, image, all_images, keywords, date_published
+
+==== 3.2 Z Wikipédie (15 premenných) ====
+
+Spark parser streamuje 20GB XML dump a filtruje kulinárske články:
+
+<code python>
+# spark_jobs/enwiki_spark_parser.py
+INFOBOX_PATTERNS = [
+    re.compile(r'{{\s*Infobox\s+food', re.I),
+    re.compile(r'{{\s*Infobox\s+prepared\s+food', re.I),
+    re.compile(r'{{\s*Infobox\s+ingredient', re.I),
+]
+
+def is_food_article(text: str, categories: List[str]) -> bool:
+    # Kontrola infoboxu
+    has_food_infobox = any(p.search(text) for p in INFOBOX_PATTERNS)
+    if has_food_infobox:
+        return True
+    
+    # Kontrola kategórií
+    food_signals = ['cuisine', 'dish', 'food', 'recipe', 'cooking']
+    matched = sum(1 for s in food_signals if s in ' '.join(categories).lower())
+    return matched >= 2
+</code>
+
+**Výsledok:** 9,693 kulinárskych článkov z 6M stránok (0.16%)
+
+----
+
+===== 4. Entity Linking (Obohatenie) =====
+
+Recepty sa obohacujú o Wikipedia entity pomocou **Aho-Corasick** algoritmu.
+
+==== 4.1 Prečo Aho-Corasick? ====
+
+Namiesto klasického JOIN-u potrebujeme nájsť entity v neštruktúrovanom texte. Aho-Corasick má zložitosť **O(n + m + z)** namiesto O(n × m) pri naivnom prístupe.
+
+<code python>
+# entities/recipe_enricher.py
+class RecipeEnricher:
+    def __init__(self, gazetteer_path: str):
+        self.automaton = ahocorasick.Automaton()
+        
+        # Načítaj 12,000 wiki entít
+        for surface, wiki_title, entity_type in load_gazetteer(gazetteer_path):
+            self.automaton.add_word(surface.lower(), (surface, wiki_title, entity_type))
+        
+        self.automaton.make_automaton()
+    
+    def enrich(self, recipe: Dict) -> Dict:
+        text = f"{recipe['title']} {' '.join(recipe['ingredients'])}"
+        
+        wiki_links = []
+        for end_pos, (surface, wiki_title, entity_type) in self.automaton.iter(text.lower()):
+            wiki_links.append({
+                'surface': surface,
+                'wiki_title': wiki_title,
+                'type': entity_type  # dish, ingredient, technique, tool
+            })
+        
+        recipe['wiki_links'] = wiki_links
+        return recipe
+</code>
+
+==== 4.2 Štatistiky obohatenia ====
+
+^ Metrika ^ Hodnota ^
+| Priemerný počet wiki_links na recept | 24.75 |
+| Pokrytie historical_context | 97.9% |
+| Pokrytie ingredient_origins | 96.5% |
+| Pokrytie dish_info | 70.1% |
+
+----
+
+===== 5. Indexovanie a vyhľadávanie =====
+
+==== 5.1 Simple Index (Pure Python) ====
+
+Invertovaný index implementovaný bez externých závislostí:
+
+<code>
+index/v1/
+├── terms.tsv      # term → df, idf (14,977 termov)
+├── postings.tsv   # term → field, docId, tf (2.5M záznamov)
+├── docmeta.tsv    # docId → url, title, time, cuisine
+└── field_lengths.json  # pre BM25 normalizáciu
+</code>
+
+==== 5.2 BM25 Implementácia ====
+
+<code python>
+# indexer/simple_indexer.py
+def search_bm25(self, query: str, k: int = 10):
+    K1, B = 1.2, 0.75  # Štandardné parametre
+    
+    for term in tokenize(query):
+        df, idf = self.terms[term]
+        
+        for field, doc_id, tf in self.postings[term]:
+            doc_len = self.field_lengths[field][doc_id]
+            avg_len = self.avg_lengths[field]
+            
+            # BM25 vzorec
+            score = idf * (tf * (K1 + 1)) / (tf + K1 * (1 - B + B * doc_len / avg_len))
+            score *= self.field_weights[field]  # title:3, ing:2, instr:1
+            
+            doc_scores[doc_id] += score
+</code>
+
+==== 5.3 Porovnanie indexov ====
+
+^ Metrika ^ Simple ^ Lucene ^
+| Priemerný čas vyhľadávania | **2.36 ms** | 19.61 ms |
+| Veľkosť indexu | 54.7 MB | 49.5 MB |
+| Overlap výsledkov | 81% | 81% |
+| Fuzzy search | ❌ | ✅ |
+
+----
+
+===== 6. Evaluácia =====
+
+==== 6.1 Metriky ====
+
+<code python>
+# eval/run.py
+def precision_at_k(retrieved, relevant, k):
+    """Presnosť - koľko z top-k je relevantných"""
+    return len(set(retrieved[:k]) & relevant) / k
+
+def ndcg_at_k(retrieved, relevance, k):
+    """NDCG - kvalita zoradenia"""
+    dcg = sum((2**relevance.get(d, 0) - 1) / log2(i + 2) 
+              for i, d in enumerate(retrieved[:k]))
+    ideal_dcg = ...
+    return dcg / ideal_dcg
+</code>
+
+==== 6.2 Príklady vyhľadávania ====
+
+**Query: "chocolate cake"**
+| Rank | Recept | Skóre |
+| 1 | Chocolate Raspberry Cake | 31.69 |
+| 2 | Pistachio Chocolate Chip Cake | 30.30 |
+| 3 | Devilishly Good Chocolate Cake | 29.97 |
+
+**Query: "quick chicken dinner" (filter: max 30 min)**
+| Rank | Recept | Čas |
+| 1 | Chicken Scallopini | 25 min |
+| 2 | Quick Chicken Cacciatore | 30 min |
+| 3 | Asian Chicken Lettuce Wraps | 20 min |
+
+==== 6.3 Evaluácia Precision a Recall ====
+
+Testované na 6 queries (3 keyword + 3 full-text):
+
+^ Query Typ ^ Simple (v1) P@3 ^ Lucene (v2) P@3 ^
+| Keyword (chicken, pasta, cookies) | **1.00** | **1.00** |
+| Full-text (dinner, breakfast, soup) | **0.44** | **0.55** |
+| **Priemer** | **0.72** | **0.78** |
+
+**Záver:** Oba indexy dosahujú vysokú presnosť na keyword queries (100%). Na full-text queries má Lucene mierne lepšie výsledky vďaka rozšírenému indexovaniu ingrediencií.
+
+----
+
+===== 7. Záver =====
+
+==== 7.1 Splnené ciele ====
+
+  * ✅ **Vlastný crawler** (BFS stratégia, robots.txt compliance)
+  * ✅ **5,646 receptov** stiahnutých z food.com (2.2 GB raw dát)
+  * ✅ **23 premenných** extrahovaných z každého receptu (JSON-LD + Regex)
+  * ✅ **Tokenizácia + Porter Stemming** pre normalizáciu textu
+  * ✅ **9,693 Wikipedia článkov** spracovaných **Apache Sparkom**
+  * ✅ **Entity linking** pomocou Aho-Corasick (Linked Data)
+  * ✅ **Vlastný indexer** (Simple TSV) + **Apache Lucene** (PyLucene)
+  * ✅ **2 ranking metriky:** BM25 a TF-IDF
+  * ✅ **Evaluácia Precision a Recall** na testovacích queries
+  * ✅ **Unit testy** (20+ testov pre parser, enricher, search)
+
+==== 7.2 Technológie ====
+
+| Komponent | Technológia |
+| Crawling | Python requests, BFS frontier |
+| Parsing | JSON-LD, Regex |
+| Text Processing | Tokenizácia, Porter Stemming, Stopwords |
+| Big Data | Apache Spark (PySpark) |
+| Linked Data | Wikipedia entity linking |
+| Indexing | Custom Python (v1), PyLucene/Lupyne (v2) |
+| Entity Matching | Aho-Corasick automaton |
+
+==== 7.3 Kľúčové metriky ====
+
+  * Veľkosť dát: **2.2 GB** (raw HTML)
+  * Rýchlosť vyhľadávania: **2-20 ms**
+  * Pokrytie Wikipedia: **24.75 linkov/recept**
+  * Overlap indexov: **81%**
+  * Precision@3 (keyword): **100%**
+  * Precision@3 (full-text): **50-55%**
+
+----
+
+===== Prílohy =====
+
+==== Spustenie projektu ====
+
+<code bash>
+# Inštalácia
+pip install -r requirements.txt
+
+# Crawling
+python -m crawler.run --output data/raw
+
+# Parsing
+python -m parser.run --input data/raw --output data/normalized/recipes_foodcom.jsonl
+
+# Indexovanie
+python -m indexer.simple_indexer --mode build --input data/normalized/recipes_enriched.jsonl --output index/v1
+
+# Vyhľadávanie
+python -m search_cli.run --index index/v1 --metric bm25 --q "chocolate cake" --k 10
+</code>
+
+==== Štruktúra repozitára ====
+
+<code>
+food-recipes-ir-pipeline/
+├── crawler/           # Web crawler (BFS, robots.txt)
+├── parser/            # HTML → JSON parser
+├── spark_jobs/        # Wikipedia Spark parser
+├── entities/          # Entity linking (Aho-Corasick)
+├── indexer/           # Simple + Lucene indexer
+├── search_cli/        # Vyhľadávací CLI
+├── eval/              # Evaluačné metriky
+├── data/              # Dátové súbory
+│   ├── raw/           # Stiahnuté HTML
+│   ├── normalized/    # Parsované JSONL
+│   └── index/         # Invertovaný index
+└── docs/              # Dokumentácia
+</code>
+
+----
+
+**Kontakt:** Maroš Bednár - xbednarm1@stuba.sk \\
+**GitHub:** [[https://github.com/Marosko123/food-recipes-ir-pipeline]]
+
+//Vytvorené pre VINF projekt - December 2025//

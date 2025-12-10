@@ -1,0 +1,722 @@
+{
+  "1": {
+    "query": "italian sausage soup",
+    "total_relevant_in_pool": 20,
+    "systems": {
+      "Simple_BM25": {
+        "precision_at_k": 1.0,
+        "recall_at_k": 0.25,
+        "relevant_in_top_k": 5,
+        "top_k_details": [
+          {
+            "title": "Lentil Soup With Italian Sausage, Copycat , Cucina Cucina",
+            "relevant": true
+          },
+          {
+            "title": "Italian Sausage Soup",
+            "relevant": true
+          },
+          {
+            "title": "Italian (Turkey) Sausage Soup",
+            "relevant": true
+          },
+          {
+            "title": "Italian Sausage and Vegetable Saute",
+            "relevant": true
+          },
+          {
+            "title": "Italian Stuffed Beef &amp; Sausage Bell Peppers",
+            "relevant": true
+          }
+        ]
+      },
+      "Simple_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      },
+      "Lucene_BM25": {
+        "precision_at_k": 1.0,
+        "recall_at_k": 0.25,
+        "relevant_in_top_k": 5,
+        "top_k_details": [
+          {
+            "title": "Italian Sausage Soup",
+            "relevant": true
+          },
+          {
+            "title": "Lentil Soup With Italian Sausage, Copycat , Cucina Cucina",
+            "relevant": true
+          },
+          {
+            "title": "Sausage Scaloppine",
+            "relevant": true
+          },
+          {
+            "title": "Italian (Turkey) Sausage Soup",
+            "relevant": true
+          },
+          {
+            "title": "Italian Style Chicken, Sausage &amp; Potato Bake",
+            "relevant": true
+          }
+        ]
+      },
+      "Lucene_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      }
+    }
+  },
+  "2": {
+    "query": "mexican beef tacos",
+    "total_relevant_in_pool": 1,
+    "systems": {
+      "Simple_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Sausage Pizza Soup",
+            "relevant": false
+          },
+          {
+            "title": "Buffalo Wing Pizza",
+            "relevant": false
+          },
+          {
+            "title": "Quick Pizza Melts",
+            "relevant": false
+          },
+          {
+            "title": "Quick Pizza Casserole",
+            "relevant": false
+          },
+          {
+            "title": "Fajita Flatbread Personal Pizzas",
+            "relevant": false
+          }
+        ]
+      },
+      "Simple_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      },
+      "Lucene_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Buffalo Wing Pizza",
+            "relevant": false
+          },
+          {
+            "title": "Sausage Pizza Soup",
+            "relevant": false
+          },
+          {
+            "title": "Hot Sausage and Mozzarella Roll",
+            "relevant": false
+          },
+          {
+            "title": "Quick Pizza Casserole",
+            "relevant": false
+          },
+          {
+            "title": "Quick Pizza Melts",
+            "relevant": false
+          }
+        ]
+      },
+      "Lucene_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      }
+    }
+  },
+  "3": {
+    "query": "thai peanut noodles",
+    "total_relevant_in_pool": 2,
+    "systems": {
+      "Simple_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Shrimp and Angel Hair Pasta",
+            "relevant": false
+          },
+          {
+            "title": "Shrimp and Pasta in a Tomato-Chile Cream Sauce",
+            "relevant": false
+          },
+          {
+            "title": "Orange Shrimp Scampi",
+            "relevant": false
+          },
+          {
+            "title": "Pasta With Spinach, Nutmeg, and Shrimp",
+            "relevant": false
+          },
+          {
+            "title": "Walley's Shrimp Scampi",
+            "relevant": false
+          }
+        ]
+      },
+      "Simple_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      },
+      "Lucene_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Mushroom Pasta Scampi",
+            "relevant": false
+          },
+          {
+            "title": "Shrimp and Angel Hair Pasta",
+            "relevant": false
+          },
+          {
+            "title": "Garlic Shrimp and Grits",
+            "relevant": false
+          },
+          {
+            "title": "Shrimp Oreganato",
+            "relevant": false
+          },
+          {
+            "title": "Walley's Shrimp Scampi",
+            "relevant": false
+          }
+        ]
+      },
+      "Lucene_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      }
+    }
+  },
+  "4": {
+    "query": "keto friendly meatballs",
+    "total_relevant_in_pool": 1,
+    "systems": {
+      "Simple_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Honey Mustard Salmon",
+            "relevant": false
+          },
+          {
+            "title": "Honey Dijon Salmon",
+            "relevant": false
+          },
+          {
+            "title": "Honey Mustard Grilled Salmon or Tuna Steaks",
+            "relevant": false
+          },
+          {
+            "title": "Ancho Glazed Salmon",
+            "relevant": false
+          },
+          {
+            "title": "Maple Glazed Salmon",
+            "relevant": false
+          }
+        ]
+      },
+      "Simple_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      },
+      "Lucene_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Honey Mustard Salmon",
+            "relevant": false
+          },
+          {
+            "title": "Honey Dijon Salmon",
+            "relevant": false
+          },
+          {
+            "title": "Honey Mustard Grilled Salmon or Tuna Steaks",
+            "relevant": false
+          },
+          {
+            "title": "Maple Glazed Salmon",
+            "relevant": false
+          },
+          {
+            "title": "Ancho Glazed Salmon",
+            "relevant": false
+          }
+        ]
+      },
+      "Lucene_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      }
+    }
+  },
+  "5": {
+    "query": "creamy garlic shrimp pasta",
+    "total_relevant_in_pool": 0,
+    "systems": {
+      "Simple_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Asian Style Chicken Breasts and Bacon",
+            "relevant": false
+          },
+          {
+            "title": "Bacon-Wrapped Chicken",
+            "relevant": false
+          },
+          {
+            "title": "BBQ Chicken With Bacon Sandwiches",
+            "relevant": false
+          },
+          {
+            "title": "Spinach Feta Stuffed Chicken Breasts",
+            "relevant": false
+          },
+          {
+            "title": "Bacon Wrapped Venison Tenderloin With Portabella Mushrooms",
+            "relevant": false
+          }
+        ]
+      },
+      "Simple_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      },
+      "Lucene_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Bacon-Wrapped Chicken",
+            "relevant": false
+          },
+          {
+            "title": "Bacon Wrapped Venison Tenderloin With Portabella Mushrooms",
+            "relevant": false
+          },
+          {
+            "title": "Asian Style Chicken Breasts and Bacon",
+            "relevant": false
+          },
+          {
+            "title": "Sweet Bacon Wrapped Hot Dogs",
+            "relevant": false
+          },
+          {
+            "title": "Spinach Feta Stuffed Chicken Breasts",
+            "relevant": false
+          }
+        ]
+      },
+      "Lucene_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      }
+    }
+  },
+  "6": {
+    "query": "low carb cheesecake",
+    "total_relevant_in_pool": 0,
+    "systems": {
+      "Simple_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Taco Casserole",
+            "relevant": false
+          },
+          {
+            "title": "Cornbread Taco Bake",
+            "relevant": false
+          },
+          {
+            "title": "taco surprise casserole",
+            "relevant": false
+          },
+          {
+            "title": "Taco Taters",
+            "relevant": false
+          },
+          {
+            "title": "Tacos De Pollo",
+            "relevant": false
+          }
+        ]
+      },
+      "Simple_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      },
+      "Lucene_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Tacos De Pollo",
+            "relevant": false
+          },
+          {
+            "title": "Easy Tacos",
+            "relevant": false
+          },
+          {
+            "title": "Mexican Steak Casserole",
+            "relevant": false
+          },
+          {
+            "title": "Mexican Manicotti",
+            "relevant": false
+          },
+          {
+            "title": "Low Cal  Beef Taco Soup",
+            "relevant": false
+          }
+        ]
+      },
+      "Lucene_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      }
+    }
+  },
+  "7": {
+    "query": "pan fried pork chops",
+    "total_relevant_in_pool": 1,
+    "systems": {
+      "Simple_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Thai Chicken Noodle Salad (Gluten Free)",
+            "relevant": false
+          },
+          {
+            "title": "King Du Noodles",
+            "relevant": false
+          },
+          {
+            "title": "Thai Salad Rolls",
+            "relevant": false
+          },
+          {
+            "title": "Tom Yum Goong (Spicy Thai Shrimp Soup)",
+            "relevant": false
+          },
+          {
+            "title": "Robin Miller's Thai Salad",
+            "relevant": false
+          }
+        ]
+      },
+      "Simple_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      },
+      "Lucene_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Robin Miller's Thai Salad",
+            "relevant": false
+          },
+          {
+            "title": "Oodle Noodles",
+            "relevant": false
+          },
+          {
+            "title": "Thai Mango Salad",
+            "relevant": false
+          },
+          {
+            "title": "Thai Salad Rolls",
+            "relevant": false
+          },
+          {
+            "title": "Butterscotch Haystacks",
+            "relevant": false
+          }
+        ]
+      },
+      "Lucene_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      }
+    }
+  },
+  "8": {
+    "query": "vegan chocolate mousse",
+    "total_relevant_in_pool": 0,
+    "systems": {
+      "Simple_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Indian Chicken Curry Pilaf",
+            "relevant": false
+          },
+          {
+            "title": "Chicken Curry in a Hurry",
+            "relevant": false
+          },
+          {
+            "title": "Vietnamese Chicken Curry",
+            "relevant": false
+          },
+          {
+            "title": "Easy Peasy Chicken Curry",
+            "relevant": false
+          },
+          {
+            "title": "Crab Stuffed Chicken Breasts with Curry Sauce",
+            "relevant": false
+          }
+        ]
+      },
+      "Simple_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      },
+      "Lucene_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Indian Chicken Curry Pilaf",
+            "relevant": false
+          },
+          {
+            "title": "Chicken Curry in a Hurry",
+            "relevant": false
+          },
+          {
+            "title": "Vietnamese Chicken Curry",
+            "relevant": false
+          },
+          {
+            "title": "Beginner's Curry",
+            "relevant": false
+          },
+          {
+            "title": "Easy Peasy Chicken Curry",
+            "relevant": false
+          }
+        ]
+      },
+      "Lucene_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      }
+    }
+  },
+  "9": {
+    "query": "gluten free brownies",
+    "total_relevant_in_pool": 0,
+    "systems": {
+      "Simple_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Teriyaki Chicken",
+            "relevant": false
+          },
+          {
+            "title": "Teriyaki Onion Burgers",
+            "relevant": false
+          },
+          {
+            "title": "Teriyaki Pork Lettuce Wraps",
+            "relevant": false
+          },
+          {
+            "title": "Salmon Teriyaki",
+            "relevant": false
+          },
+          {
+            "title": "Teriyaki Glazed Chicken",
+            "relevant": false
+          }
+        ]
+      },
+      "Simple_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      },
+      "Lucene_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Teriyaki Chicken",
+            "relevant": false
+          },
+          {
+            "title": "Teriyaki Onion Burgers",
+            "relevant": false
+          },
+          {
+            "title": "Arnies Chicken Dinner",
+            "relevant": false
+          },
+          {
+            "title": "Teriyaki Pork Lettuce Wraps",
+            "relevant": false
+          },
+          {
+            "title": "Okayu Japanese Rice Porridge",
+            "relevant": false
+          }
+        ]
+      },
+      "Lucene_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      }
+    }
+  },
+  "10": {
+    "query": "grilled vegetables marinade",
+    "total_relevant_in_pool": 1,
+    "systems": {
+      "Simple_BM25": {
+        "precision_at_k": 0.2,
+        "recall_at_k": 1.0,
+        "relevant_in_top_k": 1,
+        "top_k_details": [
+          {
+            "title": "Greek Seasoned Chicken and Orzo",
+            "relevant": false
+          },
+          {
+            "title": "The Greek Pizza (California Pizza Kitchen)",
+            "relevant": false
+          },
+          {
+            "title": "Greek Honey Lemon Chicken",
+            "relevant": false
+          },
+          {
+            "title": "Greek Grilled Chicken and Vegetable Salad With Warm Pita Bread F",
+            "relevant": true
+          },
+          {
+            "title": "Avgolemono: Chicken Soup With Egg-Lemon Sauce",
+            "relevant": false
+          }
+        ]
+      },
+      "Simple_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      },
+      "Lucene_BM25": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": [
+          {
+            "title": "Greek Seasoned Chicken and Orzo",
+            "relevant": false
+          },
+          {
+            "title": "Greek Honey Lemon Chicken",
+            "relevant": false
+          },
+          {
+            "title": "Lemon Baked Chicken",
+            "relevant": false
+          },
+          {
+            "title": "Mediterranean Lemon Chicken",
+            "relevant": false
+          },
+          {
+            "title": "Lemon Yogurt Chicken",
+            "relevant": false
+          }
+        ]
+      },
+      "Lucene_TF-IDF": {
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "relevant_in_top_k": 0,
+        "top_k_details": []
+      }
+    }
+  }
+}

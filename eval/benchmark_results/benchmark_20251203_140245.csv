@@ -1,0 +1,141 @@
+query_id,query,category,index_type,metric,time_ms,num_results,top1_title,top1_score,top1_doc_id
+1,"chicken",single_ingredient,simple_tsv,bm25,6.08,10,"Chicken Divan Tonight, Chicken Tetrazzini Next Week",17.7815,155194
+2,"pasta",single_ingredient,simple_tsv,bm25,1.98,10,"Pasta Fonzanoon – Pasta Primavera With Chicken, if You Prefer",31.2918,165960
+3,"beef",single_ingredient,simple_tsv,bm25,4.5,10,"Slow-Cooker Beef Tips and Noodles",15.3775,208952
+4,"chocolate",single_ingredient,simple_tsv,bm25,5.52,10,"Chocolate Layer Cake with Chocolate Glaze",15.0324,49238
+5,"salmon",single_ingredient,simple_tsv,bm25,1.18,10,"Salmon (Microwave-Cooked)",39.9512,70299
+6,"chicken pasta",two_words,simple_tsv,bm25,9.0,10,"Pasta Fonzanoon – Pasta Primavera With Chicken, if You Prefer",46.2943,165960
+7,"chocolate cake",two_words,simple_tsv,bm25,10.61,10,"Leila's Easy Chocolate Pound Cake",30.764,281494
+8,"beef stew",two_words,simple_tsv,bm25,7.34,10,"&quot; Secret Ingredient&quot; Beef  Stew",35.1878,165270
+9,"grilled salmon",two_words,simple_tsv,bm25,2.97,10,"Southern Grilled Blackened Salmon",56.3818,281812
+10,"tomato soup",two_words,simple_tsv,bm25,10.89,10,"Italian Tomato-Corn Soup",21.4894,279170
+11,"italian pasta",cuisine,simple_tsv,bm25,5.2,10,"Mostaccioli (Baked Pasta With Creamy Sauce &amp; Italian Sausag",41.9666,72237
+12,"mexican tacos",cuisine,simple_tsv,bm25,2.5,10,"Tacos De Pollo",64.5723,234912
+13,"asian stir fry",cuisine,simple_tsv,bm25,12.27,10,"Teriyaki Chicken & Rice Stir-Fry",33.8584,30734
+14,"french dessert",cuisine,simple_tsv,bm25,6.55,10,"Crown Jewel Dessert",22.5641,11765
+15,"indian curry",cuisine,simple_tsv,bm25,8.66,10,"Tofu Yam Curry",44.8052,278702
+16,"baked chicken",method,simple_tsv,bm25,15.83,10,"Baked Chicken and Stuffing Casserole",19.4724,278865
+17,"fried rice",method,simple_tsv,bm25,11.62,10,"Kimchee Fried Rice",24.2202,281692
+18,"grilled vegetables",method,simple_tsv,bm25,13.81,10,"Grilled Chicken Breasts With Green Pea and Mint Sauce",25.219,282423
+19,"roasted potatoes",method,simple_tsv,bm25,8.17,10,"Roasted Jalapeno Soup (Rockfish Restaurant Copycat)",28.0916,311807
+20,"steamed fish",method,simple_tsv,bm25,7.61,10,"Chinese Steamed Fish in Sauce",23.8386,281438
+21,"easy chicken dinner",complex,simple_tsv,bm25,8.9,10,"Easy Tamale Casserole",41.819,305779
+22,"healthy vegetable salad",complex,simple_tsv,bm25,12.07,10,"Healthy Egg Salad Sandwich",43.4976,226377
+23,"quick breakfast recipe",complex,simple_tsv,bm25,3.71,10,"Easy Breakfast Bake",37.0254,229069
+24,"homemade bread recipe",complex,simple_tsv,bm25,18.09,10,"Ricki Carroll’s 30-Minute Mozzarella - Homemade",34.6883,280238
+25,"creamy mushroom sauce",complex,simple_tsv,bm25,32.46,10,"Creamy Pork Chops, Mushroom and Potato Casserole",47.8982,202929
+26,"lasagna",dish,simple_tsv,bm25,0.52,10,"Baked Butternut Squash, Raisin and Pine Nut Lasagna",64.5534,147409
+27,"tiramisu",dish,simple_tsv,bm25,0.38,8,"Twinkie Tiramisu",43.7447,87044
+28,"guacamole",dish,simple_tsv,bm25,0.61,10,"Spicy Guacamole W/ Grapes",35.2357,281292
+29,"risotto",dish,simple_tsv,bm25,0.39,9,"Asparagus and Corn Risotto",79.7331,281087
+30,"cheesecake",dish,simple_tsv,bm25,0.48,10,"Ww  Fast Strawberry Cheesecake Pie",36.7721,187107
+31,"vegetarian dinner",dietary,simple_tsv,bm25,1.0,10,"Vegetarian Taquitos",42.4554,278109
+32,"low fat chicken",dietary,simple_tsv,bm25,24.0,10,"Low Carb Chicken Casserole",31.3924,373536
+33,"gluten free bread",dietary,simple_tsv,bm25,23.22,10,"Vanilla Sponge Cake- Gluten, Dairy, Nut and Egg Free",25.5055,309848
+34,"healthy smoothie",dietary,simple_tsv,bm25,0.78,10,"Healthy Manicotti",27.1724,69136
+35,"sugar free dessert",dietary,simple_tsv,bm25,26.52,10,"Crown Jewel Dessert",24.8476,11765
+1,"chicken",single_ingredient,simple_tsv,tfidf,6.13,10,"Chicken Corn Soup",1.9825,277567
+2,"pasta",single_ingredient,simple_tsv,tfidf,1.82,10,"Pasta and White Bean Casserole",1.432,281412
+3,"beef",single_ingredient,simple_tsv,tfidf,4.41,10,"Hearty Beef & Bean Burritos",1.9612,9957
+4,"chocolate",single_ingredient,simple_tsv,tfidf,5.51,10,"Devilishly Good Chocolate Cake",1.9805,279326
+5,"salmon",single_ingredient,simple_tsv,tfidf,0.76,10,"Salmon and Pasta Salad",1.444,57034
+6,"chicken pasta",two_words,simple_tsv,tfidf,9.1,10,"Chicken, Pea and Pasta Broth",1.4884,281491
+7,"chocolate cake",two_words,simple_tsv,tfidf,10.57,10,"Pistachio Chocolate Chip Cake",1.6737,27779
+8,"beef stew",two_words,simple_tsv,tfidf,7.04,10,"&quot; Secret Ingredient&quot; Beef  Stew",1.5704,165270
+9,"grilled salmon",two_words,simple_tsv,tfidf,2.66,10,"Lemon Pepper &amp; Mustard Baked Ahi / Mahi Mahi / Salmon",1.2028,173873
+10,"tomato soup",two_words,simple_tsv,tfidf,10.61,10,"Baked Eggplant With Portabellas and Tomato Sauce (Vegetarian)",1.6046,177980
+11,"italian pasta",cuisine,simple_tsv,tfidf,4.87,10,"Bow Tie Pepperoni Pasta Salad",1.4074,162722
+12,"mexican tacos",cuisine,simple_tsv,tfidf,2.17,10,"Tacos De Pollo",1.4212,234912
+13,"asian stir fry",cuisine,simple_tsv,tfidf,12.54,10,"Teriyaki Chicken & Rice Stir-Fry",1.299,30734
+14,"french dessert",cuisine,simple_tsv,tfidf,6.43,10,"Chocolate Lasagna",1.2825,278205
+15,"indian curry",cuisine,simple_tsv,tfidf,8.7,10,"Mustard Curry Sauce",1.7472,291770
+16,"baked chicken",method,simple_tsv,tfidf,15.76,10,"Baked Israeli Chicken",1.9315,279412
+17,"fried rice",method,simple_tsv,tfidf,12.02,10,"Fried Rice With Scallions, Edamame and Tofu by Ellie Krieger",1.7705,281912
+18,"grilled vegetables",method,simple_tsv,tfidf,14.29,10,"Grilled Tuna & Vegetables W/yellow Pepper Sauce",1.6012,13958
+19,"roasted potatoes",method,simple_tsv,tfidf,8.29,10,"Turnip, Honey &amp; Roasted Garlic Soup",1.6036,323418
+20,"steamed fish",method,simple_tsv,tfidf,7.54,10,"Valentine’s Day Latte",1.5087,281580
+21,"easy chicken dinner",complex,simple_tsv,tfidf,9.24,10,"Easy Tamale Casserole",1.0374,305779
+22,"healthy vegetable salad",complex,simple_tsv,tfidf,11.99,10,"Healthy Raspberry Dessert",0.9351,317684
+23,"quick breakfast recipe",complex,simple_tsv,tfidf,3.54,10,"Potato Dumplings",1.0,240759
+24,"homemade bread recipe",complex,simple_tsv,tfidf,17.88,10,"Chickpea and Artichoke Masala",1.1649,446647
+25,"creamy mushroom sauce",complex,simple_tsv,tfidf,18.19,10,"Spiced Salmon with Shiitake Mushroom Relish",1.3613,36889
+26,"lasagna",dish,simple_tsv,tfidf,0.13,10,"Skillet Lasagna",1.7056,354579
+27,"tiramisu",dish,simple_tsv,tfidf,0.04,8,"Twinkie Tiramisu",1.4142,87044
+28,"guacamole",dish,simple_tsv,tfidf,0.26,10,"Nacho Beef Casserole",1.6036,280660
+29,"risotto",dish,simple_tsv,tfidf,0.04,9,"Oven-Baked Mushroom &amp; Baby Spinach Risotto",1.3416,299373
+30,"cheesecake",dish,simple_tsv,tfidf,0.13,10,"Swirled Cranberry Cheesecake",1.4142,12021
+31,"vegetarian dinner",dietary,simple_tsv,tfidf,0.61,10,"Vegetarian Taquitos",1.1753,278109
+32,"low fat chicken",dietary,simple_tsv,tfidf,23.87,10,"Low Carb Chicken Casserole",1.7517,373536
+33,"gluten free bread",dietary,simple_tsv,tfidf,38.47,10,"Sweet Shortcrust Pastry - Gluten-Free",1.3918,439212
+34,"healthy smoothie",dietary,simple_tsv,tfidf,0.45,10,"Peach, Soy, and Almond Smoothie",0.8279,184224
+35,"sugar free dessert",dietary,simple_tsv,tfidf,25.83,10,"Rhubarb Sprinkle",1.3752,29650
+1,"chicken",single_ingredient,lucene,bm25,100.41,10,"Chicken Yumbo",7.4235,161332
+2,"pasta",single_ingredient,lucene,bm25,26.36,10,"Mexican Pasta (Sopa?)",12.6617,144607
+3,"beef",single_ingredient,lucene,bm25,22.1,10,"Sauerbraten Beef",9.6299,159764
+4,"chocolate",single_ingredient,lucene,bm25,16.45,10,"Chocolate Covered Dipped Strawberries",9.4127,160408
+5,"salmon",single_ingredient,lucene,bm25,14.92,10,"Salmon (Microwave-Cooked)",15.8173,70299
+6,"chicken pasta",two_words,lucene,bm25,27.08,10,"Chicken &amp; Asparagus Pasta",17.426,277917
+7,"chocolate cake",two_words,lucene,bm25,18.56,10,"Chocolate Raspberry Cake",17.7158,20661
+8,"beef stew",two_words,lucene,bm25,23.68,10,"Winter Beef Stew",19.4262,277420
+9,"grilled salmon",two_words,lucene,bm25,14.84,10,"Grilled Ginger Salmon",20.6824,31837
+10,"tomato soup",two_words,lucene,bm25,18.13,10,"Macaroni &amp; Tomato Soup",14.6226,304236
+11,"italian pasta",cuisine,lucene,bm25,21.92,10,"Bow Tie Pepperoni Pasta Salad",19.4739,162722
+12,"mexican tacos",cuisine,lucene,bm25,16.08,10,"Tacos De Pollo",19.9184,234912
+13,"asian stir fry",cuisine,lucene,bm25,22.68,10,"Teriyaki Chicken & Rice Stir-Fry",23.1845,30734
+14,"french dessert",cuisine,lucene,bm25,20.55,10,"Orange-Infused Mascarpone French Toast",10.8791,106126
+15,"indian curry",cuisine,lucene,bm25,17.38,10,"Indian Chicken Curry Pilaf",17.3331,211475
+16,"baked chicken",method,lucene,bm25,17.07,10,"Baked Creamed Chicken",10.8435,131372
+17,"fried rice",method,lucene,bm25,13.37,10,"Kimchee Fried Rice",21.0319,281692
+18,"grilled vegetables",method,lucene,bm25,14.04,10,"Grilled Tuna & Vegetables W/yellow Pepper Sauce",13.0747,13958
+19,"roasted potatoes",method,lucene,bm25,20.53,10,"Roasted Sweet Potatoes",15.7269,293080
+20,"steamed fish",method,lucene,bm25,12.86,10,"Chinese Steamed Fish in Sauce",16.7162,281438
+21,"easy chicken dinner",complex,lucene,bm25,8.98,10,"Arnies Chicken Dinner",13.4848,291896
+22,"healthy vegetable salad",complex,lucene,bm25,11.59,10,"Honey Mustard Salad Dressing",13.1846,449645
+23,"quick breakfast recipe",complex,lucene,bm25,22.46,10,"Easy Breakfast Bake",11.1991,229069
+24,"homemade bread recipe",complex,lucene,bm25,11.42,10,"Homemade Panko (Japanese Bread Crumbs)",13.4996,376622
+25,"creamy mushroom sauce",complex,lucene,bm25,21.68,10,"Polenta With Creamy Mushroom Sauce",14.4054,213631
+26,"lasagna",dish,lucene,bm25,13.72,10,"Easy Way Lasagna",17.8913,18888
+27,"tiramisu",dish,lucene,bm25,5.43,8,"Twinkie Tiramisu",12.5243,87044
+28,"guacamole",dish,lucene,bm25,5.87,10,"Spicy Guacamole W/ Grapes",13.2655,281292
+29,"risotto",dish,lucene,bm25,6.11,9,"Asparagus and Corn Risotto",20.6829,281087
+30,"cheesecake",dish,lucene,bm25,5.49,10,"Ww  Fast Strawberry Cheesecake Pie",10.8065,187107
+31,"vegetarian dinner",dietary,lucene,bm25,5.09,10,"Vegetarian Taquitos",12.9372,278109
+32,"low fat chicken",dietary,lucene,bm25,20.8,10,"Low Carb Chicken Casserole",15.3953,373536
+33,"gluten free bread",dietary,lucene,bm25,21.47,10,"Gluten Free Brown Gravy",19.0242,279601
+34,"healthy smoothie",dietary,lucene,bm25,12.26,10,"Tea Smoothie",10.4002,238629
+35,"sugar free dessert",dietary,lucene,bm25,13.48,10,"Sugar Free Cake Frosting",18.3424,112517
+1,"chicken",single_ingredient,lucene,tfidf,19.45,10,"Chicken - Canning",7.0042,53200
+2,"pasta",single_ingredient,lucene,tfidf,11.03,10,"Pepperoni Pasta",9.8187,131622
+3,"beef",single_ingredient,lucene,tfidf,9.73,10,"Sauerbraten Beef",8.4787,159764
+4,"chocolate",single_ingredient,lucene,tfidf,10.39,10,"Chocolate Baklava",7.6271,14738
+5,"salmon",single_ingredient,lucene,tfidf,9.93,10,"Wasabi Salmon",11.1025,304464
+6,"chicken pasta",two_words,lucene,tfidf,11.59,10,"Chicken &amp; Asparagus Pasta",12.3569,277917
+7,"chocolate cake",two_words,lucene,tfidf,9.44,10,"Chocolate Raspberry Cake",13.6403,20661
+8,"beef stew",two_words,lucene,tfidf,10.24,10,"Winter Beef Stew",15.3249,277420
+9,"grilled salmon",two_words,lucene,tfidf,6.87,10,"Grilled Ginger Salmon",15.6666,31837
+10,"tomato soup",two_words,lucene,tfidf,8.45,10,"Tomato Soup",14.6465,333005
+11,"italian pasta",cuisine,lucene,tfidf,4.51,10,"Bow Tie Pepperoni Pasta Salad",10.3193,162722
+12,"mexican tacos",cuisine,lucene,tfidf,9.21,10,"Easy Tacos",12.3246,107343
+13,"asian stir fry",cuisine,lucene,tfidf,8.53,10,"Teriyaki Chicken & Rice Stir-Fry",15.3941,30734
+14,"french dessert",cuisine,lucene,tfidf,6.88,10,"Crown Jewel Dessert",8.4446,11765
+15,"indian curry",cuisine,lucene,tfidf,6.79,10,"Indian Chicken Curry Pilaf",14.4583,211475
+16,"baked chicken",method,lucene,tfidf,7.81,10,"Baked Creamed Chicken",10.8802,131372
+17,"fried rice",method,lucene,tfidf,12.21,10,"Kimchee Fried Rice",15.8658,281692
+18,"grilled vegetables",method,lucene,tfidf,7.13,10,"Vegetables Supreme",10.7512,278343
+19,"roasted potatoes",method,lucene,tfidf,6.72,10,"Roasted Sweet Potatoes",14.6987,293080
+20,"steamed fish",method,lucene,tfidf,12.14,10,"Chinese Steamed Fish in Sauce",14.4967,281438
+21,"easy chicken dinner",complex,lucene,tfidf,6.29,10,"Arnies Chicken Dinner",14.1956,291896
+22,"healthy vegetable salad",complex,lucene,tfidf,8.93,10,"Healthy Egg Salad Sandwich",11.09,226377
+23,"quick breakfast recipe",complex,lucene,tfidf,6.44,10,"Breakfast Pockets",8.7688,254611
+24,"homemade bread recipe",complex,lucene,tfidf,7.78,10,"Homemade Nads Recipe",14.2453,91371
+25,"creamy mushroom sauce",complex,lucene,tfidf,7.43,10,"Mushroom Soy Sauce",15.0145,279097
+26,"lasagna",dish,lucene,tfidf,8.47,10,"Mediterranean Lasagna",11.2509,278862
+27,"tiramisu",dish,lucene,tfidf,4.69,8,"Twinkie Tiramisu",11.9823,87044
+28,"guacamole",dish,lucene,tfidf,5.14,10,"Chipotle's Guacamole",11.5804,36679
+29,"risotto",dish,lucene,tfidf,5.0,9,"Asparagus and Corn Risotto",10.878,281087
+30,"cheesecake",dish,lucene,tfidf,7.33,10,"Pumpkin Cheesecake",8.8081,72927
+31,"vegetarian dinner",dietary,lucene,tfidf,4.68,10,"Vegetarian Taquitos",10.6348,278109
+32,"low fat chicken",dietary,lucene,tfidf,10.83,10,"Easy Chicken Scampi (Low Fat)",14.2451,281999
+33,"gluten free bread",dietary,lucene,tfidf,12.2,10,"Gluten Free Brown Gravy",15.6531,279601
+34,"healthy smoothie",dietary,lucene,tfidf,4.55,10,"Tea Smoothie",10.1813,238629
+35,"sugar free dessert",dietary,lucene,tfidf,7.49,10,"Sugar Free Granola",15.384,281244

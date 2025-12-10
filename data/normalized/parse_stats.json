@@ -1,0 +1,12 @@
+{
+  "total_files": 5646,
+  "parsed_successfully": 5646,
+  "parse_failed": 0,
+  "json_ld_success": 0,
+  "html_fallback_success": 5646,
+  "start_time": 1759309773.98634,
+  "end_time": 1759309802.0831108,
+  "total_time": 28.096770763397217,
+  "parse_rate": 200.94835977931206,
+  "success_rate": 1.0
+}

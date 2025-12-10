@@ -433,72 +433,39 @@ def search_by_ingredients(self, include: List[str], exclude: List[str], k: int =
 
 Detailné porovnanie všetkých testovaných systémov a metrík nájdete v samostatnom dokumente:
 
-  * **[[user:maros.bednar:vinf:konzultacie:2025-12-15:Detailne_Vyhodnotenie|Detailne Tabulkove Vyhodnotenie Queries]]**
-==== 8.1 Súhrnné výsledky (Precision@5) ====
-
-Porovnanie 4 konfigurácií nášho systému a produkčného Food.com vyhľadávania na sade 10 štandardných dopytov.
-
-^ Systém ^ Mean P@5 ^ Mean R@5 ^ F1-Score ^ ZRR (Zero Result Rate) ^
-| 🥇 **S1 (Simple BM25)** | **84%** | **29%** | **44%** | 0% |
-| 🥈 **L2 (Lucene TF-IDF)** | 72% | 23% | 35% | 0% |
-| 🥉 **L1 (Lucene BM25)** | 66% | 21% | 32% | 0% |
-| 4. **S2 (Simple TF-IDF)** | 56% | 20% | 29% | 0% |
-| 5. **Food.com** | Variable | Variable | Variable | **30%** |
-
-**Legenda:**
-  * **S1/S2**: Simple Python Indexer (BM25 / TF-IDF)
-  * **L1/L2**: PyLucene Indexer (BM25 / TF-IDF)
-  * **ZRR**: Zero Result Rate (percento dopytov bez výsledkov)
-
-==== 8.2 Rýchlosť vyhľadávania ====
-
-Priemerné časy odozvy na 25 testovacích dopytov:
-
-^ Systém ^ Priemerný čas ^ Throughput ^ Poznámka ^
-| **S2 (Simple TF-IDF)** | **1.96 ms** | **510 q/s** | Najrýchlejší celkovo |
-| **S1 (Simple BM25)** | **2.36 ms** | **424 q/s** | Najrýchlejší pre malé datasety |
-| **L2 (Lucene TF-IDF)** | 13.53 ms | 74 q/s | JVM overhead, škáluje lepšie |
-| **L1 (Lucene BM25)** | 19.61 ms | 51 q/s | JVM overhead, škáluje lepšie |
-
-==== 8.3 Detailné výsledky queries ====
-
-Súhrn výsledkov pre 5 príkladových queries:
-
-^ Query ^ Ground Truth ^ Najlepší systém ^ P@5 ^ R@5 ^
-| italian sausage soup | 18 docs | S1, L1, L2, FC | 100% | 28% |
-| thai peanut noodles | 16 docs | S2, FC | 100% | 31% |
-| low carb cheesecake | 7 docs | FC | 100% | 71% |
-| vegan chocolate mousse | 9 docs | L2, FC | 100% | 56% |
-| mexican beef tacos | 21 docs | S1, S2, L2 | 100% | 24% |
-
-**Poznámka:** Food.com vrátil 0 výsledkov pre query "mexican beef tacos"!
-
-Kompletné tabulky s jednotlivými dokumentmi a ich relevanciou pre každý systém nájdete v podstránke:
   * **[[user:maros.bednar:vinf:konzultacie:2025-12-15:Detailne_Vyhodnotenie|Detailné Tabulkové Vyhodnotenie Queries]]**
 
-==== 8.4 Výkonnosť na pokročilých dopytoch ====
+==== 8.1 Metodológia ====
 
-Výsledky na rozšírenej sade 40 dopytov (vrátane filtrovania podľa ingrediencií a kuchyne).
+Porovnali sme 6 systémov na 5 testovacích dopytoch. Ground Truth sme vytvorili metódou **pooling** - zozbierali sme top-10 výsledkov zo systémov S1, S2, L1, L2 a Food.com, deduplikovali a manuálne ohodnotili relevanciu.
 
-^ Kategória dopytu ^ Najlepší systém ^ P@5 ^ Poznámka ^
-| Presná fráza ("chocolate cake") | **S1 (Simple BM25)** | **85%** | Najlepšia relevancia pre bežné názvy |
-| Ingrediencie (chicken + garlic) | **S1 (Simple BM25)** | **100%** | Perfektné filtrovanie |
-| Kuchyňa (cuisine:italian) | **S1 (Simple BM25)** | **5%** | Vyžaduje vylepšenie (faceted search) |
-| Kombinované dopyty | **S1 = L2** | **75%** | Vyrovnaný výkon |
-| **Celkový priemer** | **S1 (Simple BM25)** | **63%** | **Víťaz benchmarku** |
+**Kritérium relevancie:** Dokument je relevantný ak obsahuje hlavnú tému dopytu (typ jedla) + aspoň jeden kľúčový modifikátor.
 
-==== 8.5 Porovnanie s Food.com baseline ====
+==== 8.2 Zhrnutie výsledkov ====
 
-Pre 10 vybraných dopytov sme porovnali naše výsledky s očakávanými výsledkami z Google:
+^ Systém ^ Mean P@5 ^ ZRR ^ Poznámka ^
+| 🥇 **G (Google site:food.com)** | **100%** | 0% | Perfektná presnosť vďaka sémantickému porozumeniu |
+| 🥈 **FC (Food.com)** | **80%** | 20% | Produkčný systém, ale ZRR na Q5 |
+| 🥉 **S1 (Simple BM25)** | **76%** | 0% | Výborný výkon vďaka boostingu |
+| 🥉 **L1 (PyLucene BM25)** | **76%** | 0% | Rovnaký výkon, wiki enrichment |
+| 5. **L2 (PyLucene TF-IDF)** | **60%** | 0% | Slabší bez BM25 normalizácie |
+| 6. **S2 (Simple TF-IDF)** | **52%** | 0% | Najslabší z našich systémov |
 
-^ Query ^ Google očakávanie ^ Náš Top-3 ^ Relevance Score ^
-| chocolate cake | chocolate layer cake | Devilishly Good Chocolate Cake, German Chocolate Cake | **0.85** |
-| pasta carbonara | spaghetti carbonara | Pasta Carbonara, Spaghetti Carbonara | **0.90** |
-| mexican tacos | street tacos, carne asada | Mexican Tacos, Beef Tacos | **0.75** |
-| butter chicken | murgh makhani | Indian Butter Chicken, Curry Chicken | **0.80** |
-| thai curry | red/green curry | Thai Red Curry, Panang Curry | **0.70** |
+**Kľúčové zistenia:**
+  * **Google** dosahuje perfektné výsledky vďaka sémantickému porozumeniu a globálnym signálom (PageRank)
+  * **Food.com** má vysokú presnosť ale problém so **Zero Result Rate** (20%) na komplexnejších dopytoch
+  * **Naše BM25 systémy (76%)** dosahujú porovnateľné výsledky vďaka inteligentnému boostingu
+  * **Boosting** na title (2.0×), ingredients (1.5×) a instructions (1.2×) - v inštrukciách sa opakovane spomínajú ingrediencie, čo zvyšuje skóre relevantných dokumentov
 
-**Priemerné relevance score:** **0.80**
+==== 8.3 Rýchlosť vyhľadávania ====
+
+^ Systém ^ Priemerný čas ^ Throughput ^
+| **S2 (Simple TF-IDF)** | **1.96 ms** | **510 q/s** |
+| **S1 (Simple BM25)** | **2.36 ms** | **424 q/s** |
+| **L2 (Lucene TF-IDF)** | 13.53 ms | 74 q/s |
+| **L1 (Lucene BM25)** | 19.61 ms | 51 q/s |
+
+Simple indexy sú **8-10× rýchlejšie** pre malé datasety. PyLucene ponúka pokročilé funkcie (fuzzy, phrase queries).
 
 ===== 9. Príklady použitia =====
 

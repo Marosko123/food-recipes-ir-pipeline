@@ -1,4 +1,8 @@
-# Python
+# ============================================
+# VINF Project - Food Recipes IR Pipeline
+# ============================================
+
+# === Python ===
 __pycache__/
 *.py[cod]
 *$py.class
@@ -21,20 +25,19 @@ wheels/
 *.egg
 MANIFEST
 
-# Virtual environments
+# === Virtual environments ===
 venv/
+venv*/
 env/
 ENV/
-env.bak/
-venv.bak/
+.venv/
 .virtualenv/
 
-# Node.js and frontend build artifacts
+# === Node.js / Frontend ===
 node_modules/
 .next/
 .nuxt/
 dist/
-build/
 out/
 *.tsbuildinfo
 package-lock.json
@@ -42,105 +45,75 @@ yarn.lock
 .env.local
 .env.*.local
 
-# Frontend specific directories
-frontend/node_modules/
-frontend/.next/
-frontend/dist/
-frontend/build/
-frontend-nextjs/node_modules/
-frontend-nextjs/.next/
-frontend-nextjs/dist/
-frontend-nextjs/build/
-
-# IDE
+# === IDE ===
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# Assistant configuration files (project-specific)
 .cursorrules
-.github/
-AGENT_PROMPT.md
 
-# Logs
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Logs ===
 *.log
 logs/
-data/*.log
 
-# Large data files (anywhere in the project)
+# === Data files (large, regenerable) ===
+data/raw/
+data/logs/
+data/enwiki/
+data/seed_analysis/
+data/normalized/*.jsonl
 *.html
 *.xml
-*.csv
-*.tsv
-*.jsonl
 *.parquet
 *.gz
 *.zip
 *.tar
 *.bz2
 
-# Keep essential config and documentation files
-!README.md
-!docs/*.md
-!*.md
-!requirements.txt
-!package.json
-!eval/queries.tsv
-!eval/qrels.tsv
+# === Indexes (generated, regenerable) ===
+index/v1/
+index/v2/
+index/v2_tfidf/
 
-# Data directories and files (as per project rules)
-data/raw/
-data/normalized/
-data/entities/
-data/eval/
-data/enwiki/
-data/seed_analysis/
-data/wikipedia_recipes/
-data/wikipedia/
-data/*.log
-data/*.json
-data/*.txt
-data/*.tsv
-data/*.jsonl
-data/*.parquet
-data/*.gz
-data/*.zip
+# === Cache ===
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
 
-# Exception: Keep TSV baseline index (required by DoD)
-!data/index/
-!data/index/v1/
-!data/index/v1/*.tsv
-
-# Keep only specific sample/config files in data
-!data/sample/
-!data/config/
-!data/README.md
-
-# Temporary files
+# === Temporary ===
 tmp/
 temp/
 *.tmp
 
-# OS
-.DS_Store
-Thumbs.db
+# ============================================
+# EXCEPTIONS - Files to KEEP in repository
+# ============================================
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# Keep markdown documentation
+!README.md
+!docs/*.md
+!docs/*.txt
 
-# pytest
-.pytest_cache/
-.coverage
-htmlcov/
+# Keep package configs
+!requirements.txt
+!package.json
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+# Keep essential eval data
+!eval/queries.tsv
+!eval/qrels.tsv
 
-# Indexes (Generated)
-index/v1/
-index/v2/
-index/v2_tfidf/
+# Keep normalized data (small, required for demo)
+!data/normalized/
+!data/normalized/*.jsonl
+
+# Keep sample configs
+!data/categories.json
+!data/selected_quality_recipes.txt
+!data/selected_quality_recipes_stats.json

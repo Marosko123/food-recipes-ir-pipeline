@@ -1,0 +1,21 @@
+{
+  "total_selected": 4000,
+  "target": 4000,
+  "progress_percent": 100.0,
+  "cuisine_distribution": {
+    "italian": 4000
+  },
+  "rating_distribution": {
+    "excellent": 1679,
+    "very_good": 1216,
+    "good": 704,
+    "average": 301,
+    "below_average": 100
+  },
+  "difficulty_distribution": {
+    "easy": 3881,
+    "medium": 118,
+    "hard": 1
+  },
+  "remaining": 0
+}

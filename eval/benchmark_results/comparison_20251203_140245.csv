@@ -1,0 +1,36 @@
+query_id,query,category,simple_bm25_time,simple_bm25_results,simple_tfidf_time,simple_tfidf_results,lucene_bm25_time,lucene_bm25_results,lucene_tfidf_time,lucene_tfidf_results
+1,"chicken",single_ingredient,6.08,10,6.13,10,100.41,10,19.45,10
+2,"pasta",single_ingredient,1.98,10,1.82,10,26.36,10,11.03,10
+3,"beef",single_ingredient,4.5,10,4.41,10,22.1,10,9.73,10
+4,"chocolate",single_ingredient,5.52,10,5.51,10,16.45,10,10.39,10
+5,"salmon",single_ingredient,1.18,10,0.76,10,14.92,10,9.93,10
+6,"chicken pasta",two_words,9.0,10,9.1,10,27.08,10,11.59,10
+7,"chocolate cake",two_words,10.61,10,10.57,10,18.56,10,9.44,10
+8,"beef stew",two_words,7.34,10,7.04,10,23.68,10,10.24,10
+9,"grilled salmon",two_words,2.97,10,2.66,10,14.84,10,6.87,10
+10,"tomato soup",two_words,10.89,10,10.61,10,18.13,10,8.45,10
+11,"italian pasta",cuisine,5.2,10,4.87,10,21.92,10,4.51,10
+12,"mexican tacos",cuisine,2.5,10,2.17,10,16.08,10,9.21,10
+13,"asian stir fry",cuisine,12.27,10,12.54,10,22.68,10,8.53,10
+14,"french dessert",cuisine,6.55,10,6.43,10,20.55,10,6.88,10
+15,"indian curry",cuisine,8.66,10,8.7,10,17.38,10,6.79,10
+16,"baked chicken",method,15.83,10,15.76,10,17.07,10,7.81,10
+17,"fried rice",method,11.62,10,12.02,10,13.37,10,12.21,10
+18,"grilled vegetables",method,13.81,10,14.29,10,14.04,10,7.13,10
+19,"roasted potatoes",method,8.17,10,8.29,10,20.53,10,6.72,10
+20,"steamed fish",method,7.61,10,7.54,10,12.86,10,12.14,10
+21,"easy chicken dinner",complex,8.9,10,9.24,10,8.98,10,6.29,10
+22,"healthy vegetable salad",complex,12.07,10,11.99,10,11.59,10,8.93,10
+23,"quick breakfast recipe",complex,3.71,10,3.54,10,22.46,10,6.44,10
+24,"homemade bread recipe",complex,18.09,10,17.88,10,11.42,10,7.78,10
+25,"creamy mushroom sauce",complex,32.46,10,18.19,10,21.68,10,7.43,10
+26,"lasagna",dish,0.52,10,0.13,10,13.72,10,8.47,10
+27,"tiramisu",dish,0.38,8,0.04,8,5.43,8,4.69,8
+28,"guacamole",dish,0.61,10,0.26,10,5.87,10,5.14,10
+29,"risotto",dish,0.39,9,0.04,9,6.11,9,5.0,9
+30,"cheesecake",dish,0.48,10,0.13,10,5.49,10,7.33,10
+31,"vegetarian dinner",dietary,1.0,10,0.61,10,5.09,10,4.68,10
+32,"low fat chicken",dietary,24.0,10,23.87,10,20.8,10,10.83,10
+33,"gluten free bread",dietary,23.22,10,38.47,10,21.47,10,12.2,10
+34,"healthy smoothie",dietary,0.78,10,0.45,10,12.26,10,4.55,10
+35,"sugar free dessert",dietary,26.52,10,25.83,10,13.48,10,7.49,10

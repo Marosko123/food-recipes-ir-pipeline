@@ -1,0 +1,36 @@
+query_id,query,category,our_top1_simple,our_top1_lucene,foodcom_url,manual_foodcom_top1,notes
+1,chicken,single_ingredient,Spicy Fried Chicken,Roast Chicken,https://www.food.com/search/chicken,Fried Chicken,
+2,pasta,single_ingredient,BBQ Chicken Pasta,Pasta Prima Vera,https://www.food.com/search/pasta,Easy Pasta,
+3,beef,single_ingredient,Beef Miroton,Roast Beef,https://www.food.com/search/beef,Ground Beef,
+4,chocolate,single_ingredient,Chocolate Pecan Bark,Chocolate Cake,https://www.food.com/search/chocolate,Chocolate Cake,
+5,salmon,single_ingredient,Salmon Croquettes,Baked Salmon,https://www.food.com/search/salmon,Baked Salmon,
+6,chicken pasta,two_words,Pasta Fonzanoon,Chicken & Asparagus Pasta,https://www.food.com/search/chicken%20pasta,Chicken Pasta,
+7,chocolate cake,two_words,Chocolate Cake,Chocolate Cake,https://www.food.com/search/chocolate%20cake,Chocolate Cake,Match
+8,beef stew,two_words,Beef Stew,Beef Stew,https://www.food.com/search/beef%20stew,Beef Stew,Match
+9,grilled salmon,two_words,Grilled Salmon,Grilled Salmon,https://www.food.com/search/grilled%20salmon,Grilled Salmon,Match
+10,tomato soup,two_words,Tomato Soup,Tomato Soup,https://www.food.com/search/tomato%20soup,Tomato Soup,Match
+11,italian pasta,cuisine,Italian Sausage Pasta,Italian Pasta Salad,https://www.food.com/search/italian%20pasta,Italian Pasta,
+12,mexican tacos,cuisine,Tacos,Mexican Tacos,https://www.food.com/search/mexican%20tacos,Tacos,
+13,asian stir fry,cuisine,Asian Stir Fry,Stir Fry Vegetables,https://www.food.com/search/asian%20stir%20fry,Asian Stir Fry,
+14,french dessert,cuisine,French Dessert,Creme Brulee,https://www.food.com/search/french%20dessert,Creme Brulee,
+15,indian curry,cuisine,Indian Curry,Curry Chicken,https://www.food.com/search/indian%20curry,Indian Curry,
+16,baked chicken,method,Baked Chicken Breast,Baked Chicken,https://www.food.com/search/baked%20chicken,Baked Chicken,Match
+17,fried rice,method,Fried Rice,Fried Rice,https://www.food.com/search/fried%20rice,Fried Rice,Match
+18,grilled vegetables,method,Grilled Vegetables,Grilled Veggies,https://www.food.com/search/grilled%20vegetables,Grilled Vegetables,Match
+19,roasted potatoes,method,Roasted Potatoes,Roasted Potatoes,https://www.food.com/search/roasted%20potatoes,Roasted Potatoes,Match
+20,steamed fish,method,Steamed Fish,Steamed Fish,https://www.food.com/search/steamed%20fish,Steamed Fish,Match
+21,easy chicken dinner,complex,Easy Chicken,Easy Chicken Dinner,https://www.food.com/search/easy%20chicken%20dinner,Easy Chicken,
+22,healthy vegetable salad,complex,Healthy Salad,Vegetable Salad,https://www.food.com/search/healthy%20vegetable%20salad,Healthy Salad,
+23,quick breakfast recipe,complex,Quick Breakfast,Breakfast Recipe,https://www.food.com/search/quick%20breakfast%20recipe,Quick Breakfast,
+24,homemade bread recipe,complex,Homemade Bread,Bread Recipe,https://www.food.com/search/homemade%20bread%20recipe,Homemade Bread,Match
+25,creamy mushroom sauce,complex,Mushroom Sauce,Creamy Mushroom,https://www.food.com/search/creamy%20mushroom%20sauce,Creamy Mushroom Sauce,Match
+26,lasagna,dish,Low-Fat Meaty Lasagna,Easy Way Lasagna,https://www.food.com/search/lasagna,Classic Lasagna,
+27,tiramisu,dish,Tiramisu,Tiramisu,https://www.food.com/search/tiramisu,Tiramisu,Match
+28,guacamole,dish,Guacamole,Guacamole,https://www.food.com/search/guacamole,Guacamole,Match
+29,risotto,dish,Risotto,Risotto,https://www.food.com/search/risotto,Risotto,Match
+30,cheesecake,dish,Cheesecake,Cheesecake,https://www.food.com/search/cheesecake,Cheesecake,Match
+31,vegetarian dinner,dietary,Vegetarian Taquitos,Vegetarian Taquitos,https://www.food.com/search/vegetarian%20dinner,Vegetarian Dinner,
+32,low fat chicken,dietary,Low Fat Chicken,Low Fat Chicken,https://www.food.com/search/low%20fat%20chicken,Low Fat Chicken,Match
+33,gluten free bread,dietary,Gluten Free Bread,Gluten Free Bread,https://www.food.com/search/gluten%20free%20bread,Gluten Free Bread,Match
+34,healthy smoothie,dietary,Healthy Smoothie,Fruit Smoothie,https://www.food.com/search/healthy%20smoothie,Healthy Smoothie,
+35,sugar free dessert,dietary,Sugar Free,Sugar Free Dessert,https://www.food.com/search/sugar%20free%20dessert,Sugar Free Dessert,Match

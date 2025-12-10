@@ -1,0 +1,72 @@
+{
+  "cuisines": {
+    "european": 609,
+    "asian": 344,
+    "mexican": 155,
+    "indian": 68,
+    "chinese": 59,
+    "greek": 53,
+    "american": 41,
+    "german": 32,
+    "japanese": 25,
+    "thai": 22
+  },
+  "meal_types": {
+    "breakfast": 91,
+    "desserts": 721
+  },
+  "dietary": {
+    "vegetarian": 206,
+    "vegan": 330,
+    "keto": 8,
+    "paleo": 1,
+    "gluten-free": 67,
+    "dairy-free": 17,
+    "low-fat": 515,
+    "high-protein": 5,
+    "gym": 8,
+    "healthy": 1876,
+    "quick": 1692,
+    "one-pot": 60,
+    "slow-cooker": 91,
+    "meal-prep": 92
+  },
+  "cooking_methods": {
+    "baking": 853,
+    "steaming": 15,
+    "slow-cooking": 10
+  },
+  "ingredients": {
+    "meat": 1269,
+    "vegetable": 934,
+    "fruit": 608,
+    "poultry": 556,
+    "chicken": 353,
+    "sweet": 251,
+    "cheese": 247,
+    "savory": 240,
+    "breads": 202,
+    "spicy": 200,
+    "beans": 187,
+    "pork": 159,
+    "nuts": 145,
+    "rice": 135,
+    "potato": 127,
+    "grains": 115,
+    "tropical fruits": 114,
+    "apple": 91,
+    "greens": 85,
+    "berries": 85,
+    "onions": 85,
+    "citrus": 75,
+    "beverages": 69,
+    "chicken breast": 69,
+    "peppers": 44,
+    "pineapple": 35,
+    "south american": 34,
+    "coconut": 33,
+    "tex mex": 32,
+    "spinach": 31,
+    "tuna": 29
+  }
+}

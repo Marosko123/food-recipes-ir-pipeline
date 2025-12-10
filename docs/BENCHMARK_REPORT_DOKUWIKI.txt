@@ -77,6 +77,33 @@ P@5 = |{doc ∈ systém_top5 : doc je relevantný}| / 5
 
 **Čo hľadáme:** Polievka (soup/stew) obsahujúca taliansku klobásu alebo podobnú ingredienciu.
 
+**Terminálové príkazy (copy-paste ready):**
+
+<code bash>
+# S1: Simple BM25
+python -m search_cli.run --index index/v1 --metric bm25 --q "italian sausage soup" --k 5
+
+# S2: Simple TF-IDF
+python -m search_cli.run --index index/v1 --metric tfidf --q "italian sausage soup" --k 5
+
+# L1: PyLucene BM25
+python -m search_cli.run --index index/v2 --metric bm25 --q "italian sausage soup" --k 5
+
+# L2: PyLucene TF-IDF
+python -m search_cli.run --index index/v2_tfidf --metric tfidf --q "italian sausage soup" --k 5
+
+# === ALTERNATÍVNE FORMÁTY VÝSTUPU ===
+
+# JSON výstup (pre programové spracovanie)
+python -m search_cli.run --index index/v1 --metric bm25 --q "italian sausage soup" --k 5 --json
+
+# Quiet výstup (len doc_id a score - pre benchmarky)
+python -m search_cli.run --index index/v1 --metric bm25 --q "italian sausage soup" --k 5 --quiet
+
+# Detailný výstup (plné info o recepte)
+python -m search_cli.run --index index/v2 --metric bm25 --q "italian sausage soup" --k 5 --detail
+</code>
+
 ^ Rank ^ S1 (Simple BM25) ^ S2 (Simple TF-IDF) ^ L1 (Lucene BM25) ^ L2 (Lucene TF-IDF) ^ FC (Food.com) ^ G (Google) ^
 | 1 | Lentil Soup With Italian Sausage ✅ | Italian Sausage Soup ✅ | Italian Sausage Soup ✅ | Italian Sausage Soup ✅ | Italian Sausage Vegetable Soup ✅ | Italian Sausage Soup ✅ |
 | 2 | Italian Sausage Soup ✅ | Sausage and Pepper Soup ✅ | Lentil Soup With Italian Sausage ✅ | Italian (Turkey) Sausage Soup ✅ | Italian Sausage Soup ✅ | Italian Sausage Soup ✅ |
@@ -97,6 +124,25 @@ P@5 = |{doc ∈ systém_top5 : doc je relevantný}| / 5
 ==== 2.2 Query: "thai peanut noodles" ====
 
 **Čo hľadáme:** Rezance/noodles s thajskou kuchyňou a arašidmi/peanut alebo podobnou omáčkou.
+
+**Terminálové príkazy (copy-paste ready):**
+
+<code bash>
+# S1: Simple BM25
+python -m search_cli.run --index index/v1 --metric bm25 --q "thai peanut noodles" --k 5
+
+# S2: Simple TF-IDF
+python -m search_cli.run --index index/v1 --metric tfidf --q "thai peanut noodles" --k 5
+
+# L1: PyLucene BM25
+python -m search_cli.run --index index/v2 --metric bm25 --q "thai peanut noodles" --k 5
+
+# L2: PyLucene TF-IDF
+python -m search_cli.run --index index/v2_tfidf --metric tfidf --q "thai peanut noodles" --k 5
+
+# === JSON VÝSTUP ===
+python -m search_cli.run --index index/v2 --metric bm25 --q "thai peanut noodles" --k 5 --json
+</code>
 
 ^ Rank ^ S1 (Simple BM25) ^ S2 (Simple TF-IDF) ^ L1 (Lucene BM25) ^ L2 (Lucene TF-IDF) ^ FC (Food.com) ^ G (Google) ^
 | 1 | Thai Peanut Noodles ✅ | Thai Noodle Salad ✅ | Thai Peanut Noodles ✅ | Thai Peanut Sauce Noodles ✅ | Spicy Thai Peanut Noodles ✅ | Thai Peanut Noodles ✅ |
@@ -119,6 +165,25 @@ P@5 = |{doc ∈ systém_top5 : doc je relevantný}| / 5
 
 **Čo hľadáme:** Cheesecake (tvarohový koláč) s nízkym obsahom sacharidov alebo zdravší variant.
 
+**Terminálové príkazy (copy-paste ready):**
+
+<code bash>
+# S1: Simple BM25
+python -m search_cli.run --index index/v1 --metric bm25 --q "low carb cheesecake" --k 5
+
+# S2: Simple TF-IDF
+python -m search_cli.run --index index/v1 --metric tfidf --q "low carb cheesecake" --k 5
+
+# L1: PyLucene BM25
+python -m search_cli.run --index index/v2 --metric bm25 --q "low carb cheesecake" --k 5
+
+# L2: PyLucene TF-IDF
+python -m search_cli.run --index index/v2_tfidf --metric tfidf --q "low carb cheesecake" --k 5
+
+# === S ČASOVÝM FILTROM (max 45 minút) ===
+python -m search_cli.run --index index/v2 --metric bm25 --q "low carb cheesecake" --k 5 --filter '{"max_total_minutes": 45}'
+</code>
+
 ^ Rank ^ S1 (Simple BM25) ^ S2 (Simple TF-IDF) ^ L1 (Lucene BM25) ^ L2 (Lucene TF-IDF) ^ FC (Food.com) ^ G (Google) ^
 | 1 | Low Carb Cheesecake ✅ | Low Carb Pumpkin Cheesecake ✅ | Low Carb Cheesecake ✅ | Low Carb Cheesecake ✅ | Low-Carb Cheesecake ✅ | Low-Carb Cheesecake ✅ |
 | 2 | Guilt Free Low Cal Pumpkin Cheesecake ✅ | Swirled Low Carb Cheesecake ✅ | Keto Cheesecake ✅ | Low Carb Pasta ❌ | Super Simple Low Carb No-Bake ✅ | Low Carb Atkins Cheese Cake ✅ |
@@ -140,6 +205,25 @@ P@5 = |{doc ∈ systém_top5 : doc je relevantný}| / 5
 
 **Čo hľadáme:** Čokoládový mus (mousse) bez živočíšnych produktov alebo s rastlinnými alternatívami.
 
+**Terminálové príkazy (copy-paste ready):**
+
+<code bash>
+# S1: Simple BM25
+python -m search_cli.run --index index/v1 --metric bm25 --q "vegan chocolate mousse" --k 5
+
+# S2: Simple TF-IDF
+python -m search_cli.run --index index/v1 --metric tfidf --q "vegan chocolate mousse" --k 5
+
+# L1: PyLucene BM25
+python -m search_cli.run --index index/v2 --metric bm25 --q "vegan chocolate mousse" --k 5
+
+# L2: PyLucene TF-IDF
+python -m search_cli.run --index index/v2_tfidf --metric tfidf --q "vegan chocolate mousse" --k 5
+
+# === QUIET VÝSTUP (pre benchmarky) ===
+python -m search_cli.run --index index/v1 --metric bm25 --q "vegan chocolate mousse" --k 5 --quiet
+</code>
+
 ^ Rank ^ S1 (Simple BM25) ^ S2 (Simple TF-IDF) ^ L1 (Lucene BM25) ^ L2 (Lucene TF-IDF) ^ FC (Food.com) ^ G (Google) ^
 | 1 | Vegan Chocolate Mousse ✅ | Chocolate Mousse ✅ | Vegan Chocolate Mousse ✅ | Blender Chocolate Mousse ✅ | Vegan Chocolate Mousse ✅ | Vegan Chocolate Mousse ✅ |
 | 2 | Dairy Free Chocolate Mousse ✅ | Vegan Chocolate Cake ✅ | Chocolate Raspberry Mousse ✅ | Gordon Ramsay Chocolate Mousse ❌ | Vegan Chocolate Mousse ✅ | Vegan Chocolate Mousse (tofu) ✅ |
@@ -160,6 +244,25 @@ P@5 = |{doc ∈ systém_top5 : doc je relevantný}| / 5
 ==== 2.5 Query: "mexican beef tacos" ====
 
 **Čo hľadáme:** Tacos (mexická tortilla) s hovädzím mäsom alebo podobným mäsom.
+
+**Terminálové príkazy (copy-paste ready):**
+
+<code bash>
+# S1: Simple BM25
+python -m search_cli.run --index index/v1 --metric bm25 --q "mexican beef tacos" --k 5
+
+# S2: Simple TF-IDF
+python -m search_cli.run --index index/v1 --metric tfidf --q "mexican beef tacos" --k 5
+
+# L1: PyLucene BM25
+python -m search_cli.run --index index/v2 --metric bm25 --q "mexican beef tacos" --k 5
+
+# L2: PyLucene TF-IDF
+python -m search_cli.run --index index/v2_tfidf --metric tfidf --q "mexican beef tacos" --k 5
+
+# === DETAILNÝ VÝSTUP S WIKI ENTITAMI ===
+python -m search_cli.run --index index/v2 --metric bm25 --q "mexican beef tacos" --k 5 --detail
+</code>
 
 ^ Rank ^ S1 (Simple BM25) ^ S2 (Simple TF-IDF) ^ L1 (Lucene BM25) ^ L2 (Lucene TF-IDF) ^ FC (Food.com) ^ G (Google) ^
 | 1 | Mexican Beef Tacos ✅ | Taco Soup With Beef ✅ | Mexican Steak Tacos ✅ | Easy Beef Tacos ✅ | ❌ **0 výsledkov** | Mexican Steak Tacos ✅ |

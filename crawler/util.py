@@ -27,7 +27,7 @@ def canonicalize(url: str, html: Optional[str] = None) -> str:
     """
     if html:
         try:
-            # Use regex to find canonical link instead of BeautifulSoup
+            # Use regex to find canonical link instead of bs
             # Look for <link ... rel="canonical" ...> or <link ... rel='canonical' ...>
             # We iterate over all link tags to be safe about attribute order
             link_tags = re.findall(r'<link[^>]+>', html, re.IGNORECASE)

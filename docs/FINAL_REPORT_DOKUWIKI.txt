@@ -73,34 +73,6 @@ class RobotsParser:
 
 ===== 3. Parser =====
 
-==== 3.1 Dual-layer parsing ====
-
-Parser používa dvojvrstvový prístup pre maximálnu extrakciu dát:
-
-  - **JSON-LD** - primárny zdroj štruktúrovaných dát (Schema.org Recipe)
-  - **HTML Regex fallback** - záložný parser pre chýbajúce polia
-
-**Kľúčový kód - JSON-LD extrakcia:**
-<code python>
-def extract_json_ld(html: str) -> Optional[Dict]:
-    soup = BeautifulSoup(html, 'html.parser')
-    for script in soup.find_all('script', type='application/ld+json'):
-        data = json.loads(script.string)
-        if data.get('@type') == 'Recipe':
-            return {
-                'title': data.get('name'),
-                'ingredients': data.get('recipeIngredient', []),
-                'instructions': [s.get('text') for s in data.get('recipeInstructions', [])],
-                'nutrition': data.get('nutrition'),
-                'times': {
-                    'prep': parse_duration(data.get('prepTime')),
-                    'cook': parse_duration(data.get('cookTime')),
-                    'total': parse_duration(data.get('totalTime'))
-                }
-            }
-    return None
-</code>
-
 ==== 3.2 Extrahované polia receptu ====
 
 ^ Pole ^ Typ ^ Príklad ^
